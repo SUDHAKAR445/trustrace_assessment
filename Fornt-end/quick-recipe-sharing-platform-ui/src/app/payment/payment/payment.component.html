@@ -1,0 +1,10 @@
+<form [formGroup]="paymentForm" (ngSubmit)="bookNowClicked()">
+    <label>Name: </label>
+    <input type="text" formControlName="name">
+    <label>Email: </label>
+    <input type="text" formControlName="email">
+    <label>Contact: </label>
+    <input type="text" formControlName="contact">
+
+    <button type="submit"> Book now</button>
+</form>
