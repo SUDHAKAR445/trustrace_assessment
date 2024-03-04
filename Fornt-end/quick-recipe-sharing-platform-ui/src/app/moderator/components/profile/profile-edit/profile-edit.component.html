@@ -1,0 +1,65 @@
+<div class="form-container">
+    <div class="form-title">Update User</div>
+
+    <form [formGroup]="updateUserForm" (ngSubmit)="onUpdateFormSubmitted()">
+
+        <div class="form-group">
+            <label for="profileImage">Profile Image</label>
+            <img *ngIf="imagePreview" [src]="imagePreview" alt="Profile Image" class="uploaded-image">
+            <input type="file" id="profileImage" (change)="onFileSelected($event)" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label for="usernameValue">Username</label>
+            <input type="text" id="usernameValue" formControlName="usernameValue" class="form-control"
+                placeholder="Enter username">
+        </div>
+
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" formControlName="firstName" class="form-control"
+                placeholder="Enter first name">
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" formControlName="lastName" class="form-control"
+                placeholder="Enter last name">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" formControlName="email" class="form-control" placeholder="Enter email">
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <mat-radio-group aria-label="Select an Role" formControlName="gender">
+                <mat-radio-button value="MALE">MALE</mat-radio-button>
+                <mat-radio-button value="FEMALE">FEMALE</mat-radio-button>
+                <mat-radio-button value="NONE">Prefer not to say </mat-radio-button>
+            </mat-radio-group>
+        </div>
+
+        <div class="form-group">
+            <label for="contact">Phone</label>
+            <input type="tel" id="contact" formControlName="contact" class="form-control"
+                placeholder="Enter phone number">
+        </div>
+
+        <div class="form-group" *ngIf="false">
+            <label for="role">Role</label>
+            <input type="text" id="role" formControlName="role" class="form-control" placeholder="Enter role">
+        </div>
+
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" formControlName="password" class="form-control"
+                placeholder="Enter password">
+        </div>
+
+        <button type="submit" class="btn-primary">Update Profile</button>
+        <button type="button" class="btn-danger" routerLink="/admin/profile">Cancel</button>
+    </form>
+</div>

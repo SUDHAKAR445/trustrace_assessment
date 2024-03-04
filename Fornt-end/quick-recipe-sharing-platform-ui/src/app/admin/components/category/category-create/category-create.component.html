@@ -1,0 +1,11 @@
+<app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
+<div class="container">
+    <h2>Create Category</h2>
+    <form [formGroup]="createCategoryForm" (submit)="onCreateCategoryFormSubmitted()">
+        <div class="form-group">
+            <label for="name">Category Name:</label>
+            <input matInput type="text" id="name" name="name" formControlName="name" />
+        </div>
+        <button mat-raised-button type="submit" color="primary" [disabled]="createCategoryForm.invalid">Create Category</button>
+    </form>
+</div>

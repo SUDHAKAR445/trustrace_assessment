@@ -1,0 +1,239 @@
+<div class="container">
+    <h2>Report Detail</h2>
+    <div *ngIf="reportDetail">
+        <mat-card>
+            <mat-card-content>
+                <div class="user-details">
+
+                    <div class="detail-row">
+                        <div class="detail-label">Report</div>
+                        <div class="detail-value">{{ reportDetail.report.reportText }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value">{{ reportDetail.report.status }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label"> Reported Date </div>
+                        <div class="detail-value">{{ reportDetail.report.reportedDate | date }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Profile</div>
+                        <div class="detail-value"> <img [src]="reportDetail.reporterUser.profileImageUrl">
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Username</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.usernameValue }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter First Name</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.firstName }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Last Name</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.lastName }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Email</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.email }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Role</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.role }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Gender</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.gender }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Contact</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.contact }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Created At</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.createdAt | date}}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Updated At</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.updatedAt | date}}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Deleted At</div>
+                        <div class="detail-value">{{ reportDetail.reporterUser.deletedAt | date}}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Reporter Wallet</div>
+                        <div class="detail-value" style="font-size: xx-large;">{{
+                            reportDetail.reporterUser.wallet | currency : 'INR'}}</div>
+                    </div>
+                    <div *ngIf="reportDetail.reportedUser">
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Profile</div>
+                            <div class="detail-value"> <img [src]="reportDetail.reportedUser.profileImageUrl"></div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Username</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.usernameValue }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User First Name</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.firstName }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Last Name</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.lastName }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Email</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.email }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Role</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.role }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Gender</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.gender }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Contact</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.contact }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Created At</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.createdAt | date}}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Updated At</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.updatedAt | date}}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Deleted At</div>
+                            <div class="detail-value">{{ reportDetail.reportedUser.deletedAt | date}}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported User Wallet</div>
+                            <div class="detail-value" style="font-size: xx-large;">{{
+                                reportDetail.reportedUser.wallet | currency : 'INR'}}</div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="reportDetail.reportedComment">
+                        <div class="detail-row">
+                            <div class="detail-label">Comment User Profile</div>
+                            <div class="detail-value"> <img [src]="reportDetail.reportedComment.profileImageUrl"></div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Comment User Username</div>
+                            <div class="detail-value">{{ reportDetail.reportedComment.username }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Comment</div>
+                            <div class="detail-value">{{ reportDetail.reportedComment.text }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Like Count</div>
+                            <div class="detail-value">{{ reportDetail.reportedComment.likeCount }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Comment Date</div>
+                            <div class="detail-value">{{ reportDetail.reportedComment.commentDate | date }}</div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="reportDetail.reportedRecipe">
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Title</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.title }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Recipe User profile</div>
+                            <div class="detail-value"><img [src]="reportDetail.reportedRecipe.user?.profileImageUrl" /></div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Recipe Username</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.user?.usernameValue }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Description</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.description }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Instructions</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.instructions }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Preparation Time</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.preparationTime }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Cooking Time</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.cookingTime }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Servings</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.servings }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Date Created</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.dateCreated | date}}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Category</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.category.name }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Cuisine</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.cuisine.name }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Photo</div>
+                            <div class="detail-value"><img [src]="reportDetail.reportedRecipe.photo"></div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Uploaded Video</div>
+                            <div class="detail-value">{{ reportDetail.reportedRecipe.video }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Reported Recipe Ingredients</div>
+                            <div class="detail-value" *ngFor="let item of reportDetail.reportedRecipe.ingredients">
+                                <div class="detail">
+                                    <div class="ingredient-label">{{ item.name}}</div><br>
+                                    <div class="ingredient-value">{{item.quantity }} {{ item.unitOfMeasurement }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                
+                    <div class="button-container">
+                        <button mat-raised-button color="accent" (click)="updateStatusClicked(reportDetail.report.id,'pending')">Pending</button>
+                        <button mat-raised-button color="primary" (click)="updateStatusClicked(reportDetail.report.id,'resolve')">Resolve</button>
+                        <button mat-raised-button color="warn" (click)="updateStatusClicked(reportDetail.report.id,'reject')">Reject</button>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+    <div *ngIf="!reportDetail">
+        <p>No Report selected.</p>
+    </div>
+</div>

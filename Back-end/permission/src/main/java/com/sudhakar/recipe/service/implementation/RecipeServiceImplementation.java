@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sudhakar.recipe.dto.RecipeDto;
 import com.sudhakar.recipe.entity.Category;
 import com.sudhakar.recipe.entity.Comment;
 import com.sudhakar.recipe.entity.Cuisine;
@@ -132,14 +134,12 @@ public class RecipeServiceImplementation implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<List<Recipe>> getAllRecipesOrderByCreationDate(Pageable pageable) {
+    public ResponseEntity<Page<RecipeDto>> getAllRecipesOrderByCreationDate(Pageable pageable) {
         try {
             Page<Recipe> recipes = recipeRepository
-                    .findAllByOrderByDateCreatedDesc(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
-            if (recipes != null) {
-                return new ResponseEntity<>(recipes.getContent(), HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                    .findByOrderByDateCreatedDesc(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+
+                return new ResponseEntity<>(recipes.map(this::convertDto), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -192,9 +192,8 @@ public class RecipeServiceImplementation implements RecipeService {
         try {
             Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
             if (optionalRecipe.isPresent()) {
-                ingredientService.deleteIngredients(optionalRecipe.get().getIngredients());
-                commentService.deleteAllComment(optionalRecipe.get().getComments());
-                recipeRepository.delete(optionalRecipe.get());
+                optionalRecipe.get().setDeletedAt(new Date());
+                recipeRepository.save(optionalRecipe.get());
                 return new ResponseEntity<>("Recipe deleted successfully", HttpStatus.OK);
             }
             return new ResponseEntity<>("Recipe does not exists", HttpStatus.BAD_REQUEST);
@@ -204,21 +203,16 @@ public class RecipeServiceImplementation implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<List<Recipe>> getAllRecipeByUsername(String username, Pageable pageable) {
+    public ResponseEntity<Page<RecipeDto>> getAllRecipeByUserId(String userId, Pageable pageable) {
         try {
-            Optional<User> userOptional = userRepository.findByUsernameValue(username);
+            Optional<User> userOptional = userRepository.findById(userId);
 
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
 
-                Pageable sortedPageable = PageRequest.of(
-                        pageable.getPageNumber(),
-                        pageable.getPageSize(),
-                        Sort.by(Sort.Order.desc("dateCreated")));
+                Page<Recipe> recipesPage = recipeRepository.findByUserOrderByDateCreated(user, pageable);
 
-                Page<Recipe> recipesPage = recipeRepository.findByUser(user, sortedPageable);
-
-                return new ResponseEntity<>(recipesPage.getContent(), HttpStatus.OK);
+                return new ResponseEntity<>(recipesPage.map(this::convertDto), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -243,12 +237,12 @@ public class RecipeServiceImplementation implements RecipeService {
 
                 if (userOptional.isPresent()) {
                     User user = userOptional.get();
-                    Set<Comment> comments = recipe.getComments();
+                    List<String> comments = recipe.getComments();
                     if (recipe.getComments() == null) {
-                        comments = new HashSet<>();
+                        comments = new LinkedList<>();
                     }
-                    Comment savedComment = commentService.createComment(comment, user);
-                    comments.add(savedComment);
+                    Comment savedComment = commentService.createComment(comment, user, recipe.getId());
+                    comments.add(savedComment.getId());
                     recipe.setComments(comments);
                     recipeRepository.save(recipe);
 
@@ -332,7 +326,7 @@ public class RecipeServiceImplementation implements RecipeService {
             Page<Recipe> recipes;
 
             if (title == null || title.trim().isEmpty()) {
-                recipes = recipeRepository.findAllByOrderByDateCreatedDesc(pageable);
+                recipes = recipeRepository.findByOrderByDateCreatedDesc(pageable);
             } else {
                 recipes = recipeRepository.findByTitleContainingIgnoreCaseOrderByDateCreatedDesc(title, pageable);
             }
@@ -350,4 +344,31 @@ public class RecipeServiceImplementation implements RecipeService {
         }
     }
 
+    private RecipeDto convertDto(Recipe recipe) {
+        RecipeDto recipeDto = new RecipeDto();
+        recipeDto.setRecipeId(recipe.getId());
+        recipeDto.setTitle(recipe.getTitle());
+        recipeDto.setDateCreated(recipe.getDateCreated());
+        recipeDto.setDeletedAt(recipe.getDeletedAt());
+        recipeDto.setCategory(recipe.getCategory().getName());
+        recipeDto.setCuisine(recipe.getCuisine().getName());
+        recipeDto.setUserId(recipe.getUser().getId());
+        recipeDto.setUsername(recipe.getUser().getUsernameValue());
+        recipeDto.setProfileImageUrl(recipe.getUser().getProfileImageUrl());
+
+        return recipeDto;
+    }
+
+    @Override
+    public ResponseEntity<Recipe> getRecipeById(String id) {
+        try {
+            Optional<Recipe> recipeOptional = recipeRepository.findById(id);
+            if(recipeOptional.isPresent()){
+                return new ResponseEntity<>(recipeOptional.get(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

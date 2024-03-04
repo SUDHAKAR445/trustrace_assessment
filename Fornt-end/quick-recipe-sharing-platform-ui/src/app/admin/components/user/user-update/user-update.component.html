@@ -1,0 +1,62 @@
+<app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
+<div class="container">
+    <h2>Update User</h2>
+    <form [formGroup]="updateUserForm" (submit)="onUpdateFormSubmitted()">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input matInput type="text" id="usernameValue" name="usernameValue" formControlName="usernameValue" />
+        </div>
+
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input matInput type="text" id="firstName" name="firstName" formControlName="firstName" />
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input matInput type="text" id="lastName" name="lastName" formControlName="lastName" />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input matInput type="email" id="email" name="email" formControlName="email" />
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <mat-radio-group aria-label="Select an Gender" formControlName="gender" name="gender">
+                <mat-radio-button value="MALE">MALE</mat-radio-button>
+                <mat-radio-button value="FEMALE">FEMALE</mat-radio-button>
+                <mat-radio-button value="NONE">Prefer not to say </mat-radio-button>
+            </mat-radio-group>
+        </div>
+
+        <div class="form-group">
+            <label for="role">Role:</label>
+            <mat-radio-group aria-label="Select an Role" formControlName="role">
+                <mat-radio-button value="ADMIN">ADMIN</mat-radio-button>
+                <mat-radio-button value="MODERATOR">MODERATOR</mat-radio-button>
+                <mat-radio-button value="USER">USER</mat-radio-button>
+            </mat-radio-group>
+        </div>
+
+        <div class="form-group">
+            <label for="contact">Contact:</label>
+            <input matInput type="tel" id="contact" name="contact" formControlName="contact" />
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input matInput type="password" id="password" name="password" formControlName="password" />
+        </div>
+
+        <div class="col-6"> Upload Profile Image
+            <input type="file" value="select" #selectFile (change)="onFileSelected($event)">
+        </div>
+        <div class="button-container">
+            <button mat-raised-button type="submit" color="primary" [disabled]="updateUserForm.invalid">Update
+                User</button>
+            <button mat-raised-button type="button" color="warn" (click)="onCancelClicked()">Cancel</button>
+        </div>
+    </form>
+</div>

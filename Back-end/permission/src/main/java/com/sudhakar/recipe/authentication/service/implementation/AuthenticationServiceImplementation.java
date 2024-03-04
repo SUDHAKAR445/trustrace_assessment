@@ -60,7 +60,11 @@ public class AuthenticationServiceImplementation implements AuthenticationServic
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        String jwtToken = jwtService.generateToken(savedUser);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("Authorities", savedUser.getAuthorities());
+        System.out.println(user.getAuthorities());
+        String jwtToken = jwtService.generateToken(extraClaims, savedUser);
+        
         return new ResponseEntity<>(AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build(), HttpStatus.OK);

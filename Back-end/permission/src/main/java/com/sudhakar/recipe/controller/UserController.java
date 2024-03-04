@@ -1,8 +1,7 @@
 package com.sudhakar.recipe.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sudhakar.recipe.dto.UserResponseDto;
 import com.sudhakar.recipe.entity.User;
+import com.sudhakar.recipe.filters.UserFilterDao;
 import com.sudhakar.recipe.service.UserService;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,30 +32,50 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserFilterDao userFilterDao;
+
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User createUserRequest) {
+    public ResponseEntity<UserResponseDto> createUser(@RequestBody User createUserRequest) {
         return userService.createUser(createUserRequest);
     }
 
-    @DeleteMapping("{usernameOrEmail}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String usernameOrEmail) {
-        return userService.deleteUser(usernameOrEmail);
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+        return userService.deleteUser(id);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @ModelAttribute User userRequest,
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable String id,
+            @ModelAttribute UserResponseDto userRequest,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
         return userService.updateUser(id, userRequest, imageFile);
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers(@RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<Page<UserResponseDto>> getAllUsers(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userService.getAllUsers(pageable);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<User> getProfile(@PathVariable String id) {
+    public ResponseEntity<UserResponseDto> getProfile(@PathVariable String id) {
         return userService.getProfile(id);
     }
+
+    @GetMapping("/check/{usernameOrEmail}")
+    public ResponseEntity<Boolean> checkUsernameOrEmail(@PathVariable String usernameOrEmail) {
+        return userService.checkUsernameOrEmail(usernameOrEmail);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<UserResponseDto>> search(@RequestParam String searchText,
+            @RequestParam String selectedRole,
+            @RequestParam String selectedGender,
+            @RequestParam int page,
+            @RequestParam int size) {
+        return userFilterDao.searchUsersWithCriteria(searchText, selectedRole, selectedGender, PageRequest.of(page, size));
+    }
 }
+
+// inputValue, selectedRole, selectedGender, pageIndex, pageSize

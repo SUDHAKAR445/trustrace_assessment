@@ -26,12 +26,13 @@ public class Comment {
 
     @Field(name = "date")
     private Date date;
-    
-    @DBRef
-    @Field(name = "commented_user_ref")
-    private User user;
 
-    @DBRef
+    @Field(name = "posted_recipe_ref")
+    private String recipe;
+
+    @Field(name = "commented_user_ref")
+    private String user;
+
     @Field(name = "liked_user_ref")
-    private List<User> likes;
+    private List<String> likes;
 }

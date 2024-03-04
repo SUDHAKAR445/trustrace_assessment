@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.swing.text.html.Option;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.sudhakar.recipe.dto.ReportBody;
+import com.sudhakar.recipe.dto.ReportDto;
 import com.sudhakar.recipe.entity.Comment;
 import com.sudhakar.recipe.entity.Recipe;
 import com.sudhakar.recipe.entity.Report;
@@ -39,50 +43,68 @@ public class ReportServiceImplementation implements ReportService {
     private RecipeRepository recipeRepository;
 
     @Override
-    public ResponseEntity<String> createReport(Report report) {
+    public ResponseEntity<String> createCommentReport(String reporterId, ReportBody report) {
         try {
+            Optional<Comment> commentOptional = commentRepository.findById(report.getReportedId());
+            Optional<User> reporterUserOptional = userRepository.findById(reporterId);
+            if(commentOptional.isPresent() && reporterUserOptional.isPresent()) {
+                Report createReport = new Report();
+                createReport.setReportText(report.getText());
+                createReport.setComment(commentOptional.get());
+                createReport.setReporterUser(reporterUserOptional.get());
+                createReport.setReportedDate(new Date());
+                createReport.setStatus(Status.PENDING);
 
-            if (report.getReportedUser() == null && report.getReportedRecipe() == null
-                    && report.getReportedComment() == null) {
-                return new ResponseEntity<>("Missing of data", HttpStatus.BAD_REQUEST);
+                reportRepository.save(createReport);
+                return new ResponseEntity<>("Reported Successfully", HttpStatus.OK);
             }
-
-            Optional<User> user = userRepository.findById(report.getReporterUser().getId());
-            report.setReporterUser(user.get());
-            report.setReportedDate(new Date());
-
-            if (report.getReportedRecipe() != null) {
-                Optional<Recipe> recipe = recipeRepository.findById(report.getReportedRecipe().getId());
-                if (recipe.isPresent()) {
-                    report.setReportedRecipe(recipe.get());
-                    reportRepository.save(report);
-                    return new ResponseEntity<>("Recipe reported successfully", HttpStatus.OK);
-                }
-                return new ResponseEntity<>("Recipe does not exists", HttpStatus.BAD_REQUEST);
-            }
-
-            if (report.getReportedComment() != null) {
-                Optional<Comment> comment = commentRepository.findById(report.getReportedComment().getId());
-                if (comment.isPresent()) {
-                    report.setReportedComment(comment.get());
-                    reportRepository.save(report);
-                    return new ResponseEntity<>("Comment reported successfully", HttpStatus.OK);
-                }
-                return new ResponseEntity<>("Comment does not exists", HttpStatus.BAD_REQUEST);
-            }
-
-            if (report.getReportedUser() != null) {
-                Optional<User> reportedUser = userRepository.findById(report.getReportedUser().getId());
-                if (reportedUser.isPresent()) {
-                    report.setReportedUser(reportedUser.get());
-                    reportRepository.save(report);
-                    return new ResponseEntity<>("User reported successfully", HttpStatus.OK);
-                }
-                return new ResponseEntity<>("User does not exists", HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>("Missing of data for reporting", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Comment does not exists", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in reporting", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Problem in reporting comment", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> createUserReport(String reporterId, ReportBody report) {
+        try {
+            Optional<User> userOptional = userRepository.findById(report.getReportedId());
+            Optional<User> reporterUserOptional = userRepository.findById(reporterId);
+            if(userOptional.isPresent() && reporterUserOptional.isPresent()) {
+                Report createReport = new Report();
+                createReport.setReportText(report.getText());
+                createReport.setUser(userOptional.get());
+                createReport.setReporterUser(reporterUserOptional.get());
+                createReport.setReportedDate(new Date());
+                createReport.setStatus(Status.PENDING);
+
+                reportRepository.save(createReport);
+                return new ResponseEntity<>("Reported Successfully", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("User does not exists", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Problem in reporting user", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> createRecipeReport(String reporterId, ReportBody report) {
+        try {
+            Optional<Recipe> recipeOptional = recipeRepository.findById(report.getReportedId());
+            Optional<User> reporterUserOptional = userRepository.findById(reporterId);
+            if(recipeOptional.isPresent() && reporterUserOptional.isPresent()) {
+                Report createReport = new Report();
+                createReport.setReportText(report.getText());
+                createReport.setRecipe(recipeOptional.get());
+                createReport.setReporterUser(reporterUserOptional.get());
+                createReport.setReportedDate(new Date());
+                createReport.setStatus(Status.PENDING);
+
+                reportRepository.save(createReport);
+                return new ResponseEntity<>("Reported Successfully", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("Recipe does not exists", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Problem in reporting recipe", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -90,14 +112,18 @@ public class ReportServiceImplementation implements ReportService {
     public ResponseEntity<String> updateStatusOfReport(String reportId, String status) {
         try{
             Optional<Report> reportOptional = reportRepository.findById(reportId);
+            System.out.println(status);
             if(reportOptional.isPresent()) {
                 Report report = reportOptional.get();
-                if(status.toLowerCase().compareTo("reject") == 1) {
+                if(status.equalsIgnoreCase("reject")) {
                     report.setStatus(Status.REJECT);
-                } else {
+                } else if (status.equalsIgnoreCase("resolve")) {
                     report.setStatus(Status.RESOLVE);
+                } else {
+                    report.setStatus(Status.PENDING);
                 }
-                reportRepository.save(report);
+                report = reportRepository.save(report);
+                // System.out.println(report);
                 return new ResponseEntity<>("Status updated successfully", HttpStatus.OK);
             }
             return new ResponseEntity<>("Report does not exists", HttpStatus.BAD_REQUEST);
@@ -121,23 +147,84 @@ public class ReportServiceImplementation implements ReportService {
     }
 
     @Override
-    public ResponseEntity<List<Report>> getAllReport(Pageable pageable) {
+    public ResponseEntity<Page<ReportDto>> getAllRecipeReport(Pageable pageable) {
         try {
-            Page<Report> reportList = reportRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
-            List<Report> reports = reportList.getContent();
-            if(!reports.isEmpty()) {
-                return new ResponseEntity<>(reports, HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            Page<Report> reports =  reportRepository.findByRecipeIsNotNullOrderByReportedDateDesc(pageable);
+            return new ResponseEntity<>(reports.map(this::convertToDto), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // @Override
-    // public ResponseEntity<List<Report>> getReportByUserIdOrRecipeIdOrCommentIdOrUsername(String input, Pageable pageable) {
-    //     try{
+    @Override
+    public ResponseEntity<Page<ReportDto>> getAllCommentReport(Pageable pageable) {
+        try {
+            Page<Report> reports = reportRepository.findByCommentIsNotNullOrderByReportedDateDesc(pageable);
+            return new ResponseEntity<>(reports.map(this::convertToDto), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-    //     }
-    // }
+    @Override
+    public ResponseEntity<Page<ReportDto>> getAllUserReport(Pageable pageable) {
+        try {
+            Page<Report> reports = reportRepository.findByUserIsNotNullOrderByReportedDateDesc(pageable);
+            return new ResponseEntity<>(reports.map(this::convertToDto), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ReportDto> getReportById(String id) {
+        try {
+            Optional<Report> reportOptional = reportRepository.findById(id);
+            if(reportOptional.isPresent()) {
+                return new ResponseEntity<>(convertToDto(reportOptional.get()), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ReportDto convertToDto(Report report) {
+
+        ReportDto reportDto = new ReportDto();
+        reportDto.setId(report.getId());
+        reportDto.setReportText(report.getReportText());
+        reportDto.setReportedDate(report.getReportedDate());
+        reportDto.setStatus(report.getStatus());
+        reportDto.setReporterUserId(report.getReporterUser().getId());
+        reportDto.setReporterUsername(report.getReporterUser().getUsernameValue());
+        reportDto.setReporterUserImage(report.getReporterUser().getProfileImageUrl());
+        
+        if(report.getComment() != null) {
+            reportDto.setCommentId(report.getComment().getId());
+            reportDto.setCommentText(report.getComment().getText());
+            reportDto.setCommentUserId(report.getComment().getUser());
+            User user = userRepository.findById(report.getComment().getUser()).get();
+            reportDto.setCommentUsername(user.getUsernameValue());
+            reportDto.setCommentUserProfileImage(user.getProfileImageUrl());
+        }
+
+        if(report.getRecipe() != null) {
+            Recipe recipe = report.getRecipe();
+            reportDto.setRecipeId(recipe.getId());
+            reportDto.setRecipeTitle(recipe.getTitle());
+            reportDto.setRecipeUserId(recipe.getUser().getId());
+            reportDto.setRecipeUsername(recipe.getUser().getUsernameValue());
+            reportDto.setRecipeUserProfileImage(recipe.getUser().getProfileImageUrl());
+        }
+
+        if(report.getUser() != null) {
+            User user = report.getUser();
+            reportDto.setReportedUserId(user.getId());
+            reportDto.setReportedUserImage(user.getProfileImageUrl());
+            reportDto.setReportedUsername(user.getUsernameValue());
+        }
+
+        return reportDto;
+    }
 }

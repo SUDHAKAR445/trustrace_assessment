@@ -1,0 +1,151 @@
+<div class="container">
+    <h2>Recipe Detail</h2>
+    <div *ngIf="recipeDetail">
+        <mat-card>
+            <mat-card-content>
+                <div class="user-details">
+
+                    <div class="detail-row">
+                        <div class="detail-label">Profile</div>
+                        <div class="detail-value"> <img class="profile-img" [src]="recipeDetail.user?.profileImageUrl"></div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Username</div>
+                        <div class="detail-value">{{ recipeDetail.user?.usernameValue }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Title</div>
+                        <div class="detail-value">{{ recipeDetail.title }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div class="detail-value">{{ recipeDetail.description }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Instructions</div>
+                        <div class="detail-value">{{ recipeDetail.instructions }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Preparation Time</div>
+                        <div class="detail-value">{{ recipeDetail.preparationTime }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Cooking Time</div>
+                        <div class="detail-value">{{ recipeDetail.cookingTime }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Servings</div>
+                        <div class="detail-value">{{ recipeDetail.servings }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Date Created</div>
+                        <div class="detail-value">{{ recipeDetail.dateCreated | date}}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Deleted At</div>
+                        <div class="detail-value">{{ recipeDetail.deletedAt | date}}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Category</div>
+                        <div class="detail-value">{{ recipeDetail.category.name }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Cuisine</div>
+                        <div class="detail-value">{{ recipeDetail.cuisine.name }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Recipe photo</div>
+                        <div class="detail-value"><img [src]="recipeDetail.photo"></div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Uploaded Video</div>
+                        <div class="detail-value">{{ recipeDetail.video }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Ingredients</div>
+                        <div class="detail-value" *ngFor="let item of recipeDetail.ingredients">
+                            <div class="detail">
+                                <div class="ingredient-label">{{ item.name}}</div><br>
+                                <div class="ingredient-value">{{item.quantity }} {{ item.unitOfMeasurement }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="button-container">
+                    <button mat-raised-button color="primary">Update</button>
+                    <button mat-raised-button color="warn">Cancel</button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+    </div>
+    <div *ngIf="!recipeDetail">
+        <p>No Recipe selected.</p>
+    </div>
+</div>
+
+<div class="mat-elevation-z8">
+    <div class="mat-elevation-z8">
+        <table mat-table [dataSource]="dataSource">
+
+            <ng-container matColumnDef="S.No">
+                <th mat-header-cell *matHeaderCellDef> S.NO</th>
+                <td mat-cell *matCellDef="let element; let i = index"> {{ i + 1 }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Profile">
+                <th mat-header-cell *matHeaderCellDef> Profile</th>
+                <td mat-cell *matCellDef="let element"> <img [src]=" element.profileImageUrl" (click)="showUserDetail(element.userId)" /></td>
+            </ng-container>
+
+            <ng-container matColumnDef="Username">
+                <th mat-header-cell *matHeaderCellDef> Username</th>
+                <td mat-cell *matCellDef="let element"> {{ element.username }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Commented Text">
+                <th mat-header-cell *matHeaderCellDef> Commented Text</th>
+                <td mat-cell *matCellDef="let element"> {{ element.text }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Commented Date">
+                <th mat-header-cell *matHeaderCellDef> Date </th>
+                <td mat-cell *matCellDef="let element"> {{ element.commentDate | date }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Likes">
+                <th mat-header-cell *matHeaderCellDef> Likes</th>
+                <td mat-cell *matCellDef="let element"> {{ element.category }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Cuisine">
+                <th mat-header-cell *matHeaderCellDef> Cuisine</th>
+                <td mat-cell *matCellDef="let element"> {{ element.likeCount }}</td>
+            </ng-container>
+
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row (click)="showDetail(row.id)" *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator #paginator [length]="paginator.length" [pageIndex]="paginator.pageIndex"
+            [pageSize]="paginator.pageSize" [pageSizeOptions]="[2, 5, 10, 20]" [showFirstLastButtons]="true"
+            (page)="loadPage($event.pageIndex, $event.pageSize)">
+        </mat-paginator>
+    </div>

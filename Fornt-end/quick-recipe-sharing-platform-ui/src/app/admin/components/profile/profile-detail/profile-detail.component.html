@@ -1,0 +1,61 @@
+<mat-card class="user-card-full">
+    <mat-card-content class="row m-0">
+        <div class="col-sm-4 bg-c-lite-green user-profile">
+            <mat-card class="card-block text-center text-white">
+                <div class="card-content">
+                    <div class="m-b-25">
+                        <img [src]="userDetail.profileImageUrl || defaultImageUrl" class="img-radius"
+                            alt="User-Profile-Image">
+                    </div>
+                    <h1 class="f-w-600">{{ userDetail.firstName}}&nbsp;{{userDetail.lastName}}</h1>
+                    <p>{{ userDetail.usernameValue}}</p>
+                    <button mat-icon-button color="primary" (click)="updateProfile()">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </div>
+            </mat-card>
+        </div>
+        <div class="col-sm-8">
+            <mat-card class="card-block">
+                <h6 class="m-b-20 p-b-5 b-b-default f-w-600">Information</h6>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="m-b-10 f-w-600">Gender</p>
+                        <h6 class="text-muted f-w-400">{{ userDetail.gender }}</h6>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="m-b-10 f-w-600">Role</p>
+                        <h6 class="text-muted f-w-400">{{ userDetail.role }}</h6>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="m-b-10 f-w-600">Email</p>
+                        <h6 class="text-muted f-w-400">{{ userDetail.email }}</h6>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="m-b-10 f-w-600">Phone</p>
+                        <h6 class="text-muted f-w-400">{{ userDetail.contact }}</h6>
+                    </div>
+                </div>
+                <h6 class="m-b-20 m-t-40 p-b-5 b-b-default f-w-600">Account Details</h6>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="m-b-10 f-w-600">Created At</p>
+                        <h6 class="text-muted f-w-400">{{ userDetail.createdAt | date}}</h6>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="m-b-10 f-w-600">Updated At</p>
+                        <h6 class="text-muted f-w-400">{{ userDetail.updatedAt ? (userDetail.updatedAt | date) : 'No
+                            update date available' }}
+
+                        </h6>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="m-b-10 f-w-600">Deleted At</p>
+                        <h6 class="text-muted f-w-400">{{ userDetail.deletedAt ? (userDetail.deletedAt | date) : 'No
+                            Delete date available' }}</h6>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+    </mat-card-content>
+</mat-card>

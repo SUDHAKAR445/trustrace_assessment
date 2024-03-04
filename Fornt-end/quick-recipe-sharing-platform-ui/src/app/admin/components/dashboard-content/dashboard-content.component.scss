@@ -1,0 +1,38 @@
+.dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    padding: 30px;
+    padding-left: 5%;
+}
+
+.card {
+    width: 30%;
+    height: 200px;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: scale(1.10);
+}
+
+.card-body {
+    padding: 16px;
+}
+
+.card-title {
+    font-size: 30px;
+    font-weight:bolder;
+}
+
+.card-text {
+    padding: 30px;
+    font-size: 70px;
+    text-align: center;
+}

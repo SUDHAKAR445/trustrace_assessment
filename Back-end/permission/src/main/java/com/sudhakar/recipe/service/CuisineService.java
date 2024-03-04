@@ -2,17 +2,23 @@ package com.sudhakar.recipe.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import com.sudhakar.recipe.dto.CuisineDto;
+import com.sudhakar.recipe.dto.RecipeDto;
 import com.sudhakar.recipe.entity.Cuisine;
-import com.sudhakar.recipe.entity.Recipe;
 
 public interface CuisineService {
 
     ResponseEntity<Cuisine> createCuisine(String cuisine);
 
-    ResponseEntity<List<String>> getAllCuisines();
+    ResponseEntity<Page<CuisineDto>> getAllCuisines(Pageable page);
 
-    ResponseEntity<List<Recipe>> getAllRecipeByCuisineName(String cuisineName, Pageable page);
+    ResponseEntity<Page<RecipeDto>> getAllRecipeByCuisineId(String id, Pageable page);
+
+    ResponseEntity<CuisineDto> getCuisineDetail(String id);
+
+    ResponseEntity<Page<CuisineDto>> getCuisinesBySearch(String searchText, Pageable page);
 }

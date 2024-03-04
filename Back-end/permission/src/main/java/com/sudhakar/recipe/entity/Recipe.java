@@ -1,6 +1,7 @@
 package com.sudhakar.recipe.entity;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -42,6 +43,9 @@ public class Recipe {
     @Field(name = "date_created")
     private Date dateCreated;
 
+    @Field(name = "deleted_at")
+    private Date deletedAt;
+
     @DBRef
     @Field(name = "post_user_ref")
     private User user;
@@ -63,9 +67,8 @@ public class Recipe {
     @Field(name = "cuisine_ref")
     private Cuisine cuisine;
 
-    @DBRef
     @Field(name = "comments_ref")
-    private Set<Comment> comments;
+    private List<String> comments;
 
     @DBRef
     @Field(name = "ingredients_ref")

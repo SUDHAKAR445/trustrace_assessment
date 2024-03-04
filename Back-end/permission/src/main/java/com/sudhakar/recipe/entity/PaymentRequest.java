@@ -9,5 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentRequest {
+
+    private String bookerId;
+    private String recipeId;
     private int amount;
 }

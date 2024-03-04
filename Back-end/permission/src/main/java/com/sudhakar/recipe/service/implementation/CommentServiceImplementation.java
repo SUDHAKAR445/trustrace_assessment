@@ -3,16 +3,19 @@ package com.sudhakar.recipe.service.implementation;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.sudhakar.recipe.dto.CommentDto;
 import com.sudhakar.recipe.entity.Comment;
+import com.sudhakar.recipe.entity.Recipe;
 import com.sudhakar.recipe.entity.User;
 import com.sudhakar.recipe.repository.CommentRepository;
+import com.sudhakar.recipe.repository.RecipeRepository;
 import com.sudhakar.recipe.repository.UserRepository;
 import com.sudhakar.recipe.service.CommentService;
 
@@ -25,10 +28,14 @@ public class CommentServiceImplementation implements CommentService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RecipeRepository recipeRepository;
+
     @Override
-    public Comment createComment(Comment comment, User user) {
+    public Comment createComment(Comment comment, User user, String recipeId) {
         if (comment != null) {
-            comment.setUser(user);
+            comment.setRecipe(recipeId);
+            comment.setUser(user.getId());
             comment.setDate(new Date());
             Comment savedComment = commentRepository.save(comment);
             return savedComment;
@@ -37,16 +44,11 @@ public class CommentServiceImplementation implements CommentService {
     }
 
     @Override
-    public ResponseEntity<String> deleteComment(String commentId, String userId) {
+    public ResponseEntity<String> deleteComment(String commentId) {
         try {
             Optional<Comment> comment = commentRepository.findById(commentId);
-            Optional<User> user = userRepository.findById(userId);
 
-            if (comment.isPresent() && user.isPresent()) {
-
-                if (comment.get().getUser() == user.get()) {
-                    return new ResponseEntity<>("Unauthorized action", HttpStatus.BAD_REQUEST);
-                }
+            if (comment.isPresent()) {
                 commentRepository.delete(comment.get());
                 return new ResponseEntity<>("Comment deleted successfully", HttpStatus.OK);
             }
@@ -66,18 +68,14 @@ public class CommentServiceImplementation implements CommentService {
                 Comment comment = commentOptional.get();
                 User user = userOptional.get();
 
-                // if (comment.getUser().equals(user)) {
-                // return new ResponseEntity<>("Unauthorized action", HttpStatus.BAD_REQUEST);
-                // }
-
-                List<User> likes = comment.getLikes();
+                List<String> likes = comment.getLikes();
 
                 if (like) {
-                    likes.add(0, user);
+                    likes.add(0, user.getId());
                     commentRepository.save(comment);
                     return new ResponseEntity<>("Comment liked successfully", HttpStatus.OK);
                 } else {
-                    likes.remove(user);
+                    likes.remove(user.getId());
                     commentRepository.save(comment);
                     return new ResponseEntity<>("Comment unliked successfully", HttpStatus.OK);
                 }
@@ -90,9 +88,54 @@ public class CommentServiceImplementation implements CommentService {
     }
 
     @Override
-    public void deleteAllComment(Set<Comment> comments) {
+    public void deleteAllComment(List<String> comments) {
         if (comments != null) {
-            commentRepository.deleteAll(comments);
+            commentRepository.deleteAllById(comments);
         }
+    }
+
+    public ResponseEntity<Page<CommentDto>> getAllComments(String recipeId, Pageable page) {
+        try {
+            Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
+
+            if (recipeOptional.isPresent()) {
+                Page<Comment> comments = commentRepository.findByRecipe(recipeOptional.get().getId(), page);
+
+                return new ResponseEntity<>(comments.map(this::convertToDto), HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Override
+    public ResponseEntity<CommentDto> getCommentById(String id) {
+        try{
+            Optional<Comment> commentOptional = commentRepository.findById(id);
+            if(commentOptional.isPresent()) {
+                return new ResponseEntity<>(convertToDto(commentOptional.get()), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public CommentDto convertToDto(Comment comment) {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(comment.getId());
+        commentDto.setText(comment.getText());
+        User user = userRepository.findById(comment.getUser()).get();
+        commentDto.setUserId(user.getId());
+        commentDto.setUsername(user.getUsernameValue());
+        commentDto.setProfileImageUrl(user.getProfileImageUrl());
+        commentDto.setLikeCount(comment.getLikes() == null ? 0 : comment.getLikes().size());
+        commentDto.setCommentDate(comment.getDate());
+
+        return commentDto;
     }
 }

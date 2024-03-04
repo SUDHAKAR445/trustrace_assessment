@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'quick-recipe-sharing-platform-ui';
+
+  authService: AuthService = inject(AuthService);
+
+  ngOnInit(){
+    this.authService.autoLogin();
+  }
 }

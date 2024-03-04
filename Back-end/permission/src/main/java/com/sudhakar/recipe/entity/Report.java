@@ -35,14 +35,14 @@ public class Report {
 
     @DBRef
     @Field(name = "reported_comment_ref")
-    private Comment reportedComment;
+    private Comment comment;
 
     @DBRef
     @Field(name = "reported_recipe_ref")
-    private Recipe reportedRecipe;
+    private Recipe recipe;
 
     @DBRef
     @Field(name = "reported_user_ref")
-    private User reportedUser;
+    private User user;
 
 }
