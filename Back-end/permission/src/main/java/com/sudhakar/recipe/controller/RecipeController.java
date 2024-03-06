@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sudhakar.recipe.dto.RecipeDto;
+import com.sudhakar.recipe.dto.RecipeIdDTO;
+import com.sudhakar.recipe.dto.RecipeRequestDto;
 import com.sudhakar.recipe.entity.Comment;
 import com.sudhakar.recipe.entity.Recipe;
 import com.sudhakar.recipe.filters.RecipeFilterDao;
@@ -42,9 +45,15 @@ public class RecipeController {
     private RecipeFilterDao recipeFilterDao;
 
     @PostMapping("/create/{id}")
-    public ResponseEntity<String> createRecipe(@PathVariable String id, @RequestBody Recipe createRecipe,
-            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
-        return recipeService.createRecipe(id, createRecipe, imageFile);
+    public ResponseEntity<RecipeIdDTO> createRecipe(@PathVariable String id, @RequestBody RecipeRequestDto createRecipe) {
+
+        System.out.println(createRecipe);
+        return recipeService.createRecipe(id, createRecipe);
+    }
+
+    @PutMapping("/update/image/{id}")
+    public ResponseEntity<Void> updateRecipeImage(@PathVariable String id, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
+        return recipeService.updateRecipeImage(id, imageFile);
     }
 
     @GetMapping()
@@ -56,7 +65,7 @@ public class RecipeController {
 
     @PutMapping("/update/{id}/{recipeId}")
     public ResponseEntity<String> updateRecipe(@PathVariable String id, @PathVariable String recipeId,
-            @RequestBody Recipe updateRecipe) {
+            @RequestBody RecipeRequestDto updateRecipe) {
         return recipeService.updateRecipe(id, recipeId, updateRecipe);
     }
 

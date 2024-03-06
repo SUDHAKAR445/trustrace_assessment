@@ -20,17 +20,21 @@ import com.razorpay.RazorpayClient;
 import com.sudhakar.recipe.dto.BookingDto;
 import com.sudhakar.recipe.dto.TransactionDto;
 import com.sudhakar.recipe.entity.Booking;
+import com.sudhakar.recipe.entity.MailStructure;
 import com.sudhakar.recipe.entity.PaymentRequest;
 import com.sudhakar.recipe.entity.Recipe;
-import com.sudhakar.recipe.entity.Status;
 import com.sudhakar.recipe.entity.User;
 import com.sudhakar.recipe.entity.Booking.PaymentStatus;
 import com.sudhakar.recipe.repository.BookingRepository;
 import com.sudhakar.recipe.repository.RecipeRepository;
 import com.sudhakar.recipe.repository.UserRepository;
+import com.sudhakar.recipe.service.MailService;
 import com.sudhakar.recipe.service.RazorpayService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 @PropertySource("classpath:application.properties")
 public class RazorpayServiceImplementation implements RazorpayService {
 
@@ -54,6 +58,9 @@ public class RazorpayServiceImplementation implements RazorpayService {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private MailService mailService;
 
     @Override
     @Transactional
@@ -124,6 +131,7 @@ public class RazorpayServiceImplementation implements RazorpayService {
                     savedBooking.setOrderCompletedDate(new Date());
 
                     bookingRepository.save(savedBooking);
+                    mailService.sendMail(userRepository.findById(booking.get().getBookerUser()).get().getEmail(), new MailStructure());
                     return new ResponseEntity<>("Booked Successfully", HttpStatus.OK);
                 } else {
                     Booking savedBooking = booking.get();

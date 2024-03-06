@@ -20,4 +20,7 @@ public class RecipeDto {
     private String userId;
     private String username;
     private String profileImageUrl;
+    private String recipeImageUrl;
+    private String description;
+    private String video;
 }

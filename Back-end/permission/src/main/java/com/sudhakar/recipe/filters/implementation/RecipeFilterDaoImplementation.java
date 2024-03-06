@@ -92,11 +92,15 @@ public class RecipeFilterDaoImplementation implements RecipeFilterDao {
         recipeDto.setRecipeId(recipe.getId());
         recipeDto.setTitle(recipe.getTitle());
         recipeDto.setDateCreated(recipe.getDateCreated());
+        recipeDto.setDeletedAt(recipe.getDeletedAt());
         recipeDto.setCategory(recipe.getCategory().getName());
         recipeDto.setCuisine(recipe.getCuisine().getName());
         recipeDto.setUserId(recipe.getUser().getId());
         recipeDto.setUsername(recipe.getUser().getUsernameValue());
         recipeDto.setProfileImageUrl(recipe.getUser().getProfileImageUrl());
+        recipeDto.setDescription(recipe.getDescription());
+        recipeDto.setRecipeImageUrl(recipe.getPhoto());
+        recipeDto.setVideo(recipe.getVideo());
 
         return recipeDto;
     }

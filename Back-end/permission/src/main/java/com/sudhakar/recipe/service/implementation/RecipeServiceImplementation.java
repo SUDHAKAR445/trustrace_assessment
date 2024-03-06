@@ -28,6 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sudhakar.recipe.dto.RecipeDto;
+import com.sudhakar.recipe.dto.RecipeIdDTO;
+import com.sudhakar.recipe.dto.RecipeRequestDto;
 import com.sudhakar.recipe.entity.Category;
 import com.sudhakar.recipe.entity.Comment;
 import com.sudhakar.recipe.entity.Cuisine;
@@ -63,49 +65,72 @@ public class RecipeServiceImplementation implements RecipeService {
     @Autowired
     private CommentService commentService;
 
-    @Value("${file.upload-dir-recipeImage}")
+    @Value("${file.upload-dir-recipe-images}")
     private String uploadDir;
 
+    @Value("${file.upload-dir}")
+    private String uploadPath;
+
     @Override
-    public ResponseEntity<String> createRecipe(String id, Recipe createRecipe, MultipartFile imageFile) {
+    public ResponseEntity<RecipeIdDTO> createRecipe(String id, RecipeRequestDto recipe) {
         try {
-            validateImageFile(imageFile);
             Optional<User> existingUser = userRepository.findById(id);
             if (existingUser.isPresent()) {
+                Recipe createRecipe = new Recipe();
                 createRecipe.setUser(existingUser.get());
-                createRecipe.setCategory(category(createRecipe.getCategory()));
-                createRecipe.setCuisine(cuisine(createRecipe.getCuisine()));
+                createRecipe.setCategory(category(recipe.getCategory()));
+                createRecipe.setCuisine(cuisine(recipe.getCuisine()));
                 createRecipe.setDateCreated(new Date());
-                createRecipe.setIngredients(ingredientService.createIngredients(createRecipe.getIngredients()));
-                System.out.println(createRecipe);
+                createRecipe.setIngredients(ingredientService.createIngredients(recipe.getIngredients()));
+                createRecipe.setDescription(recipe.getDescription());
+                createRecipe.setInstructions(recipe.getInstructions());
+                createRecipe.setTitle(recipe.getTitle());
+                createRecipe.setServings(recipe.getServings());
+                createRecipe.setVideo(recipe.getVideo());
                 Recipe savedRecipe = recipeRepository.save(createRecipe);
-                savedRecipe.setPhoto(generateImageUrl(savedRecipe.getId(), imageFile));
-                recipeRepository.save(savedRecipe);
-                return new ResponseEntity<>("Recipe posted Successfully", HttpStatus.OK);
+                RecipeIdDTO newResponse = new RecipeIdDTO();
+                newResponse.setId(savedRecipe.getId());
+                return new ResponseEntity<>(newResponse, HttpStatus.OK);
             }
-            return new ResponseEntity<>("User does not exists", HttpStatus.NOT_FOUND);
-
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>("Invalid image file type", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private Category category(Category category) {
-        Optional<Category> existingCategory = categoryRepository.findByName(category.getName());
+    @Override
+    public ResponseEntity<Void> updateRecipeImage(String id, MultipartFile imageFile) {
+        try {
+            validateImageFile(imageFile);
+            Optional<Recipe> recipeOptional = recipeRepository.findById(id);
+            if (recipeOptional.isPresent()) {
+                Recipe recipe = recipeOptional.get();
+                recipe.setPhoto(generateImageUrl(recipe.getId(), imageFile));
+                recipeRepository.save(recipe);
+                return new ResponseEntity<>( HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private Category category(String category) {
+        Optional<Category> existingCategory = categoryRepository.findByName(category);
         if (existingCategory.isPresent()) {
             return existingCategory.get();
         }
-        return categoryRepository.save(category);
+        return categoryRepository.save(new Category(category));
     }
 
-    private Cuisine cuisine(Cuisine cuisine) {
-        Optional<Cuisine> existingCuisine = cuisineRepository.findByName(cuisine.getName());
+    private Cuisine cuisine(String cuisine) {
+        Optional<Cuisine> existingCuisine = cuisineRepository.findByName(cuisine);
         if (existingCuisine.isPresent()) {
             return existingCuisine.get();
         }
-        return cuisineRepository.save(cuisine);
+        return cuisineRepository.save(new Cuisine(cuisine));
     }
 
     private void validateImageFile(MultipartFile imageFile) {
@@ -123,10 +148,12 @@ public class RecipeServiceImplementation implements RecipeService {
             String fileExtension = FilenameUtils.getExtension(fileName);
             String newFileName = recipeId + "." + fileExtension;
 
-            String filePath = uploadDir + File.separator + newFileName;
+            String filePath = uploadDir + "/" + newFileName;
+
+            String fileStorePath = uploadPath + "/recipeImage" + "/" + newFileName;
 
             try (InputStream inputStream = imageFile.getInputStream()) {
-                Files.copy(inputStream, Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(inputStream, Paths.get(fileStorePath), StandardCopyOption.REPLACE_EXISTING);
             }
             return filePath;
         }
@@ -139,14 +166,14 @@ public class RecipeServiceImplementation implements RecipeService {
             Page<Recipe> recipes = recipeRepository
                     .findByOrderByDateCreatedDesc(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
 
-                return new ResponseEntity<>(recipes.map(this::convertDto), HttpStatus.OK);
+            return new ResponseEntity<>(recipes.map(this::convertDto), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<String> updateRecipe(String id, String recipeId, Recipe updateRecipe) {
+    public ResponseEntity<String> updateRecipe(String id, String recipeId, RecipeRequestDto updateRecipe) {
         try {
             Optional<Recipe> existingRecipeOptional = recipeRepository.findById(recipeId);
             Optional<User> userOptional = userRepository.findById(id);
@@ -355,6 +382,9 @@ public class RecipeServiceImplementation implements RecipeService {
         recipeDto.setUserId(recipe.getUser().getId());
         recipeDto.setUsername(recipe.getUser().getUsernameValue());
         recipeDto.setProfileImageUrl(recipe.getUser().getProfileImageUrl());
+        recipeDto.setDescription(recipe.getDescription());
+        recipeDto.setRecipeImageUrl(recipe.getPhoto());
+        recipeDto.setVideo(recipe.getVideo());
 
         return recipeDto;
     }
@@ -363,7 +393,7 @@ public class RecipeServiceImplementation implements RecipeService {
     public ResponseEntity<Recipe> getRecipeById(String id) {
         try {
             Optional<Recipe> recipeOptional = recipeRepository.findById(id);
-            if(recipeOptional.isPresent()){
+            if (recipeOptional.isPresent()) {
                 return new ResponseEntity<>(recipeOptional.get(), HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

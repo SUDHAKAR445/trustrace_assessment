@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "ingredients")
-public class Ingredient {
+public class  Ingredient {
 
     @Id
     private String id;

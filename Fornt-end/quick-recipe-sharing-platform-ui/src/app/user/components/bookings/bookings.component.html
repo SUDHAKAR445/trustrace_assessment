@@ -1,0 +1,23 @@
+<app-snackbar [errorMessage]="errorMessage" *ngIf="errorMessage"></app-snackbar>
+<app-load *ngIf="isLoading"></app-load>
+
+<div>
+    <div class="transaction-container" *ngIf="bookings">
+        <div *ngFor="let transaction of bookings" class="transaction-card mat-elevation-z2" [ngClass]="{
+            'no-payment': !transaction.paymentId,
+            'booker-user': transaction.bookerId === userId,
+            'other-user': transaction.bookerId !== userId}" (click)="showTransactionDetails(transaction.id)">
+            <div class="transaction-info">
+                <p><strong>Order ID: </strong> {{ transaction.orderId }}</p>
+                <p><strong>Payment ID: </strong> {{ transaction.paymentId || 'N/A' }}</p>
+                <p><strong>Amount: </strong> {{ transaction.amount | currency: 'INR' }}</p>
+                <p><strong>Order Date: </strong> {{ transaction.orderCreatedAt | date }}</p>
+                <p><strong>Status: </strong> {{ transaction.orderStatus }}</p>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!bookings || bookings.length === 0 && showNoBookingsMessage" class="no-bookings-message">
+        <p>No Bookings present for you </p>
+        <img src="../assets/transaction.png">
+    </div>
+</div>

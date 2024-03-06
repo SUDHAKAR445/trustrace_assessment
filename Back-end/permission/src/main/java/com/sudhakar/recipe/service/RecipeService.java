@@ -9,16 +9,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sudhakar.recipe.dto.RecipeDto;
+import com.sudhakar.recipe.dto.RecipeIdDTO;
+import com.sudhakar.recipe.dto.RecipeRequestDto;
 import com.sudhakar.recipe.entity.Comment;
 import com.sudhakar.recipe.entity.Recipe;
 
 public interface RecipeService {
 
-    ResponseEntity<String> createRecipe(String id, Recipe createRecipe, MultipartFile imageFile);
+    ResponseEntity<RecipeIdDTO> createRecipe(String id, RecipeRequestDto createRecipe);
+
+    ResponseEntity<Void> updateRecipeImage(String id, MultipartFile imageFile);
 
     ResponseEntity<Page<RecipeDto>> getAllRecipesOrderByCreationDate(Pageable pageable);
 
-    ResponseEntity<String> updateRecipe(String id, String recipeId, Recipe UpdateRecipe);
+    ResponseEntity<String> updateRecipe(String id, String recipeId, RecipeRequestDto UpdateRecipe);
 
     ResponseEntity<String> deleteRecipe(String recipeId);
 

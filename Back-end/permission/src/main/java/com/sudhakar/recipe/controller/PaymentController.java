@@ -66,4 +66,12 @@ public class PaymentController {
             @RequestParam(defaultValue = "10") int size) {
         return paymentFilterDao.searchTransaction(searchText, status, startDate, endDate, PageRequest.of(page, size));
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<TransactionDto>> getTransactionsByUserId(
+        @PathVariable String userId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+            return paymentFilterDao.getAllTransactionByUserId(userId, PageRequest.of(page, size));
+        }
 }

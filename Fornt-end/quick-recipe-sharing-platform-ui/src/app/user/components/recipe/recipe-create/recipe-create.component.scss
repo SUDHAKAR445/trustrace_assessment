@@ -1,0 +1,54 @@
+.example-stepper {
+    margin-top: 8px;
+}
+
+.mat-mdc-form-field {
+    margin-top: 16px;
+    width: 100%;
+}
+
+.custom-textarea textarea {
+    width: 200%;
+    height: 200px;
+}
+
+.recipe-container {
+    margin-left: 10px;
+}
+
+.mat-vertical-content {
+    padding-left: 0%;
+}
+
+.experience {
+    padding: 20px 10px;
+    border-radius: 5px;
+    border: #bcbcbc 2px solid;
+    margin-top: 10px;
+}
+
+.experience mat-form-field {
+    width: 30%;
+}
+
+.form .input-box {
+    width: 100%;
+    margin-top: 5px;
+}
+
+.input-box label {
+    color: #333;
+}
+
+.input-box input:focus {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+button {
+    background-color: #3f51b5;
+    margin-right: 10px;
+}
+
+button:disabled {
+    opacity: 0.3;
+}

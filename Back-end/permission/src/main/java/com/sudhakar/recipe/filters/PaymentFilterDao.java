@@ -12,4 +12,5 @@ public interface PaymentFilterDao {
 
     ResponseEntity<Page<TransactionDto>> searchTransaction(String searchText, String status, Date startDate, Date endDate, Pageable pageable);
 
+    ResponseEntity<Page<TransactionDto>> getAllTransactionByUserId(String id, Pageable pageable);
 }

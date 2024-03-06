@@ -121,4 +121,35 @@ export class RecipeService {
                 return throwError(() => this.error);
             }));
     }
+
+    createRecipe(id: string | null | undefined, formData: any): Observable<any> {
+
+        return this.http.post<string>(`${environment.recipeUrl}/create/${id}`, formData).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    updateRecipeImage(id: string, imageFile: File): Observable<any> {
+        const formData: FormData = new FormData();
+        formData.append('imageFile', imageFile, imageFile.name);
+        return this.http.put<string>(`${environment.recipeUrl}/update/image/${id}`, formData).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
 }

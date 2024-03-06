@@ -1,0 +1,62 @@
+.container {
+    margin: 20px;
+}
+
+h2 {
+    color: #333;
+}
+
+.mat-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-details {
+    padding: 20px;
+}
+
+.detail-row {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.detail-label {
+    color: #666;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    color: #333;
+}
+
+img {
+    border-radius: 50%;
+    width: 20%;
+    height: auto;
+    margin-bottom: 10px;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button-container {
+    text-align: right;
+    margin-top: 20px;
+}
+
+button {
+    background-color: #e44d26;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #d33f1f;
+}

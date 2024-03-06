@@ -1,0 +1,12 @@
+<app-header></app-header>
+<div class="container">
+    <div class="left-section">
+        <span>Left Section</span>
+    </div>
+    <div class="center-section">
+        <router-outlet></router-outlet>
+    </div>
+    <div class="right-section">
+        <button mat-fab color="primary" (click)="onCreateRecipeClicked()">+</button>
+    </div>
+</div>

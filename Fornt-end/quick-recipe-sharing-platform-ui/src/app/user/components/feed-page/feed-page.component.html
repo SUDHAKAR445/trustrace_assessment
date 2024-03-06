@@ -1,0 +1,41 @@
+<app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
+
+<div class="feed-container">
+    <div *ngFor="let post of recipes">
+        <mat-card class="post-card">
+            <mat-card-header class="header-container">
+                <div mat-card-avatar class="profile-image">
+                    <img class="profile-image" [src]="post.profileImageUrl">
+                </div>
+                <div class="header-content">
+                    <mat-card-title>{{ post.username }}</mat-card-title>
+                    <mat-card-subtitle>{{ post.title }}</mat-card-subtitle>
+                </div>
+                <mat-menu #menu="matMenu" class="menu-button" matMenuPosition="above">
+                    <button *ngIf="post.userId === userId" mat-menu-item (click)="onUpdateClick(post.recipeId)">Update</button>
+                    <button *ngIf="post.userId === userId" mat-menu-item (click)="onDeleteClick(post)">Delete</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item (click)="onReportClick(post)">Report</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item (click)="onSaveClick(post)">Save</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item (click)="onBookNowClick(post)">Book Now</button>
+                </mat-menu>
+                <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+            </mat-card-header>
+            <mat-card-content>
+                <p class="description">{{ post.description }}</p>
+            </mat-card-content>
+            <img mat-card-image [src]="post.recipeImageUrl" alt="Recipe Image" class="recipe-image">
+            <mat-card-actions class="icon-buttons">
+                <button mat-icon-button (click)="onLikeClick()">
+                    <mat-icon>thumb_up</mat-icon>
+                </button>
+                <button mat-icon-button (click)="onCommentClick()">
+                    <mat-icon>comment</mat-icon>
+                </button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+</div>
+
+<app-load *ngIf="isLoading"></app-load>

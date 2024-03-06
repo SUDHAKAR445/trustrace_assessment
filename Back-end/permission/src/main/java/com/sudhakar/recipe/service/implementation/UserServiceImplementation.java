@@ -152,9 +152,9 @@ public class UserServiceImplementation implements UserService {
             String fileExtension = FilenameUtils.getExtension(fileName);
             String newFileName = recipeId + "." + fileExtension;
 
-            String filePath = uploadDir + File.separator + newFileName;
+            String filePath = uploadDir + "/" + newFileName;
 
-            String fileStorePath = path + "/profile" + File.separator + newFileName;
+            String fileStorePath = path + "/profile" + "/" + newFileName;
 
             try (InputStream inputStream = imageFile.getInputStream()) {
                 Files.copy(inputStream, Paths.get(fileStorePath), StandardCopyOption.REPLACE_EXISTING);

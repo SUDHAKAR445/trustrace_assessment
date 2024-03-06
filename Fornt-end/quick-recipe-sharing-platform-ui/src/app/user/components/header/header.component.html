@@ -1,0 +1,28 @@
+<div class="header">
+    <div class="recipe-logo">
+        <img src="../assets/logo.png">
+    </div>
+    <div class="tabs">
+        <a routerLink="/user/feed" routerLinkActive="active">Feed</a>
+        <div class="explore-dropdown">
+            <a routerLink="/user/explore" routerLinkActive="active">Explore</a>
+            <div class="dropdown-content">
+                <a routerLink="/user/explore/category">Category</a>
+                <a routerLink="/user/explore/cuisine">Cuisine</a>
+            </div>
+        </div>
+        <a routerLink="/user/booking" routerLinkActive="active">Booking</a>
+        <a routerLink="/user/saved" routerLinkActive="active">Saved</a>
+    </div>
+    <div class="search-bar">
+        <form class="example-form example-full-width">
+            <input matInput #message maxlength="256" placeholder="Ex. Search...">
+            <button type="button" mat-button color="warn"> <mat-icon color="white">search</mat-icon>Search</button>
+        </form>
+    </div>
+    <div class="profile" *ngIf="userDetail">
+        <img [src]="userDetail.profileImageUrl" class="profile-image" routerLink="/user/profile" />
+        <p>Hi {{ userDetail.usernameValue }}</p>
+        <button mat-button color="warn" (click)="onLogoutClicked()">Logout</button>
+    </div>
+</div>

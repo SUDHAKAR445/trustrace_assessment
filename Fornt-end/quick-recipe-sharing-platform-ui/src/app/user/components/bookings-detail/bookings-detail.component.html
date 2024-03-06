@@ -1,0 +1,184 @@
+<div class="container">
+    <h2>Transaction Detail</h2>
+    <div *ngIf="transactionDetail">
+        <mat-card>
+            <mat-card-content>
+                <div class="user-details">
+
+                    <div class="detail-row">
+                        <div class="detail-label">Order Id</div>
+                        <div class="detail-value"> {{ transactionDetail.transaction.orderId }}></div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Payment Id</div>
+                        <div class="detail-value">{{ transactionDetail.transaction.paymentId }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Amount</div>
+                        <div class="detail-value" style="color: green;">{{ transactionDetail.transaction.amount | currency: 'INR' }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value">{{ transactionDetail.transaction.orderStatus }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Order Created At</div>
+                        <div class="detail-value">{{ transactionDetail.transaction.orderCreatedAt | date }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Order Completed At</div>
+                        <div class="detail-value">{{ transactionDetail.transaction.orderCompletedAt | date }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booker Profile</div>
+                        <div class="detail-value"> <img [src]="transactionDetail.bookerUserDetail.profileImageUrl">
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booker Username</div>
+                        <div class="detail-value">{{ transactionDetail.bookerUserDetail.usernameValue }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Booker First Name</div>
+                        <div class="detail-value">{{ transactionDetail.bookerUserDetail.firstName }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Booker Last Name</div>
+                        <div class="detail-value">{{ transactionDetail.bookerUserDetail.lastName }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Booker Email</div>
+                        <div class="detail-value">{{ transactionDetail.bookerUserDetail.email }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booker Gender</div>
+                        <div class="detail-value">{{ transactionDetail.bookerUserDetail.gender }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Booker Contact</div>
+                        <div class="detail-value">{{ transactionDetail.bookerUserDetail.contact }}</div>
+                    </div>
+                    
+                    <div class="detail-row" *ngIf="transactionDetail.bookerUserDetail.id === userId">
+                        <div class="detail-label">Booker Wallet</div>
+                        <div class="detail-value" style="font-size: xx-large;">{{
+                            transactionDetail.bookerUserDetail.wallet | currency : 'INR'}}</div>
+                    </div>
+                    <hr>
+                    <div class="detail-row">
+                        <div class="detail-label">Booked User Profile</div>
+                        <div class="detail-value"> <img [src]="transactionDetail.bookedUser.profileImageUrl"></div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked User Username</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUser.usernameValue }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Booked User First Name</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUser.firstName }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Booked User Last Name</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUser.lastName }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Booked User Email</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUser.email }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked User Gender</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUser.gender }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Booked User Contact</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUser.contact }}</div>
+                    </div>
+
+                    <div class="detail-row" *ngIf="transactionDetail.bookerUserDetail.id === userId">
+                        <div class="detail-label">Booked User Wallet</div>
+                        <div class="detail-value" style="font-size: xx-large;">{{
+                            transactionDetail.bookedUser.wallet | currency : 'INR'}}</div>
+                    </div>
+                    <hr>
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Title</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.title }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Description</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.description }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Instructions</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.instructions }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Preparation Time</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.preparationTime }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Cooking Time</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.cookingTime }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Servings</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.servings }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Date Created</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.dateCreated | date}}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Category</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.category.name }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Cuisine</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.cuisine.name }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Photo</div>
+                        <div class="detail-value"><img [src]="transactionDetail.bookedUserRecipeDetail.photo"></div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Uploaded Video</div>
+                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.video }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Booked Recipe Ingredients</div>
+                        <div class="detail-value" *ngFor="let item of transactionDetail.bookedUserRecipeDetail.ingredients">
+                            <div class="detail">
+                                <div class="ingredient-label">{{ item.name}}</div><br>
+                                <div class="ingredient-value">{{item.quantity }} {{ item.unitOfMeasurement }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-container">
+                    <button mat-raised-button color="warn" (click)="onCloseButtonClicked()">Close</button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+    <div *ngIf="!transactionDetail">
+        <p>No Transaction selected.</p>
+    </div>
+</div>

@@ -98,4 +98,23 @@ export class PaymentService {
         return throwError(() => this.error);
       }));
   }
+
+  getTransactionByUserId(id: string | null | undefined, pageIndex: number, pageSize: number) : Observable<any>{
+
+    let queryParams = new HttpParams()
+        .append('page', pageIndex)
+        .append('size', pageSize);
+
+    return this.http.get<Transaction>(`${environment.paymentUrl}/user/${id}`, { params: queryParams}).pipe(
+      catchError(err => {
+        if (!err.error || !err.error.error) {
+          return throwError(() => 'An unknown error has occurred');
+        }
+        switch (err.error.error.message) {
+          default:
+            this.error = err.error.error.message;
+        }
+        return throwError(() => this.error);
+      }));
+  }
 }

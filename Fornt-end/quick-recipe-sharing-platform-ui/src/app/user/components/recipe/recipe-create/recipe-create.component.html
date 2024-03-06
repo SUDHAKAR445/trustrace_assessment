@@ -1,0 +1,112 @@
+<div class="recipe-container">
+    <h2>Post Your Recipe</h2>
+    <app-snackbar [errorMessage]="errorMessage" *ngIf="errorMessage"></app-snackbar>
+    <mat-stepper class="example-stepper" [orientation]="(stepperOrientation | async)!" [linear]="isLinear">
+        <mat-step [stepControl]="firstFormGroup" label="Recipe Details">
+            <form [formGroup]="firstFormGroup">
+                <mat-form-field appearance="fill">
+                    <mat-label>Title</mat-label>
+                    <input matInput placeholder="Title" formControlName="title" required>
+                </mat-form-field>
+                <br>
+                <mat-form-field appearance="fill">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput placeholder="Description" formControlName="description" required></textarea>
+                </mat-form-field>
+                <br>
+                <mat-form-field appearance="fill">
+                    <mat-label>Category</mat-label>
+                    <input matInput placeholder="Category" formControlName="category" required>
+                </mat-form-field>
+                <br>
+                <mat-form-field appearance="fill">
+                    <mat-label>Cuisine</mat-label>
+                    <input matInput placeholder="Cuisine" formControlName="cuisine" required>
+                </mat-form-field>
+                <br>
+                <mat-form-field appearance="fill">
+                    <mat-label>Preparation Time</mat-label>
+                    <input matInput placeholder="Preparation Time in minutes" formControlName="preparationTime"
+                        required>
+                </mat-form-field>
+                <br>
+                <mat-form-field appearance="fill">
+                    <mat-label>Cooking Time</mat-label>
+                    <input matInput placeholder="Cooking Time in minutes" formControlName="cookingTime" required>
+                </mat-form-field>
+                <div>
+                    <button mat-button matStepperNext color="primary" [disabled]="firstFormGroup.invalid">Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup" label="Instructions" >
+            <form [formGroup]="secondFormGroup">
+                <mat-form-field appearance="fill">
+                    <mat-label>Cooking Instructions</mat-label>
+                    <textarea matInput formControlName="instructions" placeholder="Ex. step 1 ...." required></textarea>
+                </mat-form-field>
+                <div>
+                    <button mat-button matStepperPrevious color="warn">Back</button>
+                    <button mat-button matStepperNext color="primary" [disabled]="secondFormGroup.invalid">Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="thirdFormGroup" label="Recipe Image and Video url">
+            <form [formGroup]="thirdFormGroup">
+                <button type="button" mat-raised-button (click)="fileInput.click()">Choose Recipe Image</button>
+                <input hidden (change)="handleFileInput($event)" #fileInput type="file">
+                <span class="file-name">{{selectedFile?.name}}</span>
+                <br>
+                <img *ngIf="imagePreview" [src]="imagePreview" alt="Profile Image" class="uploaded-image">
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Video Url(optional)</mat-label>
+                    <input matInput formControlName="video" placeholder="Ex. http://....">
+                </mat-form-field>
+                <div>
+                    <button mat-button matStepperPrevious color="warn">Back</button>
+                    <button mat-button matStepperNext color="primary" [disabled]="thirdFormGroup.invalid">Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="fourthFormGroup" label="Recipe Ingredients">
+            <form [formGroup]="fourthFormGroup">
+                <mat-form-field appearance="fill">
+                    <mat-label>Servings</mat-label>
+                    <input matInput formControlName="servings" placeholder="Ex. 1" required>
+                </mat-form-field>
+                <div formArrayName="ingredients">
+                    <div class="input-box experience" *ngFor="let ingredient of getIngredients(); let i=index" [formGroupName]="i">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Ingredient Name</mat-label>
+                            <input matInput formControlName="name" placeholder="Ex. Rice.." required>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Quantity</mat-label>
+                            <input matInput formControlName="quantity" placeholder="Ex. 10.." required>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Unit of Measurement</mat-label>
+                            <input matInput formControlName="unitOfMeasurement" placeholder="Ex. mg.." required>
+                        </mat-form-field>
+
+                        <button mat-button type="button" (click)="removeIngredient(i)">Delete Ingredient</button>
+                    </div>
+                </div>
+                <button type="button" mat-button (click)="addIngredients()" [disabled]="fourthFormGroup.invalid">Add Ingredient</button>
+                <div>
+                    <button mat-button matStepperPrevious color="warn">Back</button>
+                    <button mat-button matStepperNext color="primary" [disabled]="fourthFormGroup.invalid">Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Done</ng-template>
+            <p>You are now done.</p>
+            <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button type="submit" (click)="onPostRecipeClicked()">Post Recipe</button>
+            </div>
+        </mat-step>
+    </mat-stepper>
+</div>

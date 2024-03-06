@@ -1,0 +1,92 @@
+/* Add or modify styles as needed */
+
+body{
+    align-items: center;
+}
+.feed-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 25%;
+    gap: 20px;
+    width: 50%;
+    justify-content: center;
+}
+
+.post-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 500px;
+    padding-left: 25px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.username {
+    font-weight: bold;
+}
+
+.post-content {
+    padding: 10px;
+}
+
+.description {
+    margin-bottom: 10px;
+}
+
+.recipe-image {
+    width: 450px;
+    height: 450px;
+    border-radius: 10px;
+}
+
+.interactions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f2f2f2;
+}
+
+.like-button,
+.comment-button {
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.like-button {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.comment-button {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+.header-container {
+    display: flex;
+    // justify-content:space-between;
+}
+
+.menu-button {
+    align-self: flex-end;
+}
+
+.header-content {
+    width: 90%;
+}

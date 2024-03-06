@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -28,14 +29,15 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class PaymentFilterDaoImplementation implements PaymentFilterDao{
+public class PaymentFilterDaoImplementation implements PaymentFilterDao {
 
     private final MongoTemplate mongoTemplate;
     private final UserRepository userRepository;
     private final RecipeRepository recipeRepository;
 
     @Override
-    public ResponseEntity<Page<TransactionDto>> searchTransaction(String searchText, String status, Date startDate, Date endDate, Pageable pageable) {
+    public ResponseEntity<Page<TransactionDto>> searchTransaction(String searchText, String status, Date startDate,
+            Date endDate, Pageable pageable) {
         try {
             Query query = new Query();
 
@@ -60,7 +62,27 @@ public class PaymentFilterDaoImplementation implements PaymentFilterDao{
 
             return new ResponseEntity<>(bookingsList.map(this::convertToTransactionDto), HttpStatus.OK);
 
-        } catch ( Exception e) {
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Page<TransactionDto>> getAllTransactionByUserId(String id, Pageable pageable) {
+        try {
+            Query query = new Query();
+            Criteria criteria = new Criteria().orOperator(
+                    Criteria.where("bookerUser").is(id),
+                    Criteria.where("bookedRecipeUser").is(id));
+            query.addCriteria(criteria).with(pageable).with(Sort.by(Sort.Direction.DESC, "orderCreatedDate"));
+
+            List<Booking> bookings = mongoTemplate.find(query, Booking.class);
+            long count = mongoTemplate.count(query, Booking.class);
+
+            Page<Booking> bookingsList = new PageImpl<>(bookings, pageable, count);
+
+            return new ResponseEntity<>(bookingsList.map(this::convertToTransactionDto), HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
