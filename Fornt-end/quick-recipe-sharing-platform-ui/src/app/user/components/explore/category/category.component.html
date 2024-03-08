@@ -1,0 +1,13 @@
+<div class="overall-container">
+    <ng-container *ngFor="let letter of alphabet" class="group-container">
+        <h2 class="section-title">{{ letter }}</h2>
+        <div class="content-container">
+            <mat-card *ngFor="let item of groupedCategories[letter]" clickable (click)="onSearch(item.name)">
+                <mat-card-content>
+                    <h3 matLine>{{ item.name }}</h3>
+                </mat-card-content>
+            </mat-card>
+        </div>
+        <hr>
+    </ng-container>
+</div>

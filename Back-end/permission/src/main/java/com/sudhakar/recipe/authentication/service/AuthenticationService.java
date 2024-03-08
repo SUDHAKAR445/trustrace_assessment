@@ -8,7 +8,9 @@ import com.sudhakar.recipe.authentication.dto.RegisterRequest;
 
 public interface AuthenticationService {
     
-    ResponseEntity<AuthenticationResponse> register(RegisterRequest request);
+    ResponseEntity<Void> register(RegisterRequest request);
 
     ResponseEntity<AuthenticationResponse> authenticate(AuthenticationRequest request);
+
+    ResponseEntity<Void> confirmUserAccount(String confirmationToken);
 }

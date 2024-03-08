@@ -48,8 +48,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         id = jwtService.extractId(jwt);
 
         boolean isDeleted = userRepository.findById(id).get().getDeletedAt() == null;
+        boolean accountActivated = userRepository.findById(id).get().getAccountActivated();
 
-        if(id != null && isDeleted && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if(id != null && isDeleted && accountActivated && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(id);
             if(jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

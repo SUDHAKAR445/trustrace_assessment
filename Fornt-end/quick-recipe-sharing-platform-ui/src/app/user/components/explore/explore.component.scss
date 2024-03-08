@@ -1,0 +1,136 @@
+body {
+    width: 100%;
+}
+
+.overall-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 20px;
+    width: 100%;
+    margin-left: 80px;
+    
+}
+
+.section-title {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.content-container-cuisine {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
+}
+
+.content-container-category {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
+}
+
+.card {
+    width: 70%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.mat-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+img {
+    height: 100%
+}
+
+.mat-card-content {
+    padding: 15px;
+    margin-bottom: 0px;
+}
+
+.mat-card-content h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #555;
+}
+
+/* Additional Styling */
+@media screen and (max-width: 768px) {
+    .card {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .section-title {
+        font-size: 1.5rem;
+    }
+}
+
+.overall-container {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.scroll-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-bottom: 20px;
+}
+
+.content-container-cuisine,
+.content-container-category {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+}
+
+.card {
+    flex: 0 0 auto;
+    width: 200px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.mat-card-image {
+    width: 100%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.mat-card-content {
+    padding: 15px;
+    margin-bottom: 0px;
+}
+
+.mat-card-content h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #555;
+}

@@ -1,6 +1,9 @@
 package com.sudhakar.recipe.service.implementation;
 
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.sudhakar.recipe.dto.CategoryDto;
+import com.sudhakar.recipe.dto.ExploreDto;
 import com.sudhakar.recipe.dto.RecipeDto;
 import com.sudhakar.recipe.entity.Category;
+import com.sudhakar.recipe.entity.Cuisine;
 import com.sudhakar.recipe.entity.Recipe;
 import com.sudhakar.recipe.repository.CategoryRepository;
 import com.sudhakar.recipe.repository.RecipeRepository;
@@ -127,5 +132,25 @@ public class CategoryServiceImplementation implements CategoryService {
         categoryDto.setName(categoryDetail.getName());
         categoryDto.setCount(recipeRepository.findByCategory(categoryDetail).size());
         return categoryDto;
+    }
+
+    @Override
+    public ResponseEntity<Set<ExploreDto>> exploreByCategory() {
+        try {
+            List<Category> categories = categoryRepository.findAll();
+            Set<ExploreDto> exploreList = new LinkedHashSet<>();
+            for (Category category : categories) {
+                List<Recipe> recipes = recipeRepository.findByCategory(category);
+                if (recipes.size() > 0) {
+                    ExploreDto explore = new ExploreDto();
+                    explore.setName(category.getName());
+                    explore.setImageUrl(recipes.get(0).getPhoto());
+                    exploreList.add(explore);
+                }
+            }
+            return new ResponseEntity<>(exploreList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

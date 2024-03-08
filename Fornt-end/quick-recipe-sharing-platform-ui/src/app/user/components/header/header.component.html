@@ -16,13 +16,15 @@
     </div>
     <div class="search-bar">
         <form class="example-form example-full-width">
-            <input matInput #message maxlength="256" placeholder="Ex. Search...">
-            <button type="button" mat-button color="warn"> <mat-icon color="white">search</mat-icon>Search</button>
+            <input matInput #message maxlength="256" placeholder="Ex. Search..." (keyup.enter)="onSearchClicked(message.value)">
+            <button type="button" mat-button color="warn" (click)="onSearchClicked(message.value)">
+                <mat-icon color="white">search</mat-icon>Search
+            </button>
         </form>
     </div>
     <div class="profile" *ngIf="userDetail">
         <img [src]="userDetail.profileImageUrl" class="profile-image" routerLink="/user/profile" />
         <p>Hi {{ userDetail.usernameValue }}</p>
-        <button mat-button color="warn" (click)="onLogoutClicked()">Logout</button>
+        <button mat-button color="warn" clickable (click)="onLogoutClicked()">Logout</button>
     </div>
 </div>

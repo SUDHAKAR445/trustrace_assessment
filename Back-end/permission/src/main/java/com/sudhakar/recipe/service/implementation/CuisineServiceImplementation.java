@@ -1,7 +1,11 @@
 package com.sudhakar.recipe.service.implementation;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.text.html.Option;
@@ -15,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.sudhakar.recipe.dto.CuisineDto;
+import com.sudhakar.recipe.dto.ExploreDto;
 import com.sudhakar.recipe.dto.RecipeDto;
 import com.sudhakar.recipe.entity.Cuisine;
 import com.sudhakar.recipe.entity.Recipe;
@@ -132,5 +137,27 @@ public class CuisineServiceImplementation implements CuisineService {
         cuisineDto.setName(cuisineDetail.getName());
         cuisineDto.setCount(recipeRepository.findByCuisine(cuisineDetail).size());
         return cuisineDto;
+    }
+
+    @Override
+    public ResponseEntity<Set<ExploreDto>> exploreByCuisine() {
+        try {
+            List<Cuisine> cuisines = cuisineRepository.findAll();
+
+            Set<ExploreDto> exploreList = new HashSet<>();
+            for (Cuisine cuisine : cuisines) {
+
+                List<Recipe> recipes = recipeRepository.findByCuisine(cuisine);
+                if (recipes.size() > 0) {
+                    ExploreDto explore = new ExploreDto();
+                    explore.setName(cuisine.getName());
+                    explore.setImageUrl(recipes.get(0).getPhoto());
+                    exploreList.add(explore);
+                }
+            }
+            return new ResponseEntity<>(exploreList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -11,6 +11,6 @@ import com.sudhakar.recipe.entity.Comment;
 @Repository
 public interface CommentRepository extends MongoRepository<Comment, String>{
 
-    Page<Comment> findByRecipe(String id, Pageable page);
+    Page<Comment> findByRecipeOrderByDateDesc(String id, Pageable page);
 
 }

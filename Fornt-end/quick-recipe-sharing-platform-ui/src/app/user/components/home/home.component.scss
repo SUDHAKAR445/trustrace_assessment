@@ -1,4 +1,98 @@
-button {
+/* user-profile.component.scss */
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.header {
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+.left-section {
+    flex: 0 0 300px;
+    position: fixed;
+    width: 22%;
+    top: 60px;
+    bottom: 0;
+    overflow-y: auto;
+    overflow: hidden;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #eeeee8;
+    color: #333;
+}
+
+.profile-image {
+    width: 40%;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.left-section div {
+    text-align: center;
+}
+
+.left-section h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.left-section p {
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+.left-section p:nth-child(odd) {
+    color: #555;
+}
+
+.left-section p:nth-child(even) {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.center-section {
+    flex-grow: 1;
+    margin-left: 320px;
+    margin-top: 60px;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.profile-label {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 10px;
+    color: #333;
+}
+
+.profile-value {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    font-size: 25px;
+    color: #555;
+}
+
+.follower-count,
+.following-count {
+    font-weight: bold;
+}
+
+.center-section {
+    position: relative;
+}
+
+.floating-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -9,48 +103,30 @@ button {
     background-color: orange;
 }
 
-body {
-    margin: 0;
+.profile-info {
+    position: relative;
 }
 
-.container {
-    display: flex;
-    height: 100vh;
+.profile-image-container {
+    position: relative;
+    display: inline-block;
 }
 
-.left-section,
-.right-section {
-    width: 25%;
-    background-color: #f2f2f2;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    height: 100vh;
+.edit-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-size: 24px;
+    cursor: pointer;
+    display: none;
 }
 
-.center-section {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    // align-items: center;
-    overflow-y: auto;
+.profile-image-container:hover .edit-icon {
+    display: block;
 }
 
-.left-section::-webkit-scrollbar,
-.right-section::-webkit-scrollbar,
-.center-section::-webkit-scrollbar {
-    width: 0.5em;
-}
-
-.left-section::-webkit-scrollbar-thumb,
-.right-section::-webkit-scrollbar-thumb,
-.center-section::-webkit-scrollbar-thumb {
-    background-color: transparent;
-}
-
-app-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+profile-image:hover{
+    opacity: 0.1;
 }

@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.sudhakar.recipe.entity.MailStructure;
 import com.sudhakar.recipe.service.MailService;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,15 +25,27 @@ public class MailServiceImplementation implements MailService {
     @Value("${spring.mail.username}")
     private String fromMail;
 
-    public void sendMail(String mail, MailStructure mailStructure) {
+    public void sendMail(MailStructure mailStructure) {
 
-        // JavaMailSenderImpl simpleMailMessage = new JavaMailSenderImpl();
-        // simpleMailMessage.setFrom("ssudhakar2107@gmail.com");
-        // simpleMailMessage.setSubject("HHHHH");
-        // simpleMailMessage.setText("mailStructure.getMessage()");
-        // simpleMailMessage.setTo(mail);
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom(fromMail);
+        simpleMailMessage.setSubject(mailStructure.getSubject());
+        simpleMailMessage.setText(mailStructure.getMessage());
+        simpleMailMessage.setTo(mailStructure.getTo());
 
-        // System.out.println("mail"+ simpleMailMessage);
-        // mailSender.send(simpleMailMessage);
+        mailSender.send(simpleMailMessage);
+    }
+
+    public void sendMailWithQr (MailStructure mailStructure) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+        messageHelper.setFrom(fromMail);
+        messageHelper.setSubject(mailStructure.getSubject());
+
+        messageHelper.setText(mailStructure.getMessage(), true);
+        messageHelper.setTo(mailStructure.getTo());
+
+        mailSender.send(mimeMessage);
     }
 }

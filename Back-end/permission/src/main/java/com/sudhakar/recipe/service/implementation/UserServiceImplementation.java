@@ -63,8 +63,10 @@ public class UserServiceImplementation implements UserService {
             createUserRequest.setCreatedAt(new Date());
             if(createUserRequest.getGender() == "MALE") {
                 createUserRequest.setProfileImageUrl(uploadDir+"/"+"MALE.png");
-            } else {
+            } else if(createUserRequest.getGender() == "FEMALE"){
                 createUserRequest.setProfileImageUrl(uploadDir+"/"+"FEMALE.png");
+            } else {
+                createUserRequest.setProfileImageUrl(uploadDir+"/"+"NONE.png");
             }
 
             User savedUser = userRepository.save(createUserRequest);

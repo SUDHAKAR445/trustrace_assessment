@@ -43,7 +43,7 @@ public class ReportServiceImplementation implements ReportService {
     private RecipeRepository recipeRepository;
 
     @Override
-    public ResponseEntity<String> createCommentReport(String reporterId, ReportBody report) {
+    public ResponseEntity<Void> createCommentReport(String reporterId, ReportBody report) {
         try {
             Optional<Comment> commentOptional = commentRepository.findById(report.getReportedId());
             Optional<User> reporterUserOptional = userRepository.findById(reporterId);
@@ -56,16 +56,16 @@ public class ReportServiceImplementation implements ReportService {
                 createReport.setStatus(Status.PENDING);
 
                 reportRepository.save(createReport);
-                return new ResponseEntity<>("Reported Successfully", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
-            return new ResponseEntity<>("Comment does not exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in reporting comment", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<String> createUserReport(String reporterId, ReportBody report) {
+    public ResponseEntity<Void> createUserReport(String reporterId, ReportBody report) {
         try {
             Optional<User> userOptional = userRepository.findById(report.getReportedId());
             Optional<User> reporterUserOptional = userRepository.findById(reporterId);
@@ -78,16 +78,16 @@ public class ReportServiceImplementation implements ReportService {
                 createReport.setStatus(Status.PENDING);
 
                 reportRepository.save(createReport);
-                return new ResponseEntity<>("Reported Successfully", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
-            return new ResponseEntity<>("User does not exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in reporting user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<String> createRecipeReport(String reporterId, ReportBody report) {
+    public ResponseEntity<Void> createRecipeReport(String reporterId, ReportBody report) {
         try {
             Optional<Recipe> recipeOptional = recipeRepository.findById(report.getReportedId());
             Optional<User> reporterUserOptional = userRepository.findById(reporterId);
@@ -100,11 +100,11 @@ public class ReportServiceImplementation implements ReportService {
                 createReport.setStatus(Status.PENDING);
 
                 reportRepository.save(createReport);
-                return new ResponseEntity<>("Reported Successfully", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
-            return new ResponseEntity<>("Recipe does not exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in reporting recipe", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

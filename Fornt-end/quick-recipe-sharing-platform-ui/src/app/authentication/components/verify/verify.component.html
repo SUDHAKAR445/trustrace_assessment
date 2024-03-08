@@ -1,0 +1,14 @@
+<app-snackbar [errorMessage]="errorMessage" *ngIf="errorMessage"></app-snackbar>
+
+<div class="container">
+    <div *ngIf="showMessage" class="show-message">
+        <h3>Your account has been verified successfully. Click here to go <a routerLink="/login">login page</a></h3>
+    </div>
+
+    <div *ngIf="!showMessage" class="not-verified">
+        <h3>Your account has not been verified due to being already verified or the link may be broken. Click here to go
+            <a routerLink="/login">login page</a></h3>
+    </div>
+
+    <app-load *ngIf="isLoading" class="app-load"></app-load>
+</div>

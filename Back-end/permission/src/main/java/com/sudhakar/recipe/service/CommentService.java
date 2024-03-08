@@ -15,7 +15,7 @@ public interface CommentService {
 
     Comment createComment(Comment comment, User user, String recipeId);
 
-    ResponseEntity<String> deleteComment(String commentId);
+    ResponseEntity<Void> deleteComment(String commentId);
 
     ResponseEntity<String> updateCommentLike(String commentId, String userId, boolean like);
 

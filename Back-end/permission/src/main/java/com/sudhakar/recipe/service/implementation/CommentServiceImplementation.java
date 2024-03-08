@@ -44,17 +44,17 @@ public class CommentServiceImplementation implements CommentService {
     }
 
     @Override
-    public ResponseEntity<String> deleteComment(String commentId) {
+    public ResponseEntity<Void> deleteComment(String commentId) {
         try {
             Optional<Comment> comment = commentRepository.findById(commentId);
 
             if (comment.isPresent()) {
                 commentRepository.delete(comment.get());
-                return new ResponseEntity<>("Comment deleted successfully", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
-            return new ResponseEntity<>("No comment present", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in delete the comment", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -99,7 +99,7 @@ public class CommentServiceImplementation implements CommentService {
             Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
 
             if (recipeOptional.isPresent()) {
-                Page<Comment> comments = commentRepository.findByRecipe(recipeOptional.get().getId(), page);
+                Page<Comment> comments = commentRepository.findByRecipeOrderByDateDesc(recipeOptional.get().getId(), page);
 
                 return new ResponseEntity<>(comments.map(this::convertToDto), HttpStatus.OK);
             }

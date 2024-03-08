@@ -15,6 +15,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { LoadComponent } from '../utility/load/load.component';
 import { SnackbarComponent } from '../utility/snackbar/snackbar.component';
 import {MatSelectModule} from '@angular/material/select';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { VerifyComponent } from './components/verify/verify.component';
+import { MatRadioModule } from '@angular/material/radio';
 
 
 @NgModule({
@@ -22,7 +25,9 @@ import {MatSelectModule} from '@angular/material/select';
     LoginComponent,
     RegisterComponent,
     NotFoundComponent,
-    ForgetPasswordComponent
+    ForgetPasswordComponent,
+    ResetPasswordComponent,
+    VerifyComponent
   ],
   imports: [
     CommonModule,
@@ -35,7 +40,8 @@ import {MatSelectModule} from '@angular/material/select';
     MatButtonModule,
     LoadComponent,
     SnackbarComponent,
-    MatSelectModule
+    MatSelectModule,
+    MatRadioModule
   ]
 })
 export class AuthenticationModule { }

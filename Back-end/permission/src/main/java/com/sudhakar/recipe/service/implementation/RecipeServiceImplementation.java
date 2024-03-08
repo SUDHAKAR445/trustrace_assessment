@@ -1,11 +1,11 @@
 package com.sudhakar.recipe.service.implementation;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -15,16 +15,15 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sudhakar.recipe.dto.RecipeDto;
@@ -107,11 +106,11 @@ public class RecipeServiceImplementation implements RecipeService {
                 Recipe recipe = recipeOptional.get();
                 recipe.setPhoto(generateImageUrl(recipe.getId(), imageFile));
                 recipeRepository.save(recipe);
-                return new ResponseEntity<>( HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -173,12 +172,10 @@ public class RecipeServiceImplementation implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<String> updateRecipe(String id, String recipeId, RecipeRequestDto updateRecipe) {
+    public ResponseEntity<Void> updateRecipe(String id, RecipeRequestDto updateRecipe) {
         try {
-            Optional<Recipe> existingRecipeOptional = recipeRepository.findById(recipeId);
-            Optional<User> userOptional = userRepository.findById(id);
-            System.out.println(userOptional);
-            if (existingRecipeOptional.isPresent() && userOptional.isPresent()) {
+            Optional<Recipe> existingRecipeOptional = recipeRepository.findById(id);
+            if (existingRecipeOptional.isPresent()) {
                 Recipe existingRecipe = existingRecipeOptional.get();
 
                 existingRecipe.setTitle(
@@ -205,9 +202,9 @@ public class RecipeServiceImplementation implements RecipeService {
 
                 recipeRepository.save(existingRecipe);
 
-                return new ResponseEntity<>("Recipe updated successfully", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("Recipe does not exist", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -215,17 +212,17 @@ public class RecipeServiceImplementation implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<String> deleteRecipe(String recipeId) {
+    public ResponseEntity<Void> deleteRecipe(String recipeId) {
         try {
             Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
             if (optionalRecipe.isPresent()) {
                 optionalRecipe.get().setDeletedAt(new Date());
                 recipeRepository.save(optionalRecipe.get());
-                return new ResponseEntity<>("Recipe deleted successfully", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
-            return new ResponseEntity<>("Recipe does not exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in deleting the recipe", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -249,10 +246,10 @@ public class RecipeServiceImplementation implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<String> commentRecipe(String recipeId, String userId, Comment comment) {
+    public ResponseEntity<Comment> commentRecipe(String recipeId, String userId, Comment comment) {
         try {
             if (recipeId == null || userId == null || comment == null) {
-                return new ResponseEntity<>("Invalid input parameters", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
@@ -273,20 +270,20 @@ public class RecipeServiceImplementation implements RecipeService {
                     recipe.setComments(comments);
                     recipeRepository.save(recipe);
 
-                    return new ResponseEntity<>("Comment added successfully", HttpStatus.OK);
+                    return new ResponseEntity<>(savedComment, HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
             } else {
-                return new ResponseEntity<>("Recipe not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Error commenting on the recipe", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<String> saveRecipeForUser(String userId, String recipeId) {
+    public ResponseEntity<Void> saveRecipeForUser(String userId, String recipeId) {
         try {
             Optional<User> userOptional = userRepository.findById(userId);
             Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
@@ -302,15 +299,13 @@ public class RecipeServiceImplementation implements RecipeService {
                 if (!user.getSavedRecipes().contains(recipe.getId())) {
                     user.getSavedRecipes().add(recipe.getId());
                     userRepository.save(user);
-                    return new ResponseEntity<>("Recipe saved for user successfully", HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>("Recipe is already saved for the user", HttpStatus.BAD_REQUEST);
                 }
+                return new ResponseEntity<>(HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("User or Recipe not found", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in saving the recipe for the user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -397,6 +392,60 @@ public class RecipeServiceImplementation implements RecipeService {
                 return new ResponseEntity<>(recipeOptional.get(), HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<RecipeDto>> getAllSavedRecipes(String userId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                Set<String> savedRecipeIds = user.getSavedRecipes();
+
+                if (savedRecipeIds == null || savedRecipeIds.size() == 0) {
+                    return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+                }
+                List<Recipe> recipes = recipeRepository.findAllById(savedRecipeIds);
+                List<RecipeDto> recipeDtos = new ArrayList<>();
+                for (Recipe recipe : recipes) {
+                    if (recipe.getDeletedAt() == null) {
+                        recipeDtos.add(convertDto(recipe));
+                    }
+                }
+                return new ResponseEntity<>(recipeDtos, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> removeRecipeForUser(String userId, String recipeId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+            Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
+
+            if (userOptional.isPresent() && recipeOptional.isPresent()) {
+                User user = userOptional.get();
+                Recipe recipe = recipeOptional.get();
+
+                if (user.getSavedRecipes() == null) {
+                    user.setSavedRecipes(new HashSet<>());
+                }
+
+                if (user.getSavedRecipes().contains(recipe.getId())) {
+                    user.getSavedRecipes().remove(recipe.getId());
+                    userRepository.save(user);
+                }
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

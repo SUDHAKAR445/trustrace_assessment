@@ -1,5 +1,6 @@
 package com.sudhakar.recipe.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.sudhakar.recipe.entity.Category;
+import com.sudhakar.recipe.entity.Cuisine;
 
 @Repository
 public interface CategoryRepository extends MongoRepository<Category, String>{
@@ -17,5 +19,7 @@ public interface CategoryRepository extends MongoRepository<Category, String>{
 
     @Query("{'$or': [{'name': {$regex: ?0, $options: 'i'}}]}")
     Page<Category> searchCategories(String searchText, Pageable page);
+
+    List<Category> findAllOrderByName();
 
 }

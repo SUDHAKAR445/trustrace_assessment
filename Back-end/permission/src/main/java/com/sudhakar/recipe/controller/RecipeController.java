@@ -1,21 +1,15 @@
 package com.sudhakar.recipe.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -63,14 +57,14 @@ public class RecipeController {
         return recipeService.getAllRecipesOrderByCreationDate(pageable);
     }
 
-    @PutMapping("/update/{id}/{recipeId}")
-    public ResponseEntity<String> updateRecipe(@PathVariable String id, @PathVariable String recipeId,
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Void> updateRecipe(@PathVariable String id,
             @RequestBody RecipeRequestDto updateRecipe) {
-        return recipeService.updateRecipe(id, recipeId, updateRecipe);
+        return recipeService.updateRecipe(id, updateRecipe);
     }
 
     @DeleteMapping("/{recipeId}")
-    public ResponseEntity<String> deleteRecipe(@PathVariable String recipeId) {
+    public ResponseEntity<Void> deleteRecipe(@PathVariable String recipeId) {
         return recipeService.deleteRecipe(recipeId);
     }
 
@@ -83,7 +77,7 @@ public class RecipeController {
     }
 
     @PostMapping("/comment/{recipeId}/{userId}")
-    public ResponseEntity<String> commentRecipe(
+    public ResponseEntity<Comment> commentRecipe(
             @PathVariable String recipeId,
             @PathVariable String userId,
             @RequestBody Comment comment) {
@@ -102,9 +96,14 @@ public class RecipeController {
         return recipeService.updateRecipeLike(recipeId, userId, false);
     }
 
-    @PostMapping("/save/{userId}/{recipeId}")
-    public ResponseEntity<String> saveRecipeInCollection(@PathVariable String userId, @PathVariable String recipeId) {
+    @PutMapping("/save/{userId}/{recipeId}")
+    public ResponseEntity<Void> saveRecipeInCollection(@PathVariable String userId, @PathVariable String recipeId) {
         return recipeService.saveRecipeForUser(userId, recipeId);
+    }
+
+    @PutMapping("/remove/{userId}/{recipeId}")
+    public ResponseEntity<Void> removeRecipeInCollection(@PathVariable String userId, @PathVariable String recipeId) {
+        return recipeService.removeRecipeForUser(userId, recipeId);
     }
 
     @GetMapping("{id}")
@@ -126,6 +125,10 @@ public class RecipeController {
         Pageable pageable = PageRequest.of(page, size);
         return recipeFilterDao.searchRecipeWithCriteria(searchText, cuisineName, categoryName,
                 startDate, endDate, pageable);
+    }
 
+    @GetMapping("/saved/{id}")
+    public ResponseEntity<List<RecipeDto>> savedRecipes(@PathVariable String id) {
+        return recipeService.getAllSavedRecipes(id);
     }
 }

@@ -1,5 +1,6 @@
 package com.sudhakar.recipe.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -17,4 +18,6 @@ public interface CuisineRepository extends MongoRepository<Cuisine, String>{
 
     @Query("{'$or': [{'name': {$regex: ?0, $options: 'i'}}]}")
     Page<Cuisine> searchCuisines(String searchText, Pageable pageable);
+
+    List<Cuisine> findAllOrderByName();
 }

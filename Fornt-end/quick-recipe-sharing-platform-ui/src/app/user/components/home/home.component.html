@@ -1,12 +1,52 @@
-<app-header></app-header>
+<app-header class="header"></app-header>
 <div class="container">
     <div class="left-section">
-        <span>Left Section</span>
+        <div *ngIf="userProfile">
+            <div>
+                <div class="profile-info">
+                    <div class="profile-image-container" (mouseenter)="showEditButton = true"
+                        (mouseleave)="showEditButton = false">
+                        <img [src]="userProfile.profileImageUrl" alt="Profile Image" class="profile-image">
+                        <mat-icon *ngIf="showEditButton" class="edit-icon">edit-button</mat-icon>
+                    </div>
+                    <div>
+                        <div class="profile-label">Followers:</div>
+                        <div class="profile-value">{{ followersList.length }}</div>
+
+                        <div class="profile-label">Following:</div>
+                        <div class="profile-value">{{ followingList.length }}</div>
+
+                        <div class="profile-label">Username</div>
+                        <div class="profile-value">{{ userProfile.usernameValue }}</div>
+
+                        <div class="profile-label">First Name</div>
+                        <div class="profile-value">{{ userProfile.firstName }}</div>
+
+                        <div class="profile-label">Last Name</div>
+                        <div class="profile-value">{{ userProfile.lastName }}</div>
+
+                        <div class="profile-label">Gender</div>
+                        <div class="profile-value">{{ userProfile.gender }}</div>
+
+                        <div class="profile-label">Email</div>
+                        <div class="profile-value">{{ userProfile.email }}</div>
+
+                        <div class="profile-label">Contact</div>
+                        <div class="profile-value">{{ userProfile.contact }}</div>
+
+                        <div class="profile-label">Joined on</div>
+                        <div class="profile-value">{{ userProfile.createdAt | date }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="!userProfile">
+            <p>Loading user profile...</p>
+        </div>
     </div>
     <div class="center-section">
         <router-outlet></router-outlet>
-    </div>
-    <div class="right-section">
-        <button mat-fab color="primary" (click)="onCreateRecipeClicked()">+</button>
+        <button mat-fab color="primary" class="floating-button" (click)="onCreateRecipeClicked()">+</button>
     </div>
 </div>

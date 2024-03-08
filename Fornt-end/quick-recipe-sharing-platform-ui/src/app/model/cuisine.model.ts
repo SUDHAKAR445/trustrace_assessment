@@ -3,3 +3,8 @@ export class Cuisine {
     name!: string;
     count?: string;
 }
+
+export class Explore {
+    name!: string;
+    imageUrl!: string;
+}

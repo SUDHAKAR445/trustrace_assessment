@@ -3,6 +3,7 @@ import { Injectable, inject } from "@angular/core";
 import { Observable, catchError, throwError } from "rxjs";
 import { environment } from "src/environments/environment.development";
 import { Category } from "../model/category.model";
+import { Explore } from "../model/cuisine.model";
 
 @Injectable({
     providedIn: 'root'
@@ -88,6 +89,20 @@ export class CategoryService {
         queryParams = queryParams.append("page", pageIndex);
         queryParams = queryParams.append("size", pageSize);
         return this.http.get<any>(`${environment.categoryUrl}/search`, { params: queryParams}).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    exploreByCategory() : Observable<Explore[]> {
+        return this.http.get<Explore[]>(`${environment.categoryUrl}/explore`).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');

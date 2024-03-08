@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, switchMap } from 'rxjs';
 import { Transaction } from 'src/app/model/payment.model';
@@ -16,6 +17,7 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./bookings-detail.component.scss']
 })
 export class BookingsDetailComponent {
+  constructor(private sanitizer: DomSanitizer) {}
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   paymentService: PaymentService = inject(PaymentService);
   authService: AuthService = inject(AuthService);
@@ -25,6 +27,8 @@ export class BookingsDetailComponent {
 
   transactionId!: string | null;
   userId!: string | null | undefined;
+  videoId!: string ;
+  extractedId!: string;
 
   transactionDetail: {
     transaction: Transaction,
@@ -68,5 +72,19 @@ export class BookingsDetailComponent {
 
   onCloseButtonClicked() {
     this.router.navigate(['/user/booking']);
+  }
+
+  
+  getVideoUrl(videoId: string | undefined): SafeResourceUrl | undefined {
+    if (videoId) {
+        const sanitizedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${this.extractVideoId(videoId)}`);
+        return sanitizedUrl;
+    }
+    return undefined;
+}
+
+  extractVideoId(videoUrl: string): string | undefined {
+    const match = videoUrl.match(/(?:\/|v=)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : undefined;
   }
 }

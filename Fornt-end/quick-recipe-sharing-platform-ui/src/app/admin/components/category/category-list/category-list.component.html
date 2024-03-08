@@ -1,5 +1,5 @@
 <app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
-<button mat-button color="primary" (click)="onCreateClicked()">+Add New Category</button>
+<button mat-button color="primary" clickable (click)="onCreateClicked()">+Add New Category</button>
 <div style="display: flex;">
     <mat-form-field class="example-full-width">
         <mat-label>Search</mat-label>
@@ -28,7 +28,7 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row (click)="showDetail(row.id)" *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-row clickable (click)="showDetail(row.id)" *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
 
         <mat-paginator #paginator1 [length]="paginator1.length" [pageIndex]="paginator1.pageIndex"

@@ -29,7 +29,7 @@
     <mat-datepicker #endDatePicker></mat-datepicker>
 
 </mat-form-field>
-<mat-icon (click)="onDateChange()">search</mat-icon>
+<mat-icon clickable (click)="onDateChange()">search</mat-icon>
 
 <div class="mat-elevation-z8">
     <div class="mat-elevation-z8">
@@ -42,25 +42,25 @@
 
             <ng-container matColumnDef="Reporter Profile">
                 <th mat-header-cell *matHeaderCellDef>Reporter Profile</th>
-                <td mat-cell *matCellDef="let element"> <img [src]=" element.reporterUserImage" (click)="showDetail(element.reporterUserId)"/></td>
+                <td mat-cell *matCellDef="let element"> <img [src]=" element.reporterUserImage" clickable (click)="showDetail(element.reporterUserId)"/></td>
             </ng-container>
 
             <ng-container matColumnDef="Reporter Username">
                 <th mat-header-cell *matHeaderCellDef> Reporter Username</th>
-                <td mat-cell *matCellDef="let element" (click)="showDetail(element.reporterUserId)"> {{ element.reporterUsername }}</td>
+                <td mat-cell *matCellDef="let element" clickable (click)="showDetail(element.reporterUserId)"> {{ element.reporterUsername }}</td>
             </ng-container>
 
             <ng-container matColumnDef="Reported User">
                 <th mat-header-cell *matHeaderCellDef> Reported User</th>
                 <td mat-cell *matCellDef="let element">
-                    <img [src]="element.reportedUserImage" (click)="showDetail(element.reportedUserId)" />
+                    <img [src]="element.reportedUserImage" clickable (click)="showDetail(element.reportedUserId)" />
                 </td>
             </ng-container>
 
 
             <ng-container matColumnDef="Reported Username">
                 <th mat-header-cell *matHeaderCellDef> Reported Username</th>
-                <td mat-cell *matCellDef="let element" (click)="showDetail(element.reportedUserId)"> {{ element.reportedUsername }}</td>
+                <td mat-cell *matCellDef="let element" clickable (click)="showDetail(element.reportedUserId)"> {{ element.reportedUsername }}</td>
             </ng-container>
 
             <ng-container matColumnDef="Reported Text">
@@ -81,12 +81,12 @@
             <ng-container matColumnDef="Actions">
                 <th mat-header-cell *matHeaderCellDef> Actions</th>
                 <td mat-cell *matCellDef="let element">
-                    <mat-icon class="small-button" (click)="onEditClicked(element.id)">edit</mat-icon>
+                    <mat-icon class="small-button" clickable (click)="onEditClicked(element.id)">edit</mat-icon>
                 </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onReportClicked(row.id)"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" clickable (click)="onReportClicked(row.id)"></tr>
         </table>
 
         <mat-paginator #paginator [length]="paginator.length" [pageIndex]="paginator.pageIndex"

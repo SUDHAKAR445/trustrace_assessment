@@ -17,11 +17,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Builder
 
 @Document(collection = "users")
@@ -69,6 +71,9 @@ public class User implements UserDetails {
     @Field(name = "wallet")
     private double wallet;
 
+    @Field(name = "is_enabled")
+    private boolean accountActivated;
+
     @DBRef
     private Role role;
 
@@ -107,5 +112,9 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return id;
+    }
+
+    public boolean getAccountActivated() {
+        return accountActivated;
     }
 }

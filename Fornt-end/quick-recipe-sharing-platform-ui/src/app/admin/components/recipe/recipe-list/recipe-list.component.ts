@@ -28,7 +28,7 @@ export class RecipeListComponent implements AfterViewInit {
     private changeDetectorRef: ChangeDetectorRef,
     private categoryService: CategoryService,
     private cuisineService: CuisineService
-  ) {}
+  ) { }
 
   errorMessage!: string | null;
   createUserClicked: boolean = false;
@@ -93,7 +93,7 @@ export class RecipeListComponent implements AfterViewInit {
     end: Date | null | undefined
   ) {
     console.log(start);
-    
+
     this.recipeService.getAllRecipeBySearch(inputValue, selectedCuisine, selectedCategory, start, end, this.paginator.pageIndex, this.paginator.pageSize).subscribe({
       next: (response) => {
         this.dataSource.data = response.content;
@@ -137,6 +137,10 @@ export class RecipeListComponent implements AfterViewInit {
 
   showUserDetail(id: string) {
     this.router.navigate(['/admin/users/detail'], { queryParams: { detail: id } });
+  }
+
+  onEditClicked(id: string) {
+    this.router.navigate(['/admin/recipes/update'], { queryParams: { detail: id } });
   }
 
   onDeleteClicked(id: string) {

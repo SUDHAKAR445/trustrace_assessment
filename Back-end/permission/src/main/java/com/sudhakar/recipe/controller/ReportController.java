@@ -36,17 +36,17 @@ public class ReportController {
     private ReportFilterDao reportFilterDao;
 
     @PostMapping("/recipe/{reporterId}")
-    public ResponseEntity<String> createRecipeReport(@PathVariable String reporterId, @RequestBody ReportBody report) {
+    public ResponseEntity<Void> createRecipeReport(@PathVariable String reporterId, @RequestBody ReportBody report) {
         return reportService.createRecipeReport(reporterId, report);
     }
 
     @PostMapping("/comment/{reporterId}")
-    public ResponseEntity<String> createCommentReport(@PathVariable String reporterId, @RequestBody ReportBody report) {
+    public ResponseEntity<Void> createCommentReport(@PathVariable String reporterId, @RequestBody ReportBody report) {
         return reportService.createCommentReport(reporterId, report);
     }
 
     @PostMapping("/user/{reporterId}")
-    public ResponseEntity<String> createUserReport(@PathVariable String reporterId, @RequestBody ReportBody report) {
+    public ResponseEntity<Void> createUserReport(@PathVariable String reporterId, @RequestBody ReportBody report) {
         return reportService.createUserReport(reporterId, report);
     }
 

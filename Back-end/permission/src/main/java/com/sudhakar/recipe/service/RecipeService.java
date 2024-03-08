@@ -22,20 +22,24 @@ public interface RecipeService {
 
     ResponseEntity<Page<RecipeDto>> getAllRecipesOrderByCreationDate(Pageable pageable);
 
-    ResponseEntity<String> updateRecipe(String id, String recipeId, RecipeRequestDto UpdateRecipe);
+    ResponseEntity<Void> updateRecipe(String id, RecipeRequestDto UpdateRecipe);
 
-    ResponseEntity<String> deleteRecipe(String recipeId);
+    ResponseEntity<Void> deleteRecipe(String recipeId);
 
     ResponseEntity<Page<RecipeDto>> getAllRecipeByUserId(String id, Pageable pageable);
 
-    ResponseEntity<String> commentRecipe(String recipeId, String userId, Comment comment);
+    ResponseEntity<Comment> commentRecipe(String recipeId, String userId, Comment comment);
 
-    ResponseEntity<String> saveRecipeForUser(String userId, String recipeId);
+    ResponseEntity<Void> saveRecipeForUser(String userId, String recipeId);
+
+    ResponseEntity<Void> removeRecipeForUser(String userId, String recipeId);
 
     ResponseEntity<String> updateRecipeLike(String recipeId, String userId, boolean like);
 
     ResponseEntity<List<Recipe>> getAllRecipeByTitle(String title, Pageable pageable);
 
     ResponseEntity<Recipe> getRecipeById(String id);
+
+    ResponseEntity<List<RecipeDto>> getAllSavedRecipes(String userId);
 
 }

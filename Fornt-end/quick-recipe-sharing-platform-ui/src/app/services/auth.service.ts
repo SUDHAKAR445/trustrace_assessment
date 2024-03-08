@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { JwtHelperService } from "@auth0/angular-jwt";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
@@ -20,16 +20,37 @@ export class AuthService {
     ) { }
 
     user: BehaviorSubject<Token | null> = new BehaviorSubject<Token | null>(null);
+    user
     error: string | null = null;
 
     private tokenExpireTimer: ReturnType<typeof setTimeout> | null = null;
 
-    register(username: string, firstName: string, lastName: string, email: string, password: string): Observable<string> {
+    private isOtpVerified = false;
+    private isPasswordChanged = false;
+
+    getOtpVerificationStatus(): boolean {
+        return this.isOtpVerified;
+    }
+
+    setOtpVerificationStatus(status: boolean): void {
+        this.isOtpVerified = status;
+    }
+
+    getPasswordChangedStatus(): boolean {
+        return this.isPasswordChanged;
+    }
+
+    setPasswordChangedStatus(status: boolean): void {
+        this.isPasswordChanged = status;
+    }
+
+    register(username: string, firstName: string, lastName: string, email: string, gender: string, password: string): Observable<string> {
         const data = {
             userName: username,
             firstName: firstName,
             lastName: lastName,
             email: email,
+            gender: gender,
             password: password
         };
         return this.http.post<string>(environment.registerUrl, data).pipe(
@@ -42,8 +63,7 @@ export class AuthService {
                         this.error = err.error.error.message;
                 }
                 return throwError(() => this.error);
-            }),
-            tap((res: any) => this.handleAuthentication(res))
+            })
         );
     }
 
@@ -129,4 +149,30 @@ export class AuthService {
             this.tokenExpireTimer = null;
         }
     }
+
+    verifyEmail(email: string): Observable<void> {
+        return this.http.post<void>(`${environment.forgotUrl}/verify/${email}`, {});
+    }
+
+    verifyOtp(otp: number, email: string): Observable<void> {
+        return this.http.get<void>(`${environment.forgotUrl}/verify-otp/${otp}/${email}`, {});
+    }
+
+    changePassword(email: string, password: string): Observable<void> {
+        return this.http.put<void>(`${environment.forgotUrl}/change-password/${email}`, password);
+    }
+
+    confirmAccount(token: string | null): Observable<void> {
+        return this.http.post<void>(`${environment.verifyUrl}`, token).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            })
+    )};
 }

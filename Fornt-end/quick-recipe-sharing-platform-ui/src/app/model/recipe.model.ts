@@ -9,7 +9,7 @@ export class Recipe {
     dateCreated?: Date;
     deletedAt?: Date;
     photo?: string;
-    video!: string;
+    video!: string | undefined;
     category!: {
         id?: string;
         name?: string;

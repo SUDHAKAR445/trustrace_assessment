@@ -12,7 +12,7 @@ public interface RazorpayService {
 
     ResponseEntity<BookingDto> createOrder(PaymentRequest request);
 
-    ResponseEntity<String> updateBooking(String id, String paymentId);
+    ResponseEntity<Void> updateBooking(String id, String paymentId);
 
     ResponseEntity<Page<TransactionDto>> getAllTransactions(Pageable page);
 

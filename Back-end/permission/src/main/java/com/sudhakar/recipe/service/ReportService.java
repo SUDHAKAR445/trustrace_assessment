@@ -12,11 +12,11 @@ import com.sudhakar.recipe.entity.Status;
 
 public interface ReportService {
 
-    ResponseEntity<String> createCommentReport(String reporterId, ReportBody report);
+    ResponseEntity<Void> createCommentReport(String reporterId, ReportBody report);
 
-    ResponseEntity<String> createRecipeReport(String reporterId, ReportBody report);
+    ResponseEntity<Void> createRecipeReport(String reporterId, ReportBody report);
 
-    ResponseEntity<String> createUserReport(String reporterId, ReportBody report);
+    ResponseEntity<Void> createUserReport(String reporterId, ReportBody report);
 
     ResponseEntity<String> updateStatusOfReport(String reportId, String status);
 

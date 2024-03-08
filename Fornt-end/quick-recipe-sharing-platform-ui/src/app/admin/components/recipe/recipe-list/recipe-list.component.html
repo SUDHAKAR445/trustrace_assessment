@@ -1,4 +1,6 @@
 <app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
+<button mat-button color="primary" clickable (click)="onCreateClicked()">+Add New Recipe</button>
+<br>
 <mat-form-field class="example-full-width">
     <mat-label>Search</mat-label>
     <input matInput #message maxlength="256" placeholder="Ex. Search Title, username">
@@ -33,7 +35,7 @@
     <mat-datepicker #endDatePicker></mat-datepicker>
 
 </mat-form-field>
-<mat-icon (click)="onDateChange()">search</mat-icon>
+<mat-icon clickable (click)="onDateChange()">search</mat-icon>
 
 <div class="mat-elevation-z8">
     <div class="mat-elevation-z8">
@@ -47,7 +49,7 @@
             <ng-container matColumnDef="Profile">
                 <th mat-header-cell *matHeaderCellDef> Profile</th>
                 <td mat-cell *matCellDef="let element"> <img [src]=" element.profileImageUrl"
-                        (click)="showUserDetail(element.userId)" /></td>
+                        clickable (click)="showUserDetail(element.userId)" /></td>
             </ng-container>
 
             <ng-container matColumnDef="Username">
@@ -83,12 +85,13 @@
             <ng-container matColumnDef="Actions">
                 <th mat-header-cell *matHeaderCellDef> Actions</th>
                 <td mat-cell *matCellDef="let element">
-                    <mat-icon class="small-button" (click)="onDeleteClicked(element.recipeId)">delete</mat-icon>
+                    <mat-icon class="small-button" clickable (click)="onEditClicked(element.recipeId)">edit</mat-icon>
+                    <mat-icon class="small-button" clickable (click)="onDeleteClicked(element.recipeId)">delete</mat-icon>
                 </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row (click)="showDetail(row.recipeId)" *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-row clickable (click)="showDetail(row.recipeId)" *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
 
         <mat-paginator #paginator [length]="paginator.length" [pageIndex]="paginator.pageIndex"

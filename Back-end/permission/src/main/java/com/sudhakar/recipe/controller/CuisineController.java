@@ -1,5 +1,7 @@
 package com.sudhakar.recipe.controller;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sudhakar.recipe.dto.CuisineDto;
+import com.sudhakar.recipe.dto.ExploreDto;
 import com.sudhakar.recipe.dto.RecipeDto;
 import com.sudhakar.recipe.entity.Cuisine;
 import com.sudhakar.recipe.service.CuisineService;
@@ -53,5 +56,10 @@ public class CuisineController {
     @GetMapping("/search")
     public ResponseEntity<Page<CuisineDto>> search(@RequestParam String searchText, @RequestParam int page, @RequestParam int size) {
         return cuisineService.getCuisinesBySearch(searchText, PageRequest.of(page, size));
+    }
+
+    @GetMapping("/explore")
+    public ResponseEntity<Set<ExploreDto>> exploreCuisine() {
+        return cuisineService.exploreByCuisine();
     }
 }

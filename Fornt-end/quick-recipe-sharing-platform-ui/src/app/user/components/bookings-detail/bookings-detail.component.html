@@ -86,7 +86,7 @@
                         <div class="detail-label">Booked User Last Name</div>
                         <div class="detail-value">{{ transactionDetail.bookedUser.lastName }}</div>
                     </div>
-                    <div class="detail-row">
+                    <div class="detail-row" *ngIf="transactionDetail.transaction.orderStatus === 'COMPLETED'">
                         <div class="detail-label">Booked User Email</div>
                         <div class="detail-value">{{ transactionDetail.bookedUser.email }}</div>
                     </div>
@@ -95,12 +95,12 @@
                         <div class="detail-label">Booked User Gender</div>
                         <div class="detail-value">{{ transactionDetail.bookedUser.gender }}</div>
                     </div>
-                    <div class="detail-row">
+                    <div class="detail-row" *ngIf="transactionDetail.transaction.orderStatus === 'COMPLETED'">
                         <div class="detail-label">Booked User Contact</div>
                         <div class="detail-value">{{ transactionDetail.bookedUser.contact }}</div>
                     </div>
 
-                    <div class="detail-row" *ngIf="transactionDetail.bookerUserDetail.id === userId">
+                    <div class="detail-row" *ngIf="transactionDetail.bookedUser.id === userId">
                         <div class="detail-label">Booked User Wallet</div>
                         <div class="detail-value" style="font-size: xx-large;">{{
                             transactionDetail.bookedUser.wallet | currency : 'INR'}}</div>
@@ -156,12 +156,20 @@
                         <div class="detail-value"><img [src]="transactionDetail.bookedUserRecipeDetail.photo"></div>
                     </div>
 
-                    <div class="detail-row">
+                    <div class="detail-row" *ngIf="transactionDetail.transaction.orderStatus === 'COMPLETED'">
                         <div class="detail-label">Booked Recipe Uploaded Video</div>
-                        <div class="detail-value">{{ transactionDetail.bookedUserRecipeDetail.video }}</div>
+                        <div class="detail-value">
+                            <iframe
+                                width="560"
+                                height="315"
+                                [src]= getVideoUrl(transactionDetail.bookedUserRecipeDetail.video)
+                                frameborder="0"
+                                allowfullscreen
+                            ></iframe>
+                        </div>
                     </div>
 
-                    <div class="detail-row">
+                    <div class="detail-row" *ngIf="transactionDetail.transaction.orderStatus === 'COMPLETED'">
                         <div class="detail-label">Booked Recipe Ingredients</div>
                         <div class="detail-value" *ngFor="let item of transactionDetail.bookedUserRecipeDetail.ingredients">
                             <div class="detail">
@@ -173,7 +181,7 @@
                 </div>
 
                 <div class="button-container">
-                    <button mat-raised-button color="warn" (click)="onCloseButtonClicked()">Close</button>
+                    <button mat-raised-button color="warn" clickable (click)="onCloseButtonClicked()">Close</button>
                 </div>
             </mat-card-content>
         </mat-card>

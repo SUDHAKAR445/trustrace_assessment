@@ -155,7 +155,7 @@
                         <div class="detail-row">
                             <div class="detail-label">Recipe User profile</div>
                             <div class="detail-value"><img [src]="reportDetail.reportedRecipe.user?.profileImageUrl"
-                                    (click)="showUserDetail(reportDetail.reportedRecipe.user?.id)" /></div>
+                                    clickable (click)="showUserDetail(reportDetail.reportedRecipe.user?.id)" /></div>
                         </div>
 
                         <div class="detail-row">
@@ -226,9 +226,9 @@
 
                 
                     <div class="button-container">
-                        <button mat-raised-button color="accent" (click)="updateStatusClicked(reportDetail.report.id,'pending')">Pending</button>
-                        <button mat-raised-button color="primary" (click)="updateStatusClicked(reportDetail.report.id,'resolve')">Resolve</button>
-                        <button mat-raised-button color="warn" (click)="updateStatusClicked(reportDetail.report.id,'reject')">Reject</button>
+                        <button mat-raised-button color="accent" clickable (click)="updateStatusClicked(reportDetail.report.id,'pending')">Pending</button>
+                        <button mat-raised-button color="primary" clickable (click)="updateStatusClicked(reportDetail.report.id,'resolve')">Resolve</button>
+                        <button mat-raised-button color="warn" clickable (click)="updateStatusClicked(reportDetail.report.id,'reject')">Reject</button>
                     </div>
                 </div>
             </mat-card-content>

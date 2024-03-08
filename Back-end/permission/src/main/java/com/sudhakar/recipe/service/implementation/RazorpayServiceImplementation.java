@@ -3,12 +3,23 @@ package com.sudhakar.recipe.service.implementation;
 import java.util.Date;
 import java.util.Optional;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -116,7 +127,7 @@ public class RazorpayServiceImplementation implements RazorpayService {
     }
 
     @Override
-    public ResponseEntity<String> updateBooking(String id, String paymentId) {
+    public ResponseEntity<Void> updateBooking(String id, String paymentId) {
         try {
             Optional<Booking> booking = bookingRepository.findById(id);
             if (booking.isPresent()) {
@@ -131,20 +142,24 @@ public class RazorpayServiceImplementation implements RazorpayService {
                     savedBooking.setOrderCompletedDate(new Date());
 
                     bookingRepository.save(savedBooking);
-                    mailService.sendMail(userRepository.findById(booking.get().getBookerUser()).get().getEmail(), new MailStructure());
-                    return new ResponseEntity<>("Booked Successfully", HttpStatus.OK);
+
+                    String userEmail = userRepository.findById(booking.get().getBookerUser()).get().getEmail();
+
+                    MailStructure mailStructure = constructMailBody(userEmail, convertToTransactionDto(savedBooking));
+                    mailService.sendMailWithQr(mailStructure);
+                    return new ResponseEntity<>(HttpStatus.OK);
                 } else {
                     Booking savedBooking = booking.get();
                     savedBooking.setPaymentStatus(PaymentStatus.REJECTED);
                     savedBooking.setOrderCompletedDate(new Date());
 
                     bookingRepository.save(savedBooking);
-                    return new ResponseEntity<>("Booking is failed", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
             }
-            return new ResponseEntity<>("No Booking found", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in booking", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -170,6 +185,64 @@ public class RazorpayServiceImplementation implements RazorpayService {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private MailStructure constructMailBody(String userEmail, TransactionDto transactionDto)
+            throws IOException, WriterException {
+        String qrCodeContent = "Transaction ID: " + transactionDto.getId() + "\n"
+                + "Amount: " + transactionDto.getAmount() + " " + transactionDto.getCurrency() + "\n"
+                + "Booker Username: " + transactionDto.getBookerUsername();
+
+        String qrCodeBase64 = generateQRCode(qrCodeContent, 300, 300);
+
+        String mailBody = "<html><body>"
+                + "<p>Dear User,</p>"
+                + "<p>Thank you for your transaction. Here are the details:</p>"
+                + "<ul>"
+                + "<li><strong>Transaction ID:</strong> " + transactionDto.getId() + "</li>"
+                + "<li><strong>Order ID:</strong> " + transactionDto.getOrderId() + "</li>"
+                + "<li><strong>Payment ID:</strong> " + transactionDto.getPaymentId() + "</li>"
+                + "<li><strong>Amount:</strong> " + transactionDto.getAmount() + " " + transactionDto.getCurrency()
+                + "</li>"
+                + "<li><strong>Booker Information:</strong>"
+                + "  <ul>"
+                + "    <li><strong>Username:</strong> " + transactionDto.getBookerUsername() + "</li>"
+                + "    <li><strong>Profile Image:</strong> <img src='" + transactionDto.getBookerProfileImage() + ",></li>"
+                + "    <li><strong>Contact:</strong> " + transactionDto.getBookerContact() + "</li>"
+                + "  </ul>"
+                + "</li>";
+
+        if (transactionDto.getRecipeId() != null) {
+            mailBody += "<li><strong>Recipe Information:</strong>"
+                    + "  <ul>"
+                    + "    <li><strong>Recipe ID:</strong> " + transactionDto.getRecipeId() + "</li>"
+                    + "    <li><strong>Recipe Title:</strong> " + transactionDto.getRecipeTitle() + "</li>"
+                    + "    <li><strong>Recipe User ID:</strong> " + transactionDto.getRecipeUserId() + "</li>"
+                    + "    <li><strong>Recipe User Username:</strong> " + transactionDto.getRecipeUsername() + "</li>"
+                    + "    <li><strong>Recipe User Profile Image:</strong> <img src='" + transactionDto.getRecipeUserProfile()
+                    + "'></li>"
+                    + "  </ul>"
+                    + "</li>";
+        }
+
+        mailBody += "</ul>"
+                + "<p>Order Created At: " + transactionDto.getOrderCreatedAt() + "</p>"
+                + "<p>Order Completed At: " + transactionDto.getOrderCompletedAt() + "</p>"
+                + "<p>Order Status: " + transactionDto.getOrderStatus() + "</p>"
+                + "<p>QR Code:</p>"
+                + "<img src='data:image/png;base64," + qrCodeBase64 + "' alt='QR Code'>"
+                + "<p>Thank you for using our service!</p>"
+                + "<p>Best regards,<br>Your Company</p>"
+                + "</body></html>";
+
+        mailBody += "Click here to view transaction "+ "http://localhost:4200/user/booking/detail?detail=" + transactionDto.getId();
+        MailStructure mailStructure = MailStructure.builder()
+                .to(userEmail)
+                .subject("Your order Details")
+                .message(mailBody)
+                .build();
+
+        return mailStructure;
     }
 
     private TransactionDto convertToTransactionDto(Booking booking) {
@@ -203,5 +276,13 @@ public class RazorpayServiceImplementation implements RazorpayService {
         transactionDto.setOrderStatus(booking.getPaymentStatus());
 
         return transactionDto;
+    }
+
+    private static String generateQRCode(String content, int width, int height) throws IOException, WriterException {
+        BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, width, height);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+        byte[] byteArray = outputStream.toByteArray();
+        return Base64.getEncoder().encodeToString(byteArray);
     }
 }

@@ -59,10 +59,6 @@
     display: block;
 }
 
-.dropdown-content a:hover {
-    background-color: #555;
-}
-
 .search-bar {
     display: flex;
     align-items: center;
@@ -116,4 +112,8 @@ p {
 
 input:hover {
     font-size: large;
+}
+
+.tabs a.active {
+    color: #FF0000;
 }

@@ -23,6 +23,7 @@ import { UserComponent } from './components/report/user/user.component';
 import { TransactionListComponent } from './components/transaction/transaction-list/transaction-list.component';
 import { TransactionDetailComponent } from './components/transaction/transaction-detail/transaction-detail.component';
 import { ReportDetailComponent } from './components/report/report-detail/report-detail.component';
+import { RecipeCreateComponent } from './components/recipe/recipe-create/recipe-create.component';
 
 const routes: Routes = [
   {
@@ -60,6 +61,7 @@ const routes: Routes = [
         path: 'recipes',
         children: [
           { path: '', component: RecipeListComponent },
+          { path: 'create', component: RecipeCreateComponent },
           { path: 'detail', component: RecipeDetailComponent },
           { path: 'update', component: RecipeUpdateComponent },
         ]

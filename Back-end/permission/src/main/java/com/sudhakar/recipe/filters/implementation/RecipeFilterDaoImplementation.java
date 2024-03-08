@@ -37,7 +37,7 @@ public class RecipeFilterDaoImplementation implements RecipeFilterDao {
 
             if (StringUtils.hasText(searchText)) {
                 Criteria textCriteria = new Criteria().orOperator(
-                        Criteria.where("user.usernameValue").regex(searchText, "i"),
+                        // Criteria.where("user.usernameValue").regex(searchText, "i"),
                         Criteria.where("title").regex(searchText, "i"));
 
                 query.addCriteria(textCriteria);

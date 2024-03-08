@@ -9,4 +9,7 @@ export const environment = {
     reportUrl: 'http://localhost:8080/api/reports',
     paymentUrl: 'http://localhost:8080/api/payment',
     dashboardUrl: 'http://localhost:8080/api/dashboard',
+    followUrl: 'http://localhost:8080/api/follow',
+    forgotUrl: 'http://localhost:8080/api/forgot-password',
+    verifyUrl: 'http://localhost:8080/api/auth/confirm-account'
 };

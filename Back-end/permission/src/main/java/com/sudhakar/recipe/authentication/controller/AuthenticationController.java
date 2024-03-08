@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sudhakar.recipe.authentication.dto.AuthenticationRequest;
@@ -22,7 +23,7 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
+    public ResponseEntity<Void> register(
             @RequestBody RegisterRequest request) {
         return service.register(request);
     }
@@ -31,5 +32,10 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request) {
         return service.authenticate(request);
+    }
+
+    @PostMapping("/confirm-account")
+    public ResponseEntity<Void> confirmationUserAccount(@RequestBody String token) {
+        return service.confirmUserAccount(token);
     }
 }

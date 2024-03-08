@@ -1,0 +1,27 @@
+<div class="overall-container">
+    <h2 class="section-title">Cuisine</h2>
+    <div class="scroll-container">
+        <div class="content-container-cuisine">
+            <mat-card *ngFor="let cuisine of cuisineExplore" class="card" clickable (click)="onCuisineClick(cuisine.name)">
+                <img mat-card-image [src]="cuisine.imageUrl" alt="{{ cuisine.name }} Image">
+                <mat-card-content>
+                    <h3 matLine>{{ cuisine.name }}</h3>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>
+
+<div class="overall-container">
+    <h2 class="section-title">Category</h2>
+    <div class="scroll-container">
+        <div class="content-container-category">
+            <mat-card *ngFor="let category of categoryExplore" class="card" clickable (click)="onCategoryClick(category.name)">
+                <img mat-card-image [src]="category.imageUrl" alt="{{ category.name }} Image">
+                <mat-card-content>
+                    <h3 matLine>{{ category.name }}</h3>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>

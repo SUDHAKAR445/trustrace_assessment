@@ -3,6 +3,13 @@ import { Injectable, inject } from "@angular/core";
 import { Observable, catchError, throwError } from "rxjs";
 import { environment } from "src/environments/environment.development";
 import { Recipe } from "../model/recipe.model";
+import { Comment } from "../model/comment.model";
+
+
+const today = new Date();
+const month = today.getMonth();
+const year = today.getFullYear();
+const day = today.getDate();
 
 @Injectable({
     providedIn: 'root'
@@ -64,8 +71,8 @@ export class RecipeService {
             }));
     }
 
-    deleteRecipeById(id: string | null): Observable<string> {
-        return this.http.delete<string>(`${environment.recipeUrl}/${id}`).pipe(
+    deleteRecipeById(id: string | null | undefined): Observable<void> {
+        return this.http.delete<void>(`${environment.recipeUrl}/${id}`).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');
@@ -78,8 +85,8 @@ export class RecipeService {
             }));
     }
 
-    updateRecipeById(id: string | null): Observable<string> {
-        return this.http.put<string>(`${environment.recipeUrl}/${id}`, {}).pipe(
+    updateRecipeById(id: string | null, values: FormData): Observable<void> {
+        return this.http.put<void>(`${environment.recipeUrl}/update/${id}`, values).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');
@@ -93,20 +100,20 @@ export class RecipeService {
     }
 
     getAllRecipeBySearch(
-        inputValue: any,
-        selectedCuisine: string,
-        selectedCategory: string,
+        inputValue: string | null,
+        selectedCuisine: string | null,
+        selectedCategory: string | null,
         start: Date | null | undefined,
         end: Date | null | undefined,
         pageIndex: number,
         pageSize: number
     ): Observable<any> {
         let queryParams = new HttpParams()
-            .append('searchText', inputValue)
-            .append('cuisineName', selectedCuisine)
-            .append('categoryName', selectedCategory)
-            .append('startDate', start?.toDateString() || '')
-            .append('endDate', end?.toDateString() || '')
+            .append('searchText', inputValue || '')
+            .append('cuisineName', selectedCuisine || '')
+            .append('categoryName', selectedCategory || '')
+            .append('startDate', start?.toDateString() || new Date(year - 1, month, day).toDateString())
+            .append('endDate', end?.toDateString() || new Date(year, month, day).toDateString())
             .append('page', pageIndex.toString())
             .append('size', pageSize.toString());
         return this.http.get<any>(`${environment.recipeUrl}/search`, { params: queryParams }).pipe(
@@ -141,6 +148,64 @@ export class RecipeService {
         const formData: FormData = new FormData();
         formData.append('imageFile', imageFile, imageFile.name);
         return this.http.put<string>(`${environment.recipeUrl}/update/image/${id}`, formData).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    createComment(recipeId: string | null, userId: string | undefined | null, commentText: string | null): Observable<Comment> {
+        return this.http.post<Comment>(`${environment.recipeUrl}/comment/${recipeId}/${userId}`, {text: commentText}).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    saveRecipeInUserCollection(userId: string | undefined | null, recipeId: string | undefined) : Observable<void>{
+        return this.http.put<void>(`${environment.recipeUrl}/save/${userId}/${recipeId}`, {}).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    
+    removeRecipeInUserCollection(userId: string | undefined | null, recipeId: string | undefined) : Observable<void>{
+        return this.http.put<void>(`${environment.recipeUrl}/remove/${userId}/${recipeId}`, {}).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    getAllSavedRecipeByUserId(id: string | undefined | null): Observable<any[]> {
+
+        return this.http.get<any[]>(`${environment.recipeUrl}/saved/${id}`).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');

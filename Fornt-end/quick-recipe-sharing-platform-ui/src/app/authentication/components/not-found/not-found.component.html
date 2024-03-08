@@ -1,1 +1,17 @@
-<p>not-found works!</p>
+<div class="container pt-5 mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h1>Oops!</h1>
+                <h2>404 Not Found</h2>
+                <div class="error-details">
+                    <p>Sorry, an error has occurred. The requested page was not found!</p>
+                </div>
+                <div class="error-actions">
+                    <button mat-raised-button color="primary" routerLink="/">Take Me Home</button>
+                    <button mat-raised-button color="default" (click)="goContact()">Contact Support</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

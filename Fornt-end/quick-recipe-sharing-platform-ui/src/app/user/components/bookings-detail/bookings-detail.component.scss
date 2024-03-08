@@ -1,5 +1,6 @@
 .container {
-    margin: 20px;
+    margin: 20px auto;
+    width: 100%;
 }
 
 h2 {
@@ -7,13 +8,20 @@ h2 {
 }
 
 .mat-card {
+    width: 100%;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px; /* Added margin for better separation */
+}
+
+.mat-card-content {
+    width: 100%;
 }
 
 .user-details {
     padding: 20px;
+    width: 70%;
 }
 
 .detail-row {

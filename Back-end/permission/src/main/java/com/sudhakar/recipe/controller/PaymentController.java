@@ -42,7 +42,7 @@ public class PaymentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateBooking(@PathVariable String id, @RequestBody String paymentId) {
+    public ResponseEntity<Void> updateBooking(@PathVariable String id, @RequestBody String paymentId) {
         return razorpayService.updateBooking(id, paymentId);
     }
 

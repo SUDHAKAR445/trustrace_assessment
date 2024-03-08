@@ -44,6 +44,8 @@ import { TransactionDetailComponent } from './components/transaction/transaction
 import { ReportDetailComponent } from './components/report/report-detail/report-detail.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { RecipeCreateComponent } from './components/recipe/recipe-create/recipe-create.component';
+import { MatStepperModule } from '@angular/material/stepper';
 
 @NgModule({
   declarations: [
@@ -73,6 +75,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     TransactionListComponent,
     TransactionDetailComponent,
     ReportDetailComponent,
+    RecipeCreateComponent,
   ],
   imports: [
     CommonModule,
@@ -94,6 +97,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDividerModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatStepperModule
   ]
 })
 export class AdminModule { }

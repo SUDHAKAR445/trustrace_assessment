@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { Observable, catchError, throwError } from "rxjs";
 import { environment } from "src/environments/environment.development";
-import { Cuisine } from "../model/cuisine.model";
+import { Cuisine, Explore } from "../model/cuisine.model";
 import { RecipeCuisine } from "../model/recipe-cuisine.model";
 
 @Injectable({
@@ -89,6 +89,20 @@ export class CuisineService {
         queryParams = queryParams.append("page", pageIndex);
         queryParams = queryParams.append("size", pageSize);
         return this.http.get<any>(`${environment.cuisineUrl}/search`, { params: queryParams}).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    exploreByCuisine() : Observable<Explore[]> {
+        return this.http.get<Explore[]>(`${environment.cuisineUrl}/explore`).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');

@@ -6,7 +6,7 @@
         <div *ngFor="let transaction of bookings" class="transaction-card mat-elevation-z2" [ngClass]="{
             'no-payment': !transaction.paymentId,
             'booker-user': transaction.bookerId === userId,
-            'other-user': transaction.bookerId !== userId}" (click)="showTransactionDetails(transaction.id)">
+            'other-user': transaction.bookerId !== userId}" clickable (click)="showTransactionDetails(transaction.id)">
             <div class="transaction-info">
                 <p><strong>Order ID: </strong> {{ transaction.orderId }}</p>
                 <p><strong>Payment ID: </strong> {{ transaction.paymentId || 'N/A' }}</p>

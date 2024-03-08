@@ -26,12 +26,12 @@ export class PaymentService {
       }));
   }
 
-  updateTransaction(id: string, paymentId: string): Observable<string> {
+  updateTransaction(id: string, paymentId: string): Observable<void> {
 
     let queryParams = new HttpParams();
     queryParams = queryParams.append("paymentId", paymentId);
 
-    return this.http.put<string>(`${environment.paymentUrl}/${id}`, paymentId).pipe(
+    return this.http.put<void>(`${environment.paymentUrl}/${id}`, paymentId).pipe(
       catchError(err => {
         if (!err.error || !err.error.error) {
           return throwError(() => 'An unknown error has occurred');

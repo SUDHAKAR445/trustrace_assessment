@@ -22,3 +22,22 @@ export const canActivate = (
         }
     }))
 }
+
+export const hasOtpVerified = (
+    router: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+): boolean | UrlTree | Promise<boolean | UrlTree> | Observable<boolean | UrlTree> => {
+
+    const authService: AuthService = inject(AuthService);
+    const route: Router = inject(Router);
+
+    const isOtpVerified = authService.getOtpVerificationStatus();
+    const isPasswordChanged = authService.getPasswordChangedStatus();
+
+    if (isOtpVerified) {
+        return true;
+    } else {
+        return route.createUrlTree(['/login']);
+        return false;
+    }
+}

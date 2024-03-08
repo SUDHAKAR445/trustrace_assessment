@@ -1,0 +1,29 @@
+<mat-card class="booking-card">
+    <app-load *ngIf="isLoading"></app-load>
+    <mat-card-title>Booking Page</mat-card-title>
+    <mat-card-content>
+        <form class="booking-form" (submit)="bookNowClicked()">
+            <mat-form-field class="full-width">
+                <mat-label>Payer Name</mat-label>
+                <input matInput required [(ngModel)]="payerName" name="payerName" [disabled]="true">
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" required [(ngModel)]="payerEmail" name="email" [disabled]="true">
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+                <mat-label>Phone Number</mat-label>
+                <input matInput type="tel" required [(ngModel)]="payerPhone" name="phoneNumber" [disabled]="true">
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+                <mat-label>Amount</mat-label>
+                <input matInput type="number" required [(ngModel)]="bookingAmount" name="amount" [disabled]="true">
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit" [disabled]="false">Book Now</button>
+        </form>
+    </mat-card-content>
+</mat-card>

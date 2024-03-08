@@ -2,7 +2,7 @@
 
 <div class="feed-container">
     <div *ngFor="let post of recipes">
-        <mat-card class="post-card">
+        <mat-card class="post-card" *ngIf="!post.deletedAt">
             <mat-card-header class="header-container">
                 <div mat-card-avatar class="profile-image">
                     <img class="profile-image" [src]="post.profileImageUrl">
@@ -12,25 +12,29 @@
                     <mat-card-subtitle>{{ post.title }}</mat-card-subtitle>
                 </div>
                 <mat-menu #menu="matMenu" class="menu-button" matMenuPosition="above">
-                    <button *ngIf="post.userId === userId" mat-menu-item (click)="onUpdateClick(post.recipeId)">Update</button>
-                    <button *ngIf="post.userId === userId" mat-menu-item (click)="onDeleteClick(post)">Delete</button>
-                    <button *ngIf="post.userId !== userId" mat-menu-item (click)="onReportClick(post)">Report</button>
-                    <button *ngIf="post.userId !== userId" mat-menu-item (click)="onSaveClick(post)">Save</button>
-                    <button *ngIf="post.userId !== userId" mat-menu-item (click)="onBookNowClick(post)">Book Now</button>
+                    <button *ngIf="post.userId === userId" mat-menu-item
+                        clickable (click)="onUpdateClick(post.recipeId)">Update</button>
+                    <button *ngIf="post.userId === userId" mat-menu-item clickable (click)="onDeleteRecipe(post.recipeId)">Delete</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item clickable (click)="onReportRecipe(post.recipeId)">Report Recipe</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item clickable (click)="onReportUser(post.userId)">Report User</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item clickable (click)="onSaveRecipe(post.recipeId)">Save</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item clickable (click)="onBookNowClick(post.recipeId)">Book
+                        Now</button>
                 </mat-menu>
                 <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
                     <mat-icon>more_vert</mat-icon>
                 </button>
             </mat-card-header>
-            <mat-card-content>
+            <mat-card-content clickable (click)="onShowDetailClicked(post.recipeId)">
                 <p class="description">{{ post.description }}</p>
+                <img mat-card-image [src]="post.recipeImageUrl" alt="Recipe Image" class="recipe-image">
+
             </mat-card-content>
-            <img mat-card-image [src]="post.recipeImageUrl" alt="Recipe Image" class="recipe-image">
             <mat-card-actions class="icon-buttons">
-                <button mat-icon-button (click)="onLikeClick()">
+                <button mat-icon-button clickable (click)="onLikeClick()">
                     <mat-icon>thumb_up</mat-icon>
                 </button>
-                <button mat-icon-button (click)="onCommentClick()">
+                <button mat-icon-button clickable (click)="onCommentClick(post.recipeId)">
                     <mat-icon>comment</mat-icon>
                 </button>
             </mat-card-actions>
