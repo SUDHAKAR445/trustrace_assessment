@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
-import { Observable, catchError, throwError } from "rxjs";
+import { BehaviorSubject, Observable, catchError, throwError } from "rxjs";
 import { environment } from "src/environments/environment.development";
 import { Recipe } from "../model/recipe.model";
 import { Comment } from "../model/comment.model";
@@ -19,6 +19,8 @@ export class RecipeService {
 
     http: HttpClient = inject(HttpClient);
     error: string | null = null;
+
+    recipeComments: BehaviorSubject<Comment[] | null> = new BehaviorSubject<Comment[] | null>(null);
 
     getAllRecipe(pageIndex: number, pageSize: number): Observable<any> {
 
@@ -206,6 +208,49 @@ export class RecipeService {
     getAllSavedRecipeByUserId(id: string | undefined | null): Observable<any[]> {
 
         return this.http.get<any[]>(`${environment.recipeUrl}/saved/${id}`).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    likeRecipe(recipeId: string, userId: string | undefined | null): Observable<void> {
+        return this.http.put<void>(`${environment.recipeUrl}/like/${recipeId}/${userId}`, {}).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    unlikeRecipe(recipeId: string, userId: string | undefined | null): Observable<void> {
+        return this.http.put<void>(`${environment.recipeUrl}/unlike/${recipeId}/${userId}`, {}).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    getAllLikedRecipes(userId: string | null | undefined): Observable<string[]> {
+
+        return this.http.get<string[]>(`${environment.recipeUrl}/user-liked/${userId}`).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');

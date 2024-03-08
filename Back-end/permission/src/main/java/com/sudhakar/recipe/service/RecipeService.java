@@ -2,6 +2,7 @@ package com.sudhakar.recipe.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ public interface RecipeService {
 
     ResponseEntity<Void> removeRecipeForUser(String userId, String recipeId);
 
-    ResponseEntity<String> updateRecipeLike(String recipeId, String userId, boolean like);
+    ResponseEntity<Void> updateRecipeLike(String recipeId, String userId, boolean like);
 
     ResponseEntity<List<Recipe>> getAllRecipeByTitle(String title, Pageable pageable);
 
@@ -42,4 +43,5 @@ public interface RecipeService {
 
     ResponseEntity<List<RecipeDto>> getAllSavedRecipes(String userId);
 
+    ResponseEntity<Set<String>> getAllLikedRecipes(String userId);
 }

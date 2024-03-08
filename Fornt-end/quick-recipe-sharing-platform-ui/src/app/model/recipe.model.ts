@@ -10,6 +10,7 @@ export class Recipe {
     deletedAt?: Date;
     photo?: string;
     video!: string | undefined;
+    likes!: string[];
     category!: {
         id?: string;
         name?: string;

@@ -6,11 +6,11 @@ body{
 .feed-container {
     display: flex;
     flex-wrap: wrap;
-    padding-left: 25%;
+    padding-left: 22%;
     gap: 20px;
     width: 50%;
+    margin-top: 15px;
     justify-content: center;
-    margin-top: 60px;
 }
 
 .post-card {
@@ -19,7 +19,7 @@ body{
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     width: 500px;
-    padding-left: 25px;
+    padding-left: 8px;
 }
 
 .user-info {
@@ -102,4 +102,15 @@ body{
 
 .no-saved-message img {
     height: 80vh;
+}
+
+.like-count {
+    margin-right: 5px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.liked {
+    color: blue;
 }

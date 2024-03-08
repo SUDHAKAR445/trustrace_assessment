@@ -35,4 +35,5 @@ public interface RecipeRepository extends MongoRepository<Recipe, String> {
 
     Page<Recipe> findByUserOrderByDateCreated(User user, Pageable pageable);
 
+    List<Recipe> findByLikesContains(String userId);
 }

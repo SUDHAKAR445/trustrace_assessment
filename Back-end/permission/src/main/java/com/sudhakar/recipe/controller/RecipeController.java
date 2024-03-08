@@ -2,6 +2,8 @@ package com.sudhakar.recipe.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -84,15 +86,15 @@ public class RecipeController {
         return recipeService.commentRecipe(recipeId, userId, comment);
     }
 
-    @PutMapping("/like/{recipeId}")
-    public ResponseEntity<String> likeRecipe(@PathVariable String recipeId,
-            @RequestParam String userId) {
+    @PutMapping("/like/{recipeId}/{userId}")
+    public ResponseEntity<Void> likeRecipe(@PathVariable String recipeId,
+            @PathVariable String userId) {
         return recipeService.updateRecipeLike(recipeId, userId, true);
     }
 
-    @PutMapping("/unlike/{recipeId}")
-    public ResponseEntity<String> unlikeRecipe(@PathVariable String recipeId,
-            @RequestParam String userId) {
+    @PutMapping("/unlike/{recipeId}/{userId}")
+    public ResponseEntity<Void> unlikeRecipe(@PathVariable String recipeId,
+            @PathVariable String userId) {
         return recipeService.updateRecipeLike(recipeId, userId, false);
     }
 
@@ -130,5 +132,10 @@ public class RecipeController {
     @GetMapping("/saved/{id}")
     public ResponseEntity<List<RecipeDto>> savedRecipes(@PathVariable String id) {
         return recipeService.getAllSavedRecipes(id);
+    }
+
+    @GetMapping("/user-liked/{userId}")
+    public ResponseEntity<Set<String>> getAllLikedRecipes(@PathVariable String userId) {
+        return recipeService.getAllLikedRecipes(userId);
     }
 }

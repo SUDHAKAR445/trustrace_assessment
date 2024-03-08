@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/model/user-detail';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
@@ -14,17 +15,19 @@ export class HeaderComponent {
   userService: UserService = inject(UserService);
 
   userId!: string | undefined | null;
-  userDetail!: User;
+  userDetail!: User | null;
+  subscription!: Subscription;
 
   ngOnInit() {
-    this.authService.user.subscribe((data) => {
-      this.userId = data?.id;
-      this.userService.getUserById(this.userId).subscribe((data) => {
-        this.userDetail = data;
-      })
-    })
+    this.subscription = this.authService.userDetail.subscribe((data) => {
+      this.userDetail = data;
+    });
   }
   onLogoutClicked() {
     this.authService.logout();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

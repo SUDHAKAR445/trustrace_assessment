@@ -1,11 +1,15 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { JwtHelperService } from "@auth0/angular-jwt";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment.development";
 import { Token } from "../model/user";
 import { Router } from "@angular/router";
+import { User } from "../model/user-detail";
+import { UserService } from "./user.service";
+import { FollowService } from "./follow.service";
+import { RecipeService } from "./recipe.service";
 
 @Injectable({
     providedIn: 'root'
@@ -13,6 +17,9 @@ import { Router } from "@angular/router";
 export class AuthService {
 
     private jwtHelper: JwtHelperService = new JwtHelperService();
+    userService: UserService = inject(UserService);
+    followService: FollowService = inject(FollowService);
+    recipeService: RecipeService = inject(RecipeService);
 
     constructor(
         private http: HttpClient,
@@ -20,7 +27,11 @@ export class AuthService {
     ) { }
 
     user: BehaviorSubject<Token | null> = new BehaviorSubject<Token | null>(null);
-    user
+    userDetail: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
+    followers: BehaviorSubject<User[] | null> = new BehaviorSubject<User[] | null>(null);
+    following: BehaviorSubject<User[] | null> = new BehaviorSubject<User[] | null>(null);
+    likedRecipes: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+
     error: string | null = null;
 
     private tokenExpireTimer: ReturnType<typeof setTimeout> | null = null;
@@ -91,6 +102,18 @@ export class AuthService {
         const decodeToken = this.getDecodedAccessToken(res.token);
         const user = new Token(decodeToken?.sub, res?.token, decodeToken?.exp * 1000, decodeToken?.Authorities[0]?.authority);
         this.user.next(user);
+        this.userService.getUserById(user.id).subscribe((data) => {
+            this.userDetail.next(data);
+        });
+        this.followService.getAllFollowersById(user.id).subscribe((data) => {
+            this.followers.next(data);
+        });
+        this.followService.getAllFollowingById(user.id).subscribe((data) => {
+            this.following.next(data);
+        });
+        this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
+            this.likedRecipes.next(data);
+        });
         localStorage.setItem('user', JSON.stringify(user));
         this.autoLogout(user.expiresIn);
     }
@@ -122,6 +145,18 @@ export class AuthService {
             const loggedUser = new Token(user.id, user._token, user._expiresIn, user._authority);
             if (loggedUser.token) {
                 this.user.next(loggedUser);
+                this.userService.getUserById(user.id).subscribe((data) => {
+                    this.userDetail.next(data);
+                });
+                this.followService.getAllFollowersById(user.id).subscribe((data) => {
+                    this.followers.next(data);
+                });
+                this.followService.getAllFollowingById(user.id).subscribe((data) => {
+                    this.following.next(data);
+                });
+                this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
+                    this.likedRecipes.next(data);
+                });
                 this.autoLogout(timeDifference);
             }
         } else {

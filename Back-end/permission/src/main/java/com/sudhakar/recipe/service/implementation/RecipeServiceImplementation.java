@@ -310,7 +310,7 @@ public class RecipeServiceImplementation implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<String> updateRecipeLike(String recipeId, String userId, boolean like) {
+    public ResponseEntity<Void> updateRecipeLike(String recipeId, String userId, boolean like) {
         try {
             Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
             Optional<User> optionalUser = userRepository.findById(userId);
@@ -332,13 +332,13 @@ public class RecipeServiceImplementation implements RecipeService {
                     recipe.setLikes(likes);
                     recipeRepository.save(recipe);
                 }
-                return new ResponseEntity<>("Like updated successfully", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
-            return new ResponseEntity<>("User or Recipe not found", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (
 
         Exception e) {
-            return new ResponseEntity<>("Problem in updating recipe like", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -380,6 +380,7 @@ public class RecipeServiceImplementation implements RecipeService {
         recipeDto.setDescription(recipe.getDescription());
         recipeDto.setRecipeImageUrl(recipe.getPhoto());
         recipeDto.setVideo(recipe.getVideo());
+        recipeDto.setLikes(recipe.getLikes() == null ? new HashSet<>() : recipe.getLikes());
 
         return recipeDto;
     }
@@ -446,6 +447,25 @@ public class RecipeServiceImplementation implements RecipeService {
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Set<String>> getAllLikedRecipes(String userId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isPresent()) {
+                String requestUserId = userOptional.get().getId();
+                List<Recipe> recipes = recipeRepository.findByLikesContains(requestUserId);
+                Set<String> likeList = new HashSet<>();
+                for(Recipe recipe : recipes) {
+                    likeList.add(recipe.getId());
+                }
+                return new ResponseEntity<>(likeList, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

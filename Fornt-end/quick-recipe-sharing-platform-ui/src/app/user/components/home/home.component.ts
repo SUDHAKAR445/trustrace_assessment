@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/model/user-detail';
 import { AuthService } from 'src/app/services/auth.service';
 import { FollowService } from 'src/app/services/follow.service';
@@ -18,58 +19,36 @@ export class HomeComponent {
   followService: FollowService = inject(FollowService);
 
   userId!: string | null | undefined;
-  userProfile!: User;
-  followersList!: User[];
-  followingList!: User[];
+  userProfile!: User | null;
+  followersList!: User[] | null;
+  followingList!: User[] | null;
   errorMessage!: string | null;
   showEditButton: boolean = false;
+  subscription!: Subscription;
+  subscriptionFollowers!: Subscription;
+  subscriptionFollowing!: Subscription;
 
   ngOnInit() {
-    this.authService.user.subscribe((data) => {
-      this.userId = data?.id
+    this.authService.userDetail.subscribe((data) => {
+      this.userProfile = data;
     });
 
-    this.userService.getUserById(this.userId).subscribe({
-      next: (response) => {
-        this.userProfile = response;
-      },
-      error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = error;
-        }, 3000);
-        this.errorMessage = null;
-      }
+    this.authService.followers.subscribe((data) => {
+      this.followersList = data;
     });
 
-    this.followService.getAllFollowersById(this.userId).subscribe({
-      next: (response) => {
-        this.followersList = response;
-      },
-      error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = error;
-        }, 3000);
-        this.errorMessage = null;
-      }
-    });
-
-    this.followService.getAllFollowingById(this.userId).subscribe({
-      next: (response) => {
-        this.followingList = response;
-      },
-      error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = error;
-        }, 3000);
-        this.errorMessage = null;
-      }
-    });
+    this.authService.following.subscribe((data) => {
+      this.followingList = data;
+    })
   }
   
   onCreateRecipeClicked() {
     this.router.navigate(['/user/create']);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscriptionFollowers.unsubscribe();
+    this.subscriptionFollowing.unsubscribe();
   }
 }

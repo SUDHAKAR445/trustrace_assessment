@@ -25,24 +25,24 @@ public class FollowServiceImplementation implements FollowService {
     private UserRepository userRepository;
 
     @Override
-    public ResponseEntity<String> followRequest(String followerUser, String followingUser) {
+    public ResponseEntity<Void> followRequest(String followerUser, String followingUser) {
         try {
-            Optional<User> existingFollowerUser = userRepository.findById(followingUser);
+            Optional<User> existingFollowerUser = userRepository.findById(followerUser);
             Optional<User> existingFollowingUser = userRepository.findById(followingUser);
 
             if (existingFollowerUser.isPresent() && existingFollowingUser.isPresent()) {
                 Follow newFollow = new Follow(existingFollowerUser.get(), existingFollowingUser.get());
                 followRepository.save(newFollow);
-                return new ResponseEntity<>("Followed Successfully", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
-            return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in following the user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<String> unFollowRequest(String followerUser, String followingUser) {
+    public ResponseEntity<Void> unFollowRequest(String followerUser, String followingUser) {
         try {
             Optional<User> existingFollowerUser = userRepository.findById(followerUser);
             Optional<User> existingFollowingUser = userRepository.findById(followingUser);
@@ -53,13 +53,13 @@ public class FollowServiceImplementation implements FollowService {
 
                 if (followOptional.isPresent()) {
                     followRepository.delete(followOptional.get());
-                    return new ResponseEntity<>("User unfollowed successfully", HttpStatus.OK);
+                    return new ResponseEntity<>(HttpStatus.OK);
                 }
-                return new ResponseEntity<>("User was not followed", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in unfollowed the user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

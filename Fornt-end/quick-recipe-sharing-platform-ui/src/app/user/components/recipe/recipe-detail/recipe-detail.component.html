@@ -7,14 +7,26 @@
         </div>
         <div class="header-content">
             <mat-card-title>{{ recipe.user?.usernameValue }}</mat-card-title>
+            <br>
+            <mat-card-subtitle>{{ recipe.dateCreated | date }}</mat-card-subtitle>
         </div>
+        <button mat-button *ngIf="!checkFollow(recipe.user?.id!)" color="primary" style="margin-top: 10px;" clickable
+            (click)="onFollowNowClick(recipe.user?.id!)">Follow</button>
+        <button mat-button *ngIf="checkFollow(recipe.user?.id!)" color="primary" style="margin-top: 10px;" clickable
+            (click)="onUnfollowNowClick(recipe.user?.id!)">Unfollow</button>
         <mat-menu #menu="matMenu" class="menu-button" matMenuPosition="above">
-            <button *ngIf="recipe.user?.id === userId" mat-menu-item clickable (click)="onUpdateClick(recipe.id)">Update</button>
-            <button *ngIf="recipe.user?.id === userId" mat-menu-item clickable (click)="onDeleteRecipe(recipe.id)">Delete</button>
-            <button *ngIf="recipe.user?.id !== userId" mat-menu-item clickable (click)="onReportUser(recipe.user?.id)">Report User</button>
-            <button *ngIf="recipe.user?.id !== userId" mat-menu-item clickable (click)="onReportRecipe(recipe.id)">Report Recipe</button>
-            <button *ngIf="recipe.user?.id !== userId" mat-menu-item clickable (click)="onSaveRecipe(recipe.id)">Save</button>
-            <button *ngIf="recipe.user?.id !== userId" mat-menu-item clickable (click)="onBookNowClick(recipe.id)">Book Now</button>
+            <button *ngIf="recipe.user?.id === userId" mat-menu-item clickable
+                (click)="onUpdateClick(recipe.id)">Update</button>
+            <button *ngIf="recipe.user?.id === userId" mat-menu-item clickable
+                (click)="onDeleteRecipe(recipe.id)">Delete</button>
+            <button *ngIf="recipe.user?.id !== userId" mat-menu-item clickable
+                (click)="onReportUser(recipe.user?.id)">Report User</button>
+            <button *ngIf="recipe.user?.id !== userId" mat-menu-item clickable
+                (click)="onReportRecipe(recipe.id)">Report Recipe</button>
+            <button *ngIf="recipe.user?.id !== userId" mat-menu-item clickable
+                (click)="onSaveRecipe(recipe.id)">Save</button>
+            <button *ngIf="recipe.user?.id !== userId" mat-menu-item clickable (click)="onBookNowClick(recipe.id)">Book
+                Now</button>
         </mat-menu>
         <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
             <mat-icon>more_vert</mat-icon>
@@ -30,7 +42,8 @@
         <div class="text-container">
             <h1>{{ recipe.title }}</h1>
             <p>{{ recipe.description }}</p>
-            <button mat-button color="warn"  *ngIf="recipe.user?.id !== userId" clickable (click)="onBookNowClick(recipe.id)">Book Now</button>
+            <button mat-button color="warn" *ngIf="recipe.user?.id !== userId" clickable
+                (click)="onBookNowClick(recipe.id)">Book Now</button>
         </div>
     </div>
 
@@ -64,7 +77,8 @@
                         <button mat-menu-item clickable (click)="onLikeComment(comment.id)">Like</button>
                         <button mat-menu-item clickable (click)="onReportComment(comment.id)">Report Comment</button>
                         <button mat-menu-item clickable (click)="onReportUser(comment.userId)">Report User</button>
-                        <button *ngIf="comment.userId === userId" mat-menu-item clickable (click)="onDeleteComment(comment.id)">Delete</button>
+                        <button *ngIf="comment.userId === userId" mat-menu-item clickable
+                            (click)="onDeleteComment(comment.id)">Delete</button>
                     </mat-menu>
                     <button mat-icon-button [matMenuTriggerFor]="commentMenu">
                         <mat-icon>more_vert</mat-icon>

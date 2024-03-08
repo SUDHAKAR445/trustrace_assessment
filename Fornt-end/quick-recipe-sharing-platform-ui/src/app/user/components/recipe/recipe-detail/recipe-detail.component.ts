@@ -1,11 +1,13 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs/internal/Subscription';
 import { Comment } from 'src/app/model/comment.model';
 import { Recipe } from 'src/app/model/recipe.model';
 import { User } from 'src/app/model/user-detail';
 import { AuthService } from 'src/app/services/auth.service';
 import { CommentService } from 'src/app/services/comment.service';
+import { FollowService } from 'src/app/services/follow.service';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { UserService } from 'src/app/services/user.service';
 import { ConfirmDialogComponent } from 'src/app/utility/confirm-dialog/confirm-dialog.component';
@@ -24,10 +26,13 @@ export class RecipeDetailComponent {
   commentService: CommentService = inject(CommentService);
   authService: AuthService = inject(AuthService);
   router: Router = inject(Router);
+  followService: FollowService = inject(FollowService);
 
   recipeId!: string | null;
   recipe!: Recipe;
   recipeComments: Comment[] = [];
+  followerList!: User[] | null;
+  followingList!: User[] | null;
   userId!: string | null | undefined;
   errorMessage!: string | null;
   isLoading: boolean = false;
@@ -35,10 +40,20 @@ export class RecipeDetailComponent {
   pageSize: number = 10;
   newCommentText!: string;
   userDetail!: User;
+  subscription1!: Subscription;
+  subscription2!: Subscription;
 
   constructor(private dialog: MatDialog) { }
 
   ngOnInit() {
+
+    this.subscription1 = this.authService.followers.subscribe((data) => {
+      this.followerList = data;
+    });
+
+    this.subscription2 = this.authService.following.subscribe((data) => {
+      this.followingList = data;
+    });
 
     this.authService.user.subscribe((data) => {
       this.userId = data?.id;
@@ -142,6 +157,50 @@ export class RecipeDetailComponent {
 
   onLikeComment(id: string | undefined) {
 
+  }
+
+  checkFollow(id: string): boolean {
+    return this.followingList?.some(user => user.id === id) ?? false;
+  }
+
+  onFollowNowClick(followerUserId: string) {
+    this.followService.followRequest(followerUserId, this.userId).subscribe({
+      next: () => {
+        this.followService.getAllFollowersById(this.userId).subscribe((data) => {
+          this.authService.followers.next(data);
+        });
+
+        this.followService.getAllFollowingById(this.userId).subscribe((data) => {
+          this.authService.following.next(data);
+        });
+      },
+      error: (error) => {
+        this.errorMessage = error;
+        setTimeout(() => {
+          this.errorMessage = null;
+        }, 3000);
+      }
+    });
+  }
+
+  onUnfollowNowClick(followerUserId: string) {
+    this.followService.unfollowRequest(followerUserId, this.userId).subscribe({
+      next: () => {
+        this.followService.getAllFollowersById(this.userId).subscribe((data) => {
+          this.authService.followers.next(data);
+        });
+
+        this.followService.getAllFollowingById(this.userId).subscribe((data) => {
+          this.authService.following.next(data);
+        });
+      },
+      error: (error) => {
+        this.errorMessage = error;
+        setTimeout(() => {
+          this.errorMessage = null;
+        }, 3000);
+      }
+    });
   }
 
   onSaveRecipe(id: string | undefined) {

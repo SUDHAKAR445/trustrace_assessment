@@ -4,6 +4,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileHandle } from 'src/app/model/file-handle.model';
 import { User } from 'src/app/model/user-detail';
+import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -26,7 +27,8 @@ export class ProfileEditComponent implements OnInit {
     private activeRoute: ActivatedRoute,
     private userService: UserService,
     private router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -74,6 +76,9 @@ export class ProfileEditComponent implements OnInit {
       const userFormData = this.prepareFormData(this.updateUserForm.value);
       this.userService.updateUserById(this.userId!, userFormData).subscribe({
         next: (response) => {
+          this.userService.getUserById(this.userId).subscribe((data) => {
+            this.authService.userDetail.next(data);
+          });
           this.router.navigate(['/admin/profile']);
         },
         error: (error) => {

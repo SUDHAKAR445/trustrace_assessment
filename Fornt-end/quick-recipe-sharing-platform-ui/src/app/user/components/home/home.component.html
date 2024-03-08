@@ -11,10 +11,10 @@
                     </div>
                     <div>
                         <div class="profile-label">Followers:</div>
-                        <div class="profile-value">{{ followersList.length }}</div>
+                        <div class="profile-value">{{ followersList?.length || 0}}</div>
 
                         <div class="profile-label">Following:</div>
-                        <div class="profile-value">{{ followingList.length }}</div>
+                        <div class="profile-value">{{ followingList?.length || 0}}</div>
 
                         <div class="profile-label">Username</div>
                         <div class="profile-value">{{ userProfile.usernameValue }}</div>

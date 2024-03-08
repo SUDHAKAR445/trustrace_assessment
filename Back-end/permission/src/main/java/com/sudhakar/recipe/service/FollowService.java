@@ -8,9 +8,9 @@ import com.sudhakar.recipe.entity.User;
 
 public interface FollowService {
 
-    ResponseEntity<String> followRequest(String followerUser, String followingUser);
+    ResponseEntity<Void> followRequest(String followerUser, String followingUser);
 
-    ResponseEntity<String> unFollowRequest(String followerUser, String followingUser);
+    ResponseEntity<Void> unFollowRequest(String followerUser, String followingUser);
 
     ResponseEntity<List<User>> getAllFollowingByUser(String userId);
 

@@ -1,8 +1,9 @@
 /* Add or modify styles as needed */
 
-body{
+body {
     align-items: center;
 }
+
 .feed-container {
     display: flex;
     flex-wrap: wrap;
@@ -18,7 +19,7 @@ body{
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     width: 500px;
-    padding-left: 25px;
+    padding-left: 5px;
 }
 
 .user-info {
@@ -89,4 +90,15 @@ body{
 
 .header-content {
     width: 90%;
+}
+
+.like-count {
+    margin-right: 5px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.liked {
+    color: blue;
 }

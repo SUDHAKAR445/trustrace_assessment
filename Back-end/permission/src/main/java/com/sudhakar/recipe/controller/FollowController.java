@@ -24,13 +24,13 @@ public class FollowController {
     @Autowired
     private FollowService followService;
 
-    @PostMapping("/follow")
-    public ResponseEntity<String> followRequest(@RequestParam String followerUserId, @RequestParam String followingUserId) {
+    @PostMapping("/{followerUserId}/{followingUserId}")
+    public ResponseEntity<Void> followRequest(@PathVariable String followerUserId, @PathVariable String followingUserId) {
         return followService.followRequest(followerUserId, followingUserId);
     }
 
-    @DeleteMapping("/unfollow")
-    public ResponseEntity<String> unFollowRequest(@RequestParam String followerUserId, @RequestParam String followingUserId) {
+    @DeleteMapping("/{followerUserId}/{followingUserId}")
+    public ResponseEntity<Void> unFollowRequest(@PathVariable String followerUserId, @PathVariable String followingUserId) {
         return followService.unFollowRequest(followerUserId, followingUserId);
     }
 

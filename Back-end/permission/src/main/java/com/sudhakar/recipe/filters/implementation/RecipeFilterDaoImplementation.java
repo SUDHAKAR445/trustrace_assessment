@@ -1,6 +1,7 @@
 package com.sudhakar.recipe.filters.implementation;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -101,6 +102,7 @@ public class RecipeFilterDaoImplementation implements RecipeFilterDao {
         recipeDto.setDescription(recipe.getDescription());
         recipeDto.setRecipeImageUrl(recipe.getPhoto());
         recipeDto.setVideo(recipe.getVideo());
+        recipeDto.setLikes(recipe.getLikes() == null ? new HashSet<>() : recipe.getLikes());
 
         return recipeDto;
     }

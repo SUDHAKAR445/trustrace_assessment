@@ -1,6 +1,7 @@
 package com.sudhakar.recipe.dto;
 
 import java.util.Date;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,4 +24,5 @@ public class RecipeDto {
     private String recipeImageUrl;
     private String description;
     private String video;
+    private Set<String> likes;
 }
