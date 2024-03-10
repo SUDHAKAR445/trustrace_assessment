@@ -8,9 +8,9 @@ import com.sudhakar.recipe.entity.User;
 
 public interface BlockService {
 
-    ResponseEntity<String> blockUser(String blockingUserId, String blockedUserId);
+    ResponseEntity<Void> blockUser(String blockingUserId, String blockedUserId);
 
     ResponseEntity<List<User>> getAllBlockedUserByUser(String userId);
 
-    ResponseEntity<String> unblockUser(String blockingUserId, String blockedUserId);
+    ResponseEntity<Void> unblockUser(String blockingUserId, String blockedUserId);
 }

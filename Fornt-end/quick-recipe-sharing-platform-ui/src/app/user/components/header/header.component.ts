@@ -26,13 +26,14 @@ export class HeaderComponent {
   isMenuOpen: boolean = false;
 
   ngOnInit() {
-    this.authService.userDetail.subscribe((data) => {
+    this.subscription = this.authService.userDetail.subscribe((data) => {
       this.userDetail = data;
     });
   }
   onLogoutClicked(){
     this.alertService.confirm('Confirm', 'Are going to logout?').then((isConfirmed) => {
       if (isConfirmed) {
+        this.router.navigate(['/login']);
         this.authService.logout();
       }
     });
@@ -52,12 +53,5 @@ export class HeaderComponent {
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
-  }
-  onDeletedPostClicked() {
-
-  }
-
-  onBlockedUserClicked() {
-
   }
 }

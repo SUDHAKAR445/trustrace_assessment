@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,24 +19,25 @@ import com.sudhakar.recipe.service.BlockService;
 
 @RestController
 @RequestMapping("/api/block")
+@CrossOrigin(origins = "http://localhost:4200")
 @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class BlockController {
 
     @Autowired
     private BlockService blockService;
 
-    @PostMapping("/block-user")
-    public ResponseEntity<String> blockUser(@RequestParam String blockingUserId, @RequestParam String blockedUserId) {
-        return blockService.blockUser(blockingUserId, blockedUserId);
+    @PostMapping("/{blockerUserId}/{blockedUserId}")
+    public ResponseEntity<Void> blockUser(@PathVariable String blockerUserId, @PathVariable String blockedUserId) {
+        return blockService.blockUser(blockerUserId, blockedUserId);
     }
 
-    @GetMapping("/blocked-users/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<User>> getAllBlockedUserByUser(@PathVariable String userId) {
         return blockService.getAllBlockedUserByUser(userId);
     }
 
-    @DeleteMapping("/unblock-user")
-    public ResponseEntity<String> unblockUser(@RequestParam String blockingUserId, @RequestParam String blockedUserId) {
+    @DeleteMapping("/{blockerUserId}/{blockedUserId}")
+    public ResponseEntity<Void> unblockUser(@RequestParam String blockingUserId, @RequestParam String blockedUserId) {
         return blockService.unblockUser(blockingUserId, blockedUserId);
     }
 }

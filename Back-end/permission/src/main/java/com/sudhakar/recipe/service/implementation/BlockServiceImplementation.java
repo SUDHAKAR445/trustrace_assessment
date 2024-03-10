@@ -30,7 +30,7 @@ public class BlockServiceImplementation implements BlockService {
     private FollowRepository followRepository;
 
     @Override
-    public ResponseEntity<String> blockUser(String blockingUserId, String blockedUserId) {
+    public ResponseEntity<Void> blockUser(String blockingUserId, String blockedUserId) {
         try {
             Optional<User> existingBlockingUserOptional = userRepository.findById(blockingUserId);
             Optional<User> existingBlockedUserOptional = userRepository.findById(blockedUserId);
@@ -45,16 +45,16 @@ public class BlockServiceImplementation implements BlockService {
                         blockedUser);
 
                 if (existingBlockOptional.isPresent()) {
-                    return new ResponseEntity<>("User is already blocked", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 } else {
                     blockRepository.save(new Block(blockingUser, blockedUser));
-                    return new ResponseEntity<>("User blocked successfully", HttpStatus.OK);
+                    return new ResponseEntity<>(HttpStatus.OK);
                 }
             } else {
-                return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in blocking the user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -75,7 +75,7 @@ public class BlockServiceImplementation implements BlockService {
     }
 
     @Override
-    public ResponseEntity<String> unblockUser(String blockingUserId, String blockedUserId) {
+    public ResponseEntity<Void> unblockUser(String blockingUserId, String blockedUserId) {
         try {
             Optional<User> existingBlockingUserOptional = userRepository.findById(blockingUserId);
             Optional<User> existingBlockedUserOptional = userRepository.findById(blockedUserId);
@@ -86,15 +86,15 @@ public class BlockServiceImplementation implements BlockService {
 
                 if (blockOptional.isPresent()) {
                     blockRepository.delete(blockOptional.get());
-                    return new ResponseEntity<>("User unblocked successfully", HttpStatus.OK);
+                    return new ResponseEntity<>(HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>("User was not blocked", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
             } else {
-                return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in unblocking the user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

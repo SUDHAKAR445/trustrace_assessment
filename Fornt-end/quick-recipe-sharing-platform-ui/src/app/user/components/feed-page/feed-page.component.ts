@@ -82,11 +82,6 @@ export class FeedPageComponent implements OnInit {
 
   @HostListener('window:scroll', ['$event'])
   onScroll(event: any): void {
-    console.log('Scroll event detected!');
-    console.log('Window inner height:', window.innerHeight);
-    console.log('Window scroll Y:', window.scrollY);
-    console.log('Document body offset height:', document.body.offsetHeight);
-
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1) {
       console.log('Calling loadRecipes...');
       this.loadRecipes();
