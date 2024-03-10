@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormControlStatus, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { IDeactivateComponent } from 'src/app/model/canActivate.model';
 import { Token } from 'src/app/model/user';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -10,15 +12,17 @@ import { AuthService } from 'src/app/services/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements IDeactivateComponent{
+
+  authService: AuthService = inject(AuthService);
+  router: Router = inject(Router);
+  alertService: AlertService = inject(AlertService);
 
   hide: boolean = true;
   isLoading: boolean = false;
-  errorMessage: string | null = null
+  isSubmitted: boolean = false;
   formStatus!: FormControlStatus | undefined;
   loginForm!: FormGroup;
-  authService: AuthService = inject(AuthService);
-  router: Router = inject(Router);
   role: string | undefined = undefined;
   isLoggedIn: boolean = true;
 
@@ -31,7 +35,6 @@ export class LoginComponent {
     })
 
     this.loginForm.statusChanges.subscribe((value) => {
-      // console.log(value);
       this.formStatus = value;
     })
 
@@ -43,12 +46,13 @@ export class LoginComponent {
       this.router.navigate(['/admin']);
     } else if (this.role === "ROLE_MODERATOR") {
       this.router.navigate(['/moderator']);
-    } else if (this.role === "ROLE_USER"){
+    } else if (this.role === "ROLE_USER") {
       this.router.navigate(['/user']);
     }
   }
 
   onLoginClicked() {
+    this.isSubmitted = true;
     this.isLoading = true;
     this.authService.login(this.loginForm.get('usernameOrEmail')?.value,
       this.loginForm.get('password')?.value).subscribe({
@@ -64,19 +68,25 @@ export class LoginComponent {
           } else {
             this.router.navigate(['/user']);
           }
-            this.isLoading = false;
+          this.alertService.showSuccess('Logged in Successfully');
+          this.isLoading = false;
         },
         error: (error) => {
           this.isLoading = false;
-          this.errorMessage = error;
-          setTimeout(() => {
-            this.errorMessage = null;
-          }, 3000);
+          this.alertService.showError('Username or Password invalid');
         }
       })
   }
 
   onDestroy() {
     this.user.unsubscribe();
+  }
+
+  canExit(): boolean | Promise<boolean> | Observable<boolean> {
+    if (this.loginForm.dirty && !this.isSubmitted) {
+      return this.alertService.confirmExit();
+    } else {
+      return true;
+    }
   }
 }

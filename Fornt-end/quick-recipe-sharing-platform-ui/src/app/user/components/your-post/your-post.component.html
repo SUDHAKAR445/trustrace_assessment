@@ -1,5 +1,3 @@
-<app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
-
 <div class="feed-container">
     <div *ngFor="let post of recipes">
         <mat-card class="post-card" *ngIf="!post.deletedAt">

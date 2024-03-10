@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -11,6 +12,8 @@ export class VerifyComponent {
 
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   authService: AuthService = inject(AuthService);
+  alertService: AlertService = inject(AlertService);
+
   token!: string | null;
   showMessage: boolean = false;
   errorMessage!: string | null;
@@ -25,14 +28,12 @@ export class VerifyComponent {
     this.authService.confirmAccount(this.token).subscribe({
       next: () => {
         this.showMessage = true;
-        this.isLoading = false
+        this.isLoading = false;
+        this.alertService.showSuccess('Account verified successfully');
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorMessage = "Link is broken or Already verified";
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Link is broken or Already verified');
       }
     })
   }

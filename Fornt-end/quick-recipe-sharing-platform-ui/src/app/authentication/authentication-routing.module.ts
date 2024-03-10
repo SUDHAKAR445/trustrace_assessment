@@ -12,16 +12,16 @@ const routes: Routes = [
     path: '', redirectTo: 'login', pathMatch: 'full'
   },
   {
-    path: 'login', component: LoginComponent
+    path: 'login', component: LoginComponent, canDeactivate: [(comp: LoginComponent) => {return comp.canExit()}]
   },
   {
-    path: 'register', component: RegisterComponent
+    path: 'register', component: RegisterComponent, canDeactivate: [(comp: RegisterComponent) => {return comp.canExit()}]
   },
   {
-    path: 'forgot-password', component: ForgetPasswordComponent
+    path: 'forgot-password', component: ForgetPasswordComponent, canDeactivate: [(comp: ForgetPasswordComponent) => {return comp.canExit()}]
   },
   {
-    path: 'change-password', component: ResetPasswordComponent, canActivate: [hasOtpVerified]
+    path: 'change-password', component: ResetPasswordComponent, canActivate: [hasOtpVerified], canDeactivate: [(comp: ResetPasswordComponent) => {return comp.canExit()}]
   },
   {
     path: 'confirm-account', component: VerifyComponent

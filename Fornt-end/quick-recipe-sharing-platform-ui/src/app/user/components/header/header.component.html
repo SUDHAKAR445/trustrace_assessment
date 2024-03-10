@@ -26,6 +26,13 @@
     <div class="profile" *ngIf="userDetail">
         <img [src]="userDetail.profileImageUrl" class="profile-image" routerLink="/user/profile" />
         <p>Hi {{ userDetail.usernameValue }}</p>
-        <button mat-button color="warn" clickable (click)="onLogoutClicked()">Logout</button>
+        <mat-menu #menu="matMenu" class="menu-button" matMenuPosition="above">
+            <button mat-menu-item (click)="onBlockedUserClicked()">Blocked User</button>
+            <button mat-menu-item (click)="onDeletedPostClicked()">Deleted Post</button>
+            <button mat-menu-item (click)="onLogoutClicked()">Logout</button>
+        </mat-menu>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
+            <mat-icon>more_vert</mat-icon>
+        </button>
     </div>
 </div>

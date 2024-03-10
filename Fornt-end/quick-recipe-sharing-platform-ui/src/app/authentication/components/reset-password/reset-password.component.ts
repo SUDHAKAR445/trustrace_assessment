@@ -2,6 +2,9 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormControlStatus, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { IDeactivateComponent } from 'src/app/model/canActivate.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ConfirmDialogComponent } from 'src/app/utility/confirm-dialog/confirm-dialog.component';
 
@@ -10,17 +13,17 @@ import { ConfirmDialogComponent } from 'src/app/utility/confirm-dialog/confirm-d
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss']
 })
-export class ResetPasswordComponent {
+export class ResetPasswordComponent implements IDeactivateComponent{
 
-  constructor(private dialog: MatDialog) { }
-
-  isLoading: boolean = false;
-  errorMessage: string | null = null
-  formStatus!: FormControlStatus | undefined;
-  resetForm!: FormGroup;
   authService: AuthService = inject(AuthService);
   activateRoute: ActivatedRoute = inject(ActivatedRoute);
   router: Router = inject(Router);
+  alertService: AlertService = inject(AlertService);
+
+  isLoading: boolean = false;
+  isSubmitted: boolean = false;
+  formStatus!: FormControlStatus | undefined;
+  resetForm!: FormGroup;
   emailId!: string | null;
 
   ngOnInit() {
@@ -37,17 +40,24 @@ export class ResetPasswordComponent {
   }
 
   onResetClicked() {
-    console.log(this.resetForm.get('password')?.value);
+    this.isSubmitted = true;
     this.authService.changePassword(this.resetForm.get('email')?.value, this.resetForm.get('password')?.value).subscribe({
       next: () => {
-        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-          data: { message: 'Your password has been reset' },
-        });
-    
-        dialogRef.afterClosed().subscribe((result) => {
-            this.router.navigate(['/login']);
-        });
+        this.alertService.showSuccess('Your password has been reset successfully');
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        this.alertService.showError('Failed to reset your password. Please try again later');
+        this.router.navigate(['/login']);
       }
-    })
+    });
+  }
+
+  canExit(): boolean | Promise<boolean> | Observable<boolean> {
+    if (this.resetForm.dirty && !this.isSubmitted) {
+      return this.alertService.confirmExit();
+    } else {
+      return true;
+    }
   }
 }

@@ -2,8 +2,10 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormControlStatus, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { IDeactivateComponent } from 'src/app/model/canActivate.model';
 import { Token } from 'src/app/model/user';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { VerifyEmailDialogComponent } from 'src/app/utility/verify-email-dialog/verify-email-dialog.component';
 
@@ -12,22 +14,20 @@ import { VerifyEmailDialogComponent } from 'src/app/utility/verify-email-dialog/
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent {
+export class RegisterComponent implements IDeactivateComponent{
 
-  constructor(private dialog: MatDialog) {};
+  authService: AuthService = inject(AuthService);
+  alertService: AlertService = inject(AlertService);
+  router: Router =inject(Router);
 
   hide: boolean = true;
+  isSubmitted: boolean = false;
   registerForm!: FormGroup;
   formStatus!: FormControlStatus;
   isLoading: boolean = false;
-  errorMessage: string | null = null;
   user!: Subscription;
   role: string | undefined = undefined;
 
-
-  authService: AuthService = inject(AuthService);
-
-  router: Router =inject(Router);
   ngOnInit() {
     this.registerForm = new FormGroup({
       userName: new FormControl(null, Validators.required),
@@ -56,6 +56,7 @@ export class RegisterComponent {
   }
 
   onRegisterClicked() {
+    this.isSubmitted = true;
     this.isLoading = true;
     this.authService.register(this.registerForm.get('userName')?.value,
       this.registerForm.get('firstName')?.value,
@@ -64,20 +65,25 @@ export class RegisterComponent {
       this.registerForm.get('gender')?.value,
       this.registerForm.get('password')?.value).subscribe({
         next: () => {
-          this.dialog.open(VerifyEmailDialogComponent);
+          this.alertService.showSuccess('Registered successfully. Please verify the email');
           this.router.navigate(['/login']);
         },
           error: (error) => {
             this.isLoading = false;
-            this.errorMessage = "Email id or Username already exists";
-            setTimeout(() => {
-              this.errorMessage = null;
-            }, 3000);
+            this.alertService.showError('Email id or Username already exists');
           }
         })
     }
   
     onDestroy() {
       this.user.unsubscribe();
+    }
+
+    canExit(): boolean | Promise<boolean> | Observable<boolean> {
+      if (this.registerForm.dirty && !this.isSubmitted) {
+        return this.alertService.confirmExit();
+      } else {
+        return true;
+      }
     }
   }

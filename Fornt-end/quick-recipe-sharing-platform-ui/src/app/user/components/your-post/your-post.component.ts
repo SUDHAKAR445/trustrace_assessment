@@ -29,7 +29,6 @@ export class YourPostComponent implements OnInit {
   page = 0;
   pageSize = 10;
   isLoading = false;
-  errorMessage!: string | null;
   userId!: string;
   followerList!: User[] | null;
   followingList!: User[] | null;
@@ -77,10 +76,7 @@ export class YourPostComponent implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error in displaying your recipes');
       }
     })
   }

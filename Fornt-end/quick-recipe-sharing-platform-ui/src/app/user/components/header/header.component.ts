@@ -23,6 +23,7 @@ export class HeaderComponent {
 
   userId!: string | undefined | null;
   userDetail!: User | null;
+  isMenuOpen: boolean = false;
 
   ngOnInit() {
     this.authService.userDetail.subscribe((data) => {
@@ -47,5 +48,16 @@ export class HeaderComponent {
 
   onSearchChange(searchText: string): void {
     this.recipeService.setSearchText(searchText);
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+  onDeletedPostClicked() {
+
+  }
+
+  onBlockedUserClicked() {
+
   }
 }
