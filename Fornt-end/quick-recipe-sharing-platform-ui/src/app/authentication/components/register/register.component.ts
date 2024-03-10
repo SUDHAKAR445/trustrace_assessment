@@ -8,6 +8,7 @@ import { Token } from 'src/app/model/user';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { VerifyEmailDialogComponent } from 'src/app/utility/verify-email-dialog/verify-email-dialog.component';
+import { CustomValidators } from 'src/app/validators/custom.validator';
 
 @Component({
   selector: 'app-register',
@@ -19,6 +20,7 @@ export class RegisterComponent implements IDeactivateComponent{
   authService: AuthService = inject(AuthService);
   alertService: AlertService = inject(AlertService);
   router: Router =inject(Router);
+  customValidator: CustomValidators = inject(CustomValidators);
 
   hide: boolean = true;
   isSubmitted: boolean = false;
@@ -30,11 +32,11 @@ export class RegisterComponent implements IDeactivateComponent{
 
   ngOnInit() {
     this.registerForm = new FormGroup({
-      userName: new FormControl(null, Validators.required),
-      firstName: new FormControl(null, Validators.required),
-      lastName: new FormControl(null, Validators.required),
+      userName: new FormControl(null, [Validators.required, this.customValidator.checkUsername]),
+      firstName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
+      lastName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
       gender: new FormControl(null, Validators.required),
-      email: new FormControl(null, [Validators.required, Validators.email]),
+      email: new FormControl(null, [Validators.required, Validators.email, this.customValidator.checkEmail]),
       password: new FormControl(null, [Validators.required, Validators.pattern(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,20})/)])
     });
 

@@ -1,7 +1,7 @@
 <div class="form-container">
-    <div class="form-title">Update User</div>
+    <div class="form-title">Update Profile</div>
 
-    <form [formGroup]="updateUserForm" (ngSubmit)="onUpdateFormSubmitted()">
+    <form [formGroup]="updateUserForm" (submit)="onUpdateFormSubmitted()">
 
         <div class="form-group">
             <label for="profileImage">Profile Image</label>
@@ -10,56 +10,57 @@
         </div>
 
         <div class="form-group">
-            <label for="usernameValue">Username</label>
-            <input type="text" id="usernameValue" formControlName="usernameValue" class="form-control"
-                placeholder="Enter username">
+            <label for="username">Username:</label>
+            <input matInput type="text" id="username" name="username" formControlName="usernameValue" />
         </div>
 
         <div class="form-group">
-            <label for="firstName">First Name</label>
-            <input type="text" id="firstName" formControlName="firstName" class="form-control"
-                placeholder="Enter first name">
+            <label for="firstName">First Name:</label>
+            <input matInput type="text" id="firstName" name="firstName" formControlName="firstName" />
+            <div *ngIf="updateUserForm.get('firstName')?.hasError('noSpaceAllowed')">
+                <small>No space allowed</small>
+            </div>
+            <small
+                *ngIf="updateUserForm.get('firstName')?.hasError('required') && updateUserForm.get('firstName')?.touched">
+                *First Name is required
+            </small>
         </div>
 
         <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input type="text" id="lastName" formControlName="lastName" class="form-control"
-                placeholder="Enter last name">
+            <label for="lastName">Last Name:</label>
+            <input matInput type="text" id="lastName" name="lastName" formControlName="lastName" />
+            <div *ngIf="updateUserForm.get('lastName')?.hasError('noSpaceAllowed')">
+                <small>No space allowed</small>
+            </div>
+            <small
+                *ngIf="updateUserForm.get('lastName')?.hasError('required') && updateUserForm.get('lastName')?.touched">
+                *Last Name is required
+            </small>
         </div>
 
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" formControlName="email" class="form-control" placeholder="Enter email">
+            <label for="email">Email:</label>
+            <input matInput type="email" id="email" name="email" formControlName="email" />
         </div>
 
         <div class="form-group">
             <label for="gender">Gender:</label>
-            <mat-radio-group aria-label="Select an Role" formControlName="gender">
+            <mat-radio-group aria-label="Select a Gender" formControlName="gender">
                 <mat-radio-button value="MALE">MALE</mat-radio-button>
                 <mat-radio-button value="FEMALE">FEMALE</mat-radio-button>
-                <mat-radio-button value="NONE">Prefer not to say </mat-radio-button>
+                <mat-radio-button value="NONE">Prefer not to say</mat-radio-button>
             </mat-radio-group>
+            <small *ngIf="updateUserForm.get('gender')?.hasError('required') && updateUserForm.get('gender')?.touched">
+                *Gender is required
+            </small>
         </div>
 
         <div class="form-group">
-            <label for="contact">Phone</label>
-            <input type="tel" id="contact" formControlName="contact" class="form-control"
-                placeholder="Enter phone number">
-        </div>
-
-        <div class="form-group" *ngIf="false">
-            <label for="role">Role</label>
-            <input type="text" id="role" formControlName="role" class="form-control" placeholder="Enter role">
-        </div>
-
-
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" formControlName="password" class="form-control"
-                placeholder="Enter password">
+            <label for="contact">Contact:</label>
+            <input matInput type="tel" id="contact" name="contact" formControlName="contact" />
         </div>
 
         <button type="submit" class="btn-primary" [disabled]="updateUserForm.invalid">Update Profile</button>
-        <button type="button" class="btn-danger" routerLink="/admin/profile">Cancel</button>
+        <button type="button" class="btn-danger" routerLink="/moderator/profile">Cancel</button>
     </form>
 </div>

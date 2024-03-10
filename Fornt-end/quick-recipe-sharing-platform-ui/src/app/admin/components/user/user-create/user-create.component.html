@@ -4,39 +4,72 @@
         <div class="form-group">
             <label for="username">Username:</label>
             <input matInput type="text" id="username" name="username" formControlName="usernameValue" />
+            <div *ngIf="createUserForm.get('usernameValue')?.hasError('checkValue')">
+                <small>Username is already taken.</small>
+            </div>
+            <small *ngIf="createUserForm.get('usernameValue')?.hasError('required') && createUserForm.get('usernameValue')?.touched">
+                *Username is required
+            </small>
         </div>
 
         <div class="form-group">
             <label for="firstName">First Name:</label>
             <input matInput type="text" id="firstName" name="firstName" formControlName="firstName" />
+            <div *ngIf="createUserForm.get('firstName')?.hasError('noSpaceAllowed')">
+                <small>No space allowed</small>
+            </div>
+            <small *ngIf="createUserForm.get('firstName')?.hasError('required') && createUserForm.get('firstName')?.touched">
+                *First Name is required
+            </small>
         </div>
 
         <div class="form-group">
             <label for="lastName">Last Name:</label>
             <input matInput type="text" id="lastName" name="lastName" formControlName="lastName" />
+            <div *ngIf="createUserForm.get('lastName')?.hasError('noSpaceAllowed')">
+                <small>No space allowed</small>
+            </div>
+            <small *ngIf="createUserForm.get('lastName')?.hasError('required') && createUserForm.get('lastName')?.touched">
+                *Last Name is required
+            </small>
         </div>
 
         <div class="form-group">
             <label for="email">Email:</label>
             <input matInput type="email" id="email" name="email" formControlName="email" />
+            <div *ngIf="createUserForm.get('email')?.hasError('checkEmail')">
+                <small>Email is already taken.</small>
+            </div>
+            <small *ngIf="createUserForm.get('email')?.hasError('required') && createUserForm.get('email')?.touched">
+                *Email is required
+            </small>
+            <small *ngIf="createUserForm.get('email')?.hasError('email') && createUserForm.get('email')?.touched">
+                *Invalid email format
+            </small>
         </div>
 
         <div class="form-group">
             <label for="gender">Gender:</label>
-            <mat-radio-group aria-label="Select an Role" formControlName="gender">
+            <mat-radio-group aria-label="Select a Gender" formControlName="gender">
                 <mat-radio-button value="MALE">MALE</mat-radio-button>
                 <mat-radio-button value="FEMALE">FEMALE</mat-radio-button>
-                <mat-radio-button value="NONE">Prefer not to say </mat-radio-button>
+                <mat-radio-button value="NONE">Prefer not to say</mat-radio-button>
             </mat-radio-group>
+            <small *ngIf="createUserForm.get('gender')?.hasError('required') && createUserForm.get('gender')?.touched">
+                *Gender is required
+            </small>
         </div>
 
         <div class="form-group">
             <label for="role">Role:</label>
-            <mat-radio-group aria-label="Select an Role" formControlName="role">
+            <mat-radio-group aria-label="Select a Role" formControlName="role">
                 <mat-radio-button value="ADMIN">ADMIN</mat-radio-button>
                 <mat-radio-button value="MODERATOR">MODERATOR</mat-radio-button>
                 <mat-radio-button value="USER">USER</mat-radio-button>
             </mat-radio-group>
+            <small *ngIf="createUserForm.get('role')?.hasError('required') && createUserForm.get('role')?.touched">
+                *Role is required
+            </small>
         </div>
 
         <div class="form-group">
@@ -47,13 +80,10 @@
         <div class="form-group">
             <label for="password">Password:</label>
             <input matInput type="password" id="password" name="password" formControlName="password" />
+            <small *ngIf="createUserForm.get('password')?.hasError('required') && createUserForm.get('password')?.touched">
+                *Password is required
+            </small>
         </div>
-
-        <!-- <div class="col-6">
-                    <input type="file" value="select" #selectFile
-                        (change)="onFileSelected($event)"
-                    >
-                </div> -->
 
         <button mat-raised-button type="submit" color="primary" [disabled]="createUserForm.invalid">Create User</button>
     </form>

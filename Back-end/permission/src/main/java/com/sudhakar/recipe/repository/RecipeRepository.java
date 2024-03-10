@@ -39,5 +39,9 @@ public interface RecipeRepository extends MongoRepository<Recipe, String> {
     Set<Ingredient> countByUser(User user);
 
     Page<Recipe> findByUserOrderByDateCreatedDesc(User user, Pageable pageable);
+
+    Page<Recipe> findByUserAndDeletedAtIsNullOrderByDateCreatedDesc(User user, Pageable pageable);
+
+    Set<Ingredient> findByUserAndDeletedAtIsNull(User user);
     
 }

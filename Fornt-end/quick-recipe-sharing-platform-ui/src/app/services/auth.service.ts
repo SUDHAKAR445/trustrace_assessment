@@ -110,24 +110,24 @@ export class AuthService {
         this.userService.getUserById(user.id).subscribe((data) => {
             this.userDetail.next(data);
         });
-        if(user.authority === 'ROLE_USER') {
-            this.followService.getAllFollowersById(user.id).subscribe((data) => {
-                this.followers.next(data);
-            });
-            this.followService.getAllFollowingById(user.id).subscribe((data) => {
-                this.following.next(data);
-            });
-            this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
-                this.likedRecipes.next(data);
-            });
-            this.commentService.getAllLikedCommentsByUser(user.id).subscribe((data) => {
-                this.likedComments.next(data);
-            });
-            this.recipeService.getCountOfRecipes(user.id).subscribe((data) => {
-                this.recipesPosted.next(data[0]);
-            });
-        }
-        
+
+        this.followService.getAllFollowersById(user.id).subscribe((data) => {
+            this.followers.next(data);
+        });
+        this.followService.getAllFollowingById(user.id).subscribe((data) => {
+            this.following.next(data);
+        });
+        this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
+            this.likedRecipes.next(data);
+        });
+        this.commentService.getAllLikedCommentsByUser(user.id).subscribe((data) => {
+            this.likedComments.next(data);
+        });
+        this.recipeService.getCountOfRecipes(user.id).subscribe((data) => {
+            this.recipesPosted.next(data[0]);
+        });
+
+
         localStorage.setItem('user', JSON.stringify(user));
         this.autoLogout(user.expiresIn);
     }
@@ -162,23 +162,23 @@ export class AuthService {
                 this.userService.getUserById(user.id).subscribe((data) => {
                     this.userDetail.next(data);
                 });
-                if(user.authority === 'ROLE_USER') {
-                    this.followService.getAllFollowersById(user.id).subscribe((data) => {
-                        this.followers.next(data);
-                    });
-                    this.followService.getAllFollowingById(user.id).subscribe((data) => {
-                        this.following.next(data);
-                    });
-                    this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
-                        this.likedRecipes.next(data);
-                    });
-                    this.commentService.getAllLikedCommentsByUser(user.id).subscribe((data) => {
-                        this.likedComments.next(data);
-                    });
-                    this.recipeService.getCountOfRecipes(user.id).subscribe((data) => {
-                        this.recipesPosted.next(data[0]);
-                    });
-                }
+
+                this.followService.getAllFollowersById(user.id).subscribe((data) => {
+                    this.followers.next(data);
+                });
+                this.followService.getAllFollowingById(user.id).subscribe((data) => {
+                    this.following.next(data);
+                });
+                this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
+                    this.likedRecipes.next(data);
+                });
+                this.commentService.getAllLikedCommentsByUser(user.id).subscribe((data) => {
+                    this.likedComments.next(data);
+                });
+                this.recipeService.getCountOfRecipes(user.id).subscribe((data) => {
+                    this.recipesPosted.next(data[0]);
+                });
+
                 this.autoLogout(timeDifference);
             }
         } else {
@@ -236,5 +236,6 @@ export class AuthService {
                 }
                 return throwError(() => this.error);
             })
-    )};
+        )
+    };
 }

@@ -39,3 +39,20 @@ button {
     justify-content:flex-start;
     gap: 10px;
 }
+
+small {
+    color: red;
+    font-weight: bold;
+}
+
+mat-card.VALID {
+    border: green 1px solid;
+}
+
+mat-card.INVALID {
+    border: red 1px solid;
+}
+
+mat-card.PENDING {
+    border: orange 1px solid;
+}

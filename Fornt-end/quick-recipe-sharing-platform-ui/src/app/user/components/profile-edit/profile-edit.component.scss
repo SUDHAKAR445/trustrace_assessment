@@ -83,3 +83,20 @@ img {
     border: 2px solid #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+small {
+    color: red;
+    font-weight: bold;
+}
+
+mat-card.VALID {
+    border: green 1px solid;
+}
+
+mat-card.INVALID {
+    border: red 1px solid;
+}
+
+mat-card.PENDING {
+    border: orange 1px solid;
+}

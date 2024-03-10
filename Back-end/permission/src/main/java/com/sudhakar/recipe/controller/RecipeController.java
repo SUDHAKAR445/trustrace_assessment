@@ -150,13 +150,13 @@ public class RecipeController {
         return recipeService.getAllSavedRecipes(id);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/user-liked/{userId}")
     public ResponseEntity<Set<String>> getAllLikedRecipes(@PathVariable String userId) {
         return recipeService.getAllLikedRecipes(userId);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/post-count/{userId}")
     public ResponseEntity<List<Integer>> getCountOfRecipes(@PathVariable String userId) {
         return recipeService.getTotalRecipeCount(userId);

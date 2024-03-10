@@ -23,7 +23,7 @@ export class UserUpdateComponent implements IDeactivateComponent {
   userService: UserService = inject(UserService);
   router: Router = inject(Router);
   sanitizer: DomSanitizer = inject(DomSanitizer);
-  customValidators: CustomValidators = inject(CustomValidators);
+  customValidator: CustomValidators = inject(CustomValidators);
 
   updateUserForm!: FormGroup;
   imageFile!: FileHandle;
@@ -33,14 +33,14 @@ export class UserUpdateComponent implements IDeactivateComponent {
 
   ngOnInit() {
     this.updateUserForm = new FormGroup({
-      usernameValue: new FormControl(null, [Validators.required, this.customValidators.checkUsername]),
-      firstName: new FormControl(null, Validators.required),
-      lastName: new FormControl(null, Validators.required),
-      email: new FormControl(null, Validators.required),
+      usernameValue: new FormControl({ disabled: true }, [Validators.required, Validators.minLength(5)]),
+      firstName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
+      lastName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
+      email: new FormControl({ disabled: true }, Validators.required),
       gender: new FormControl(null, Validators.required),
       contact: new FormControl(null),
       role: new FormControl(null, Validators.required),
-      password: new FormControl(null, Validators.required),
+      password: new FormControl(null, [Validators.required, Validators.pattern(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,20})/)]),
     });
 
     this.activeRoute.queryParamMap.subscribe((data) => {
@@ -61,7 +61,7 @@ export class UserUpdateComponent implements IDeactivateComponent {
             });
           },
           error: (error) => {
-            console.log(error);
+            this.alertService.showError('Error occurred in getting user detail');
           }
         });
       }

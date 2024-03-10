@@ -237,7 +237,7 @@ public class RecipeServiceImplementation implements RecipeService {
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
 
-                Page<Recipe> recipesPage = recipeRepository.findByUserOrderByDateCreatedDesc(user, pageable);
+                Page<Recipe> recipesPage = recipeRepository.findByUserAndDeletedAtIsNullOrderByDateCreatedDesc(user, pageable);
 
                 return new ResponseEntity<>(recipesPage.map(this::convertDto), HttpStatus.OK);
             } else {
@@ -479,7 +479,7 @@ public class RecipeServiceImplementation implements RecipeService {
         try {
             Optional<User> userOptional = userRepository.findById(userId);
             if(userOptional.isPresent()) {
-                int countOfRecipe = recipeRepository.countByUser(userOptional.get()).size();
+                int countOfRecipe = recipeRepository.findByUserAndDeletedAtIsNull(userOptional.get()).size();
                 List<Integer> count =  new ArrayList<>();
                 count.add(countOfRecipe);
                 return new ResponseEntity<>(count, HttpStatus.OK);

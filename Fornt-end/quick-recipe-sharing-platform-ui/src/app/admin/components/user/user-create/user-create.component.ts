@@ -20,6 +20,7 @@ export class UserCreateComponent implements IDeactivateComponent {
 
   userService: UserService = inject(UserService);
   alertService: AlertService = inject(AlertService);
+  customValidators: CustomValidators = inject(CustomValidators);
   router: Router = inject(Router);
 
   createUserForm!: FormGroup;
@@ -28,14 +29,22 @@ export class UserCreateComponent implements IDeactivateComponent {
 
   ngOnInit() {
     this.createUserForm = new FormGroup({
-      usernameValue: new FormControl(null, [Validators.required] as ValidatorFn[]),
-      firstName: new FormControl(null, Validators.required),
-      lastName: new FormControl(null, Validators.required),
-      email: new FormControl(null, Validators.required),
-      gender: new FormControl(null),
+      usernameValue: new FormControl(null, {
+        validators: [Validators.required, this.customValidators.noSpaceAllowed],
+        asyncValidators: [this.customValidators.checkUsername()],
+        updateOn: 'blur'
+      }),
+      firstName: new FormControl(null, [Validators.required, this.customValidators.noSpaceAllowed]),
+      lastName: new FormControl(null, [Validators.required, this.customValidators.noSpaceAllowed]),
+      email: new FormControl(null, {
+        validators: [Validators.required, Validators.email, this.customValidators.noSpaceAllowed],
+        asyncValidators: [this.customValidators.checkEmail()],
+        updateOn: 'blur'
+      }),
+      gender: new FormControl(null, Validators.required),
       contact: new FormControl(null),
       role: new FormControl(null, Validators.required),
-      password: new FormControl(null, Validators.required),
+      password: new FormControl(null, [Validators.required, Validators.pattern(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,20})/)]),
     });
   }
 

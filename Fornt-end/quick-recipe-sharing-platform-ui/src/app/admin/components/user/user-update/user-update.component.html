@@ -3,20 +3,29 @@
     <form [formGroup]="updateUserForm" (submit)="onUpdateFormSubmitted()">
         <div class="form-group">
             <label for="username">Username:</label>
-            <input matInput type="text" id="usernameValue" name="usernameValue" formControlName="usernameValue" />
-            <div *ngIf="updateUserForm.get('usernameValue')?.hasError('checkValue')">
-                Username is already taken.
-            </div>
+            <input matInput type="text" id="username" name="username" formControlName="usernameValue" />
         </div>
 
         <div class="form-group">
             <label for="firstName">First Name:</label>
             <input matInput type="text" id="firstName" name="firstName" formControlName="firstName" />
+            <div *ngIf="updateUserForm.get('firstName')?.hasError('noSpaceAllowed')">
+                <small>No space allowed</small>
+            </div>
+            <small *ngIf="updateUserForm.get('firstName')?.hasError('required') && updateUserForm.get('firstName')?.touched">
+                *First Name is required
+            </small>
         </div>
 
         <div class="form-group">
             <label for="lastName">Last Name:</label>
             <input matInput type="text" id="lastName" name="lastName" formControlName="lastName" />
+            <div *ngIf="updateUserForm.get('lastName')?.hasError('noSpaceAllowed')">
+                <small>No space allowed</small>
+            </div>
+            <small *ngIf="updateUserForm.get('lastName')?.hasError('required') && updateUserForm.get('lastName')?.touched">
+                *Last Name is required
+            </small>
         </div>
 
         <div class="form-group">
@@ -26,20 +35,26 @@
 
         <div class="form-group">
             <label for="gender">Gender:</label>
-            <mat-radio-group aria-label="Select an Gender" formControlName="gender" name="gender">
+            <mat-radio-group aria-label="Select a Gender" formControlName="gender">
                 <mat-radio-button value="MALE">MALE</mat-radio-button>
                 <mat-radio-button value="FEMALE">FEMALE</mat-radio-button>
-                <mat-radio-button value="NONE">Prefer not to say </mat-radio-button>
+                <mat-radio-button value="NONE">Prefer not to say</mat-radio-button>
             </mat-radio-group>
+            <small *ngIf="updateUserForm.get('gender')?.hasError('required') && updateUserForm.get('gender')?.touched">
+                *Gender is required
+            </small>
         </div>
 
         <div class="form-group">
             <label for="role">Role:</label>
-            <mat-radio-group aria-label="Select an Role" formControlName="role">
+            <mat-radio-group aria-label="Select a Role" formControlName="role">
                 <mat-radio-button value="ADMIN">ADMIN</mat-radio-button>
                 <mat-radio-button value="MODERATOR">MODERATOR</mat-radio-button>
                 <mat-radio-button value="USER">USER</mat-radio-button>
             </mat-radio-group>
+            <small *ngIf="updateUserForm.get('role')?.hasError('required') && updateUserForm.get('role')?.touched">
+                *Role is required
+            </small>
         </div>
 
         <div class="form-group">
@@ -50,15 +65,11 @@
         <div class="form-group">
             <label for="password">Password:</label>
             <input matInput type="password" id="password" name="password" formControlName="password" />
+            <small *ngIf="updateUserForm.get('password')?.hasError('required') && updateUserForm.get('password')?.touched">
+                *Password is required
+            </small>
         </div>
 
-        <div class="col-6"> Upload Profile Image
-            <input type="file" value="select" #selectFile (change)="onFileSelected($event)">
-        </div>
-        <div class="button-container">
-            <button mat-raised-button type="submit" color="primary" [disabled]="updateUserForm.invalid">Update
-                User</button>
-            <button mat-raised-button type="button" color="warn" clickable (click)="onCancelClicked()">Cancel</button>
-        </div>
+        <button mat-raised-button type="submit" color="primary" [disabled]="updateUserForm.invalid">Update User</button>
     </form>
 </div>

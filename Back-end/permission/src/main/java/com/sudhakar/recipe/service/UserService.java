@@ -20,7 +20,9 @@ public interface UserService {
 
     ResponseEntity<UserResponseDto> getProfile( String id);
 
-    ResponseEntity<Boolean> checkUsernameOrEmail(String usernameOrEmail);
+    ResponseEntity<Boolean> checkUsername(String username);
+
+    ResponseEntity<Boolean> checkEmail(String email);
 
     UserResponseDto convertToUserDto(User user);
 }

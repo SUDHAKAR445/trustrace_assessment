@@ -45,6 +45,7 @@ public class CommentController {
         return commentService.updateCommentLike(commentId, userId, false);
     }
 
+    @PreAuthorize("hasRole('ADMIN')or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/like/{userId}")
     public ResponseEntity<Set<String>> getAllLikedComments(@PathVariable String userId) {
         return commentService.getAllLikedComments(userId);

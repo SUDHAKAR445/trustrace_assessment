@@ -71,9 +71,15 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
-    @GetMapping("/check/{usernameOrEmail}")
-    public ResponseEntity<Boolean> checkUsernameOrEmail(@PathVariable String usernameOrEmail) {
-        return userService.checkUsernameOrEmail(usernameOrEmail);
+    @GetMapping("/check/username/{username}")
+    public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
+        return userService.checkUsername(username);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+    @GetMapping("/check/email/{email}")
+    public ResponseEntity<Boolean> checkEmail(@PathVariable String email) {
+        return userService.checkEmail(email);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

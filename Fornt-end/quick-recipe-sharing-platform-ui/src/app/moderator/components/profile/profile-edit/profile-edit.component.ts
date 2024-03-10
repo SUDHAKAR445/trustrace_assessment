@@ -9,6 +9,7 @@ import { User } from 'src/app/model/user-detail';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
+import { CustomValidators } from 'src/app/validators/custom.validator';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -23,6 +24,7 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
   router: Router = inject(Router);
   sanitizer: DomSanitizer = inject(DomSanitizer);
   authService: AuthService = inject(AuthService);
+  customValidator: CustomValidators = inject(CustomValidators);
 
   updateUserForm!: FormGroup;
   imageFile!: FileHandle;
@@ -34,14 +36,14 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
 
   ngOnInit(): void {
     this.updateUserForm = new FormGroup({
-      usernameValue: new FormControl(null, [Validators.required]),
-      firstName: new FormControl(null, Validators.required),
-      lastName: new FormControl(null, Validators.required),
-      email: new FormControl(null, Validators.required),
+      usernameValue: new FormControl({disabled: true}, [Validators.required]),
+      firstName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
+      lastName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
+      email: new FormControl({disabled: true}, Validators.required),
       gender: new FormControl(null, Validators.required),
       contact: new FormControl(null, Validators.min(1000)),
-      role: new FormControl(null, Validators.required),
-      password: new FormControl(null, Validators.required),
+      role: new FormControl(null),
+      password: new FormControl(null),
     });
 
     this.authService.userDetail.subscribe((data) => {
@@ -77,6 +79,7 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
               this.userService.getUserById(this.userId).subscribe((data) => {
                 this.authService.userDetail.next(data);
               });
+              
               this.alertService.showSuccess("Your profile updated successfully");
               this.router.navigate(['/moderator/profile']);
             },

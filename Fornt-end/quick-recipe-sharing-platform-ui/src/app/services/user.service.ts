@@ -37,8 +37,12 @@ export class UserService {
             }));
     }
 
-    checkUsernameOrEmail(usernameOrEmail: String) {
-        return this.http.get<boolean>(`${environment.userUrl}/check/${usernameOrEmail}`);
+    checkUsername(username: String) {
+        return this.http.get<boolean>(`${environment.userUrl}/check/username/${username}`);
+    }
+
+    checkEmail(email: String) {
+        return this.http.get<boolean>(`${environment.userUrl}/check/email/${email}`);
     }
 
     createUser(user: User): Observable<String> {

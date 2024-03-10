@@ -31,3 +31,20 @@ button {
     margin-top: 16px;
     font-size: 18px;
 }
+
+small {
+    color: red;
+    font-weight: bold;
+}
+
+mat-card.VALID {
+    border: green 1px solid;
+}
+
+mat-card.INVALID {
+    border: red 1px solid;
+}
+
+mat-card.PENDING {
+    border: orange 1px solid;
+}

@@ -229,7 +229,12 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public ResponseEntity<Boolean> checkUsernameOrEmail(String usernameOrEmail){
-        return new ResponseEntity<>(userRepository.existsByUsernameValueOrEmail(usernameOrEmail, usernameOrEmail), HttpStatus.OK);
+    public ResponseEntity<Boolean> checkUsername(String username){
+        return new ResponseEntity<>(userRepository.existsByUsernameValue(username), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Boolean> checkEmail(String email){
+        return new ResponseEntity<>(userRepository.existsByEmail(email), HttpStatus.OK);
     }
 }

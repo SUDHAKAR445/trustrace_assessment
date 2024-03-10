@@ -35,11 +35,13 @@ public class FollowController {
         return followService.unFollowRequest(followerUserId, followingUserId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/following/{userId}")
     public ResponseEntity<List<User>> getAllFollowingByUser(@PathVariable String userId) {
         return followService.getAllFollowingByUser(userId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/followers/{userId}")
     public ResponseEntity<List<User>> getAllFollowersByUser(@PathVariable String userId) {
         return followService.getAllFollowersByUser(userId);

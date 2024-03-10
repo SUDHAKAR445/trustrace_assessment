@@ -17,6 +17,9 @@
                     <small
                         *ngIf="registerForm.get('userName')?.invalid && registerForm.get('userName')?.touched">*Username
                         is required</small>
+                    <div *ngIf="registerForm.get('userName')?.hasError('checkValue')">
+                        <small>Username is already taken.</small>
+                    </div>
 
                     <mat-form-field appearance="fill">
                         <mat-label>First Name</mat-label>
@@ -25,6 +28,9 @@
                     <small
                         *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">*First
                         name is required</small>
+                    <div *ngIf="registerForm.get('firstName')?.hasError('noSpaceAllowed')">
+                        <small>Space not allowed</small>
+                    </div>
 
                     <mat-form-field appearance="fill">
                         <mat-label>Last Name</mat-label>
@@ -32,13 +38,16 @@
                     </mat-form-field>
                     <small *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">*Last
                         name is required</small>
+                    <div *ngIf="registerForm.get('lastName')?.hasError('noSpaceAllowed')">
+                        <small>Space not allowed</small>
+                    </div>
 
                     <mat-radio-group aria-label="Select an Gender" formControlName="gender" name="gender">
                         <mat-radio-button value="MALE">MALE</mat-radio-button>
                         <mat-radio-button value="FEMALE">FEMALE</mat-radio-button>
                         <mat-radio-button value="NONE">NONE</mat-radio-button>
                     </mat-radio-group>
-                    
+
                     <small *ngIf="registerForm.get('gender')?.invalid && registerForm.get('gender')?.touched">*Gender is
                         required</small>
 
@@ -48,6 +57,9 @@
                     </mat-form-field>
                     <small *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">*Email is
                         required</small>
+                    <div *ngIf="registerForm.get('email')?.hasError('checkEmail')">
+                        <small>Email is already taken.</small>
+                    </div>
 
                     <mat-form-field appearance="fill">
                         <mat-label>Password</mat-label>
