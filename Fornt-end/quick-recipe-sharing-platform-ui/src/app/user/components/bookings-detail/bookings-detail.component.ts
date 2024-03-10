@@ -5,6 +5,7 @@ import { forkJoin, switchMap } from 'rxjs';
 import { Transaction } from 'src/app/model/payment.model';
 import { Recipe } from 'src/app/model/recipe.model';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PaymentService } from 'src/app/services/payment.service';
 import { RecipeService } from 'src/app/services/recipe.service';
@@ -17,12 +18,14 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./bookings-detail.component.scss']
 })
 export class BookingsDetailComponent {
-  constructor(private sanitizer: DomSanitizer) {}
+
+  sanitizer: DomSanitizer = inject(DomSanitizer);
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   paymentService: PaymentService = inject(PaymentService);
   authService: AuthService = inject(AuthService);
   userService: UserService = inject(UserService);
   recipeService: RecipeService = inject(RecipeService);
+  alertService: AlertService = inject(AlertService);
   router: Router = inject(Router);
 
   transactionId!: string | null;
@@ -65,7 +68,7 @@ export class BookingsDetailComponent {
           this.transactionDetail.bookedUser = bookedUserResponse;
           this.transactionDetail.bookedUserRecipeDetail = recipeResponse;
         },
-        error: (err) => console.log(err),
+        error: (err) => this.alertService.showError('Error occurred in displaying the booking details'),
       });
     });
   }

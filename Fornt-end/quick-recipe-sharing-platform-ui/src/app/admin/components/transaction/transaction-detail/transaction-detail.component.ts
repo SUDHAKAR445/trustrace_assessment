@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, switchMap } from 'rxjs';
 import { Transaction } from 'src/app/model/payment.model';
@@ -13,7 +13,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './transaction-detail.component.html',
   styleUrls: ['./transaction-detail.component.scss']
 })
-export class TransactionDetailComponent {
+export class TransactionDetailComponent implements OnInit{
 
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   paymentService: PaymentService = inject(PaymentService);

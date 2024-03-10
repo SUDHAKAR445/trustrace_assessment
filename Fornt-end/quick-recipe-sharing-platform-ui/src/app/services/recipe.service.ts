@@ -17,6 +17,13 @@ const day = today.getDate();
 
 export class RecipeService {
 
+    private searchTextSubject = new BehaviorSubject<string>('');
+    searchText$: Observable<string> = this.searchTextSubject.asObservable();
+
+    setSearchText(searchText: string): void {
+        this.searchTextSubject.next(searchText);
+    }
+    
     http: HttpClient = inject(HttpClient);
     error: string | null = null;
 
@@ -163,7 +170,7 @@ export class RecipeService {
     }
 
     createComment(recipeId: string | null, userId: string | undefined | null, commentText: string | null): Observable<Comment> {
-        return this.http.post<Comment>(`${environment.recipeUrl}/comment/${recipeId}/${userId}`, {text: commentText}).pipe(
+        return this.http.post<Comment>(`${environment.recipeUrl}/comment/${recipeId}/${userId}`, { text: commentText }).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');
@@ -176,7 +183,7 @@ export class RecipeService {
             }));
     }
 
-    saveRecipeInUserCollection(userId: string | undefined | null, recipeId: string | undefined) : Observable<void>{
+    saveRecipeInUserCollection(userId: string | undefined | null, recipeId: string | undefined): Observable<void> {
         return this.http.put<void>(`${environment.recipeUrl}/save/${userId}/${recipeId}`, {}).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
@@ -190,8 +197,8 @@ export class RecipeService {
             }));
     }
 
-    
-    removeRecipeInUserCollection(userId: string | undefined | null, recipeId: string | undefined) : Observable<void>{
+
+    removeRecipeInUserCollection(userId: string | undefined | null, recipeId: string | undefined): Observable<void> {
         return this.http.put<void>(`${environment.recipeUrl}/remove/${userId}/${recipeId}`, {}).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
@@ -251,6 +258,21 @@ export class RecipeService {
     getAllLikedRecipes(userId: string | null | undefined): Observable<string[]> {
 
         return this.http.get<string[]>(`${environment.recipeUrl}/user-liked/${userId}`).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    getCountOfRecipes(userId: string | null | undefined): Observable<number[]> {
+        
+        return this.http.get<number[]>(`${environment.recipeUrl}/post-count/${userId}`).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');

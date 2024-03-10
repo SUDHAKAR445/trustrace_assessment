@@ -1,0 +1,29 @@
+<mat-card *ngIf="userDetail" class="user-profile-card" id="userProfileCard">
+    <div class="profile-content-wrapper">
+        <div class="profile-image-container">
+            <img [src]="userDetail.profileImageUrl!" alt="User Profile Image" class="profile-image">
+        </div>
+        <div class="profile-content">
+            <div class="profile-label">Username:</div>
+            <div class="profile-value">{{ userDetail.usernameValue! }}</div>
+
+            <div class="profile-label" clickable (click)="showFollowers(userDetail.id!)">Total Followers:</div>
+            <div class="profile-value" clickable (click)="showFollowers(userDetail.id!)">{{ userFollowersList?.length || 0 }}</div>
+
+            <div class="profile-label" clickable (click)="showFollowing(userDetail.id!)">Total Following:</div>
+            <div class="profile-value" clickable (click)="showFollowing(userDetail.id!)">{{ userFollowingList?.length || 0 }}</div>
+
+            <div class="profile-label" clickable (click)="showPosts(userDetail.id!)">Total Posts:</div>
+            <div class="profile-value" clickable (click)="showPosts(userDetail.id!)">{{ totalPosts || 0 }}</div>
+
+            <div class="follow-buttons">
+                <button mat-button *ngIf="!checkFollow(userDetail.id!) && userDetail.id !== userId" color="primary" (click)="onFollowNowClick(userDetail.id!)">
+                    Follow
+                </button>
+                <button mat-button *ngIf="checkFollow(userDetail.id!) && userDetail.id !== userId" color="primary" (click)="onUnfollowNowClick(userDetail.id!)">
+                    Unfollow
+                </button>
+            </div>
+        </div>
+    </div>
+</mat-card>

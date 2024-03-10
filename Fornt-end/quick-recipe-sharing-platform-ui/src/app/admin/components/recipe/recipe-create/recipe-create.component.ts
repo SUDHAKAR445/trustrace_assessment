@@ -9,24 +9,27 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { RecipeService } from 'src/app/services/recipe.service';
+import { IDeactivateComponent } from 'src/app/model/canActivate.model';
+import Swal from 'sweetalert2';
+import { AlertService } from 'src/app/services/alert.service';
 
 @Component({
   selector: 'app-recipe-create',
   templateUrl: './recipe-create.component.html',
   styleUrls: ['./recipe-create.component.scss']
 })
-export class RecipeCreateComponent {
+export class RecipeCreateComponent implements IDeactivateComponent{
+
+  authService: AuthService = inject(AuthService);
+  recipeService: RecipeService = inject(RecipeService);
+  alertService: AlertService = inject(AlertService);
+  router: Router = inject(Router);
 
   selectedFile: any = null;
   imagePreview: SafeUrl | null = null;
   isLinear: boolean = true;
   userId!: string | null | undefined;
-  errorMessage!: string | null;
-
-
-  authService: AuthService = inject(AuthService);
-  recipeService: RecipeService = inject(RecipeService);
-  router: Router = inject(Router);
+  isSubmitted: boolean = false;
   firstFormGroup!: FormGroup;
   secondFormGroup!: FormGroup;
   thirdFormGroup!: FormGroup;
@@ -104,6 +107,10 @@ export class RecipeCreateComponent {
   }
 
   onPostRecipeClicked() {
+
+    this.alertService.confirm('Confirm', 'Are you post this recipe?').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.isSubmitted = true;
     const thirdFormGroupValue = this.thirdFormGroup.value;
 
     const allFormValues = {
@@ -117,22 +124,29 @@ export class RecipeCreateComponent {
       next: (response) => {
         this.recipeService.updateRecipeImage(response.id, thirdFormGroupValue.imageFile).subscribe({
           next: () => {
-            this.router.navigate(['/admin/recipe']);
+            this.alertService.showSuccess("Recipe posted successfully");
+            this.router.navigate(['/admin/recipes']);
           },
           error: (error) => {
-            this.errorMessage = error;
-            setTimeout(() => {
-              this.errorMessage = null;
-            }, 3000);
+            this.alertService.showError("Error in uploading the recipe image");
+            this.router.navigate(['/admin/recipes']);
           },
         });
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Error in posting the recipe");
+        this.router.navigate(['/admin/recipes']);
       },
     });
+      }
+    });
+  }
+
+  canExit(): boolean | Promise<boolean> | Observable<boolean> {
+    if ((this.firstFormGroup.dirty || this.secondFormGroup.dirty || this.thirdFormGroup.dirty || this.fourthFormGroup.dirty)&& !this.isSubmitted) {
+      return this.alertService.confirmExit();
+    } else {
+      return true;
+    }
   }
 }

@@ -2,21 +2,20 @@
 
     <!-- Header Section -->
     <mat-card-header class="header-container">
-        <div mat-card-avatar class="profile-image">
+        <div mat-card-avatar class="profile-image" (click)="showUserDetail(recipe.user?.id)" clickable>
             <img class="profile-image" [src]="recipe.user?.profileImageUrl">
         </div>
-        <div class="header-content">
-            <mat-card-title>{{ recipe.user?.usernameValue }}</mat-card-title>
-            <br>
+        <div class="header-content" (click)="showUserDetail(recipe.user?.id)" clickable>
+            <mat-card-title>{{ recipe.user?.usernameValue }}</mat-card-title> &nbsp;
             <mat-card-subtitle>{{ recipe.dateCreated | date }}</mat-card-subtitle>
         </div>
-        <button mat-button *ngIf="!checkFollow(recipe.user?.id!)" color="primary" style="margin-top: 10px;" clickable
-            (click)="onFollowNowClick(recipe.user?.id!)">Follow</button>
-        <button mat-button *ngIf="checkFollow(recipe.user?.id!)" color="primary" style="margin-top: 10px;" clickable
-            (click)="onUnfollowNowClick(recipe.user?.id!)">Unfollow</button>
+        <button mat-button *ngIf="!checkFollow(recipe.user?.id!) && recipe.user?.id !== userId" color="primary"
+            style="margin-top: 10px;" clickable (click)="onFollowNowClick(recipe.user?.id!)">Follow</button>
+        <button mat-button *ngIf="checkFollow(recipe.user?.id!) && recipe.user?.id !== userId" color="primary"
+            style="margin-top: 10px;" clickable (click)="onUnfollowNowClick(recipe.user?.id!)">Unfollow</button>
         <mat-menu #menu="matMenu" class="menu-button" matMenuPosition="above">
             <button *ngIf="recipe.user?.id === userId" mat-menu-item clickable
-                (click)="onUpdateClick(recipe.id)">Update</button>
+                (click)="onUpdateClick(recipe.id!)">Update</button>
             <button *ngIf="recipe.user?.id === userId" mat-menu-item clickable
                 (click)="onDeleteRecipe(recipe.id)">Delete</button>
             <button *ngIf="recipe.user?.id !== userId" mat-menu-item clickable
@@ -67,14 +66,13 @@
             <li *ngFor="let comment of recipeComments">
                 <!-- Comment Header -->
                 <div class="comment-header">
-                    <img class="comment-avatar" [src]="comment.profileImageUrl" alt="User Avatar">
+                    <img class="comment-avatar" [src]="comment.profileImageUrl" alt="User Avatar" (click)="showUserDetail(comment.userId)" clickable>
                     <div class="comment-info">
                         <p class="comment-username">{{ comment.username }}</p>
                         <p class="comment-date">{{ comment.commentDate | date:'medium' }}</p>
                     </div>
 
                     <mat-menu #commentMenu="matMenu">
-                        <button mat-menu-item clickable (click)="onLikeComment(comment.id)">Like</button>
                         <button mat-menu-item clickable (click)="onReportComment(comment.id)">Report Comment</button>
                         <button mat-menu-item clickable (click)="onReportUser(comment.userId)">Report User</button>
                         <button *ngIf="comment.userId === userId" mat-menu-item clickable
@@ -85,9 +83,23 @@
                     </button>
                 </div>
                 <p class="comment-text">{{ comment.text }}</p>
-                <button mat-icon-button>
-                    <mat-icon>thumb_up</mat-icon>
-                </button>
+                <mat-card-actions class="icon-buttons">
+                    <div class="like-count" *ngIf="!(userId && likedComments?.includes(comment.id!))" clickable
+                        (click)="onLikeClick(comment.id!)">
+                        {{ comment.likes.length }}
+                        <button mat-icon-button style="margin-left: 0px; padding-top:-0.4px ;">
+                            <mat-icon style="font-size: 25px;">thumb_up_off_alt</mat-icon>
+                        </button>
+                    </div>
+
+                    <div class="like-count" *ngIf="userId && likedComments?.includes(comment.id!)" clickable
+                        (click)="onUnlikeClick(comment.id!)">
+                        {{ comment.likes.length + 1}}
+                        <button mat-icon-button style="margin-left: 0px;padding-top:-0.4px ;">
+                            <mat-icon style="font-size: 25px;">thumb_up</mat-icon>
+                        </button>
+                    </div>
+                </mat-card-actions>
             </li>
         </ul>
     </div>

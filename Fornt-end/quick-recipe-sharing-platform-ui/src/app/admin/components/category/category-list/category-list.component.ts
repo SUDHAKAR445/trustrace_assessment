@@ -3,6 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Category } from 'src/app/model/category.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { CategoryService } from 'src/app/services/category.service';
 import { CuisineService } from 'src/app/services/cuisine.service';
 
@@ -13,16 +14,14 @@ import { CuisineService } from 'src/app/services/cuisine.service';
 })
 export class CategoryListComponent implements AfterViewInit {
 
-  errorMessage!: string | null;
-  createUserClicked: boolean = false;
-  displayedColumns: string[] = ['S.No', 'Category Name', 'Total Recipe Posted'];
-
-  dataSource = new MatTableDataSource<Category>();
-
+  categoryService: CategoryService = inject(CategoryService);
+  changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
+  alertService: AlertService = inject(AlertService);
   router: Router = inject(Router);
 
-  constructor(private categoryService: CategoryService, private changeDetectorRef: ChangeDetectorRef) {
-  }
+  createUserClicked: boolean = false;
+  displayedColumns: string[] = ['S.No', 'Category Name', 'Total Recipe Posted'];
+  dataSource = new MatTableDataSource<Category>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('message') messageRef!: ElementRef;
@@ -55,10 +54,7 @@ export class CategoryListComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Error in applying the filter");
       }
     })
   }
@@ -72,10 +68,7 @@ export class CategoryListComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Failed to load Category list");
       }
     })
   }

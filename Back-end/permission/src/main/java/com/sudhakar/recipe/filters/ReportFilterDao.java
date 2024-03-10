@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.sudhakar.recipe.dto.ReportDto;
-import com.sudhakar.recipe.entity.Status;
 
 public interface ReportFilterDao {
 

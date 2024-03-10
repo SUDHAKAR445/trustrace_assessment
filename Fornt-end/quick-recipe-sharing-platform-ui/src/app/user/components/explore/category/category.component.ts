@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Explore } from 'src/app/model/cuisine.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
@@ -10,26 +11,22 @@ import { CategoryService } from 'src/app/services/category.service';
 })
 export class CategoryComponent {
 
-  alphabet: string[] = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
+  router: Router = inject(Router);
   categoryService: CategoryService = inject(CategoryService);
-  errorMessage!: string | null;
-
+  alertService: AlertService = inject(AlertService);
+  
   categoryExplore!: Explore[];
   groupedCategories: { [key: string]: Explore[] } = {};
-  router: Router = inject(Router);
+  alphabet: string[] = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
   ngOnInit() {
     this.categoryService.exploreByCategory().subscribe({
       next: (response) => {
         this.categoryExplore = response;
         this.groupCategories();
-        console.log(this.groupedCategories);
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showSuccess('Error occurred in showing the category list');
       }
     });
   }

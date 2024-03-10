@@ -18,7 +18,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -163,7 +162,7 @@ public class RecipeServiceImplementation implements RecipeService {
     public ResponseEntity<Page<RecipeDto>> getAllRecipesOrderByCreationDate(Pageable pageable) {
         try {
             Page<Recipe> recipes = recipeRepository
-                    .findByOrderByDateCreatedDesc(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+                    .findByOrderByDateCreatedDesc(pageable);
 
             return new ResponseEntity<>(recipes.map(this::convertDto), HttpStatus.OK);
         } catch (Exception e) {
@@ -216,7 +215,11 @@ public class RecipeServiceImplementation implements RecipeService {
         try {
             Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
             if (optionalRecipe.isPresent()) {
-                optionalRecipe.get().setDeletedAt(new Date());
+                if(optionalRecipe.get().getDeletedAt() == null) {
+                    optionalRecipe.get().setDeletedAt(new Date());
+                } else {
+                    optionalRecipe.get().setDeletedAt(null);
+                }
                 recipeRepository.save(optionalRecipe.get());
                 return new ResponseEntity<>(HttpStatus.OK);
             }
@@ -234,7 +237,7 @@ public class RecipeServiceImplementation implements RecipeService {
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
 
-                Page<Recipe> recipesPage = recipeRepository.findByUserOrderByDateCreated(user, pageable);
+                Page<Recipe> recipesPage = recipeRepository.findByUserOrderByDateCreatedDesc(user, pageable);
 
                 return new ResponseEntity<>(recipesPage.map(this::convertDto), HttpStatus.OK);
             } else {
@@ -464,6 +467,22 @@ public class RecipeServiceImplementation implements RecipeService {
                     likeList.add(recipe.getId());
                 }
                 return new ResponseEntity<>(likeList, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<Integer>> getTotalRecipeCount(String userId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if(userOptional.isPresent()) {
+                int countOfRecipe = recipeRepository.countByUser(userOptional.get()).size();
+                List<Integer> count =  new ArrayList<>();
+                count.add(countOfRecipe);
+                return new ResponseEntity<>(count, HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

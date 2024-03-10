@@ -36,8 +36,8 @@ const routes: Routes = [
         path: 'users',
         children: [
           { path: '', component: UserListComponent },
-          { path: 'create', component: UserCreateComponent },
-          { path: 'update', component: UserUpdateComponent },
+          { path: 'create', component: UserCreateComponent, canDeactivate: [(comp: UserCreateComponent) => {return comp.canExit()}] },
+          { path: 'update', component: UserUpdateComponent, canDeactivate: [(comp: UserUpdateComponent) => {return comp.canExit()}] },
           { path: 'detail', component: UserDetailComponent },
         ],
       },
@@ -46,7 +46,7 @@ const routes: Routes = [
         children: [
           { path: '', component: CuisineListComponent },
           { path: 'detail', component: CuisineDetailComponent },
-          { path: 'create', component: CuisineCreateComponent },
+          { path: 'create', component: CuisineCreateComponent, canDeactivate: [(comp: CuisineCreateComponent) => {return comp.canExit()}] },
         ]
       },
       {
@@ -54,23 +54,23 @@ const routes: Routes = [
         children: [
           { path: '', component: CategoryListComponent },
           { path: 'detail', component: CategoryDetailComponent },
-          { path: 'create', component: CategoryCreateComponent },
+          { path: 'create', component: CategoryCreateComponent, canDeactivate: [(comp: CategoryCreateComponent) => {return comp.canExit()}] },
         ]
       },
       {
         path: 'recipes',
         children: [
           { path: '', component: RecipeListComponent },
-          { path: 'create', component: RecipeCreateComponent },
+          { path: 'create', component: RecipeCreateComponent, canDeactivate: [(comp: RecipeCreateComponent) => {return comp.canExit()}] },
           { path: 'detail', component: RecipeDetailComponent },
-          { path: 'update', component: RecipeUpdateComponent },
+          { path: 'update', component: RecipeUpdateComponent, canDeactivate: [(comp: RecipeUpdateComponent) => {return comp.canExit()}] },
         ]
       },
       {
         path: 'profile',
         children: [
           { path: '', component: ProfileDetailComponent },
-          { path: 'update', component: ProfileEditComponent },
+          { path: 'update', component: ProfileEditComponent, canDeactivate: [(comp: ProfileEditComponent) => {return comp.canExit()}] },
         ]
       },
       {
@@ -91,11 +91,9 @@ const routes: Routes = [
           { path: 'detail', component: TransactionDetailComponent },
         ]
       },
-      // Add a wildcard route for unknown paths
       { path: '**', redirectTo: '/not-found' },
     ]
   },
-  // Add a wildcard route for unknown paths outside of the dashboard
   { path: '**', redirectTo: '/not-found' },
 ];
 

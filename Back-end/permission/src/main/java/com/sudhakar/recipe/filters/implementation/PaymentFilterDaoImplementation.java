@@ -3,6 +3,7 @@ package com.sudhakar.recipe.filters.implementation;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -42,7 +43,7 @@ public class PaymentFilterDaoImplementation implements PaymentFilterDao {
             Query query = new Query();
 
             if (StringUtils.hasText(status)) {
-                query.addCriteria(Criteria.where("status").regex(status, "i"));
+                query.addCriteria(Criteria.where("paymentStatus").is(status));
             }
 
             if (StringUtils.hasText(searchText)) {
@@ -57,7 +58,7 @@ public class PaymentFilterDaoImplementation implements PaymentFilterDao {
             }
 
             long count = mongoTemplate.count(query, Report.class);
-            List<Booking> bookings = mongoTemplate.find(query.with(pageable), Booking.class);
+            List<Booking> bookings = mongoTemplate.find(query.with(pageable).with(Sort.by(Sort.Direction.ASC, "orderCreatedDate")), Booking.class);
             Page<Booking> bookingsList = new PageImpl<>(bookings, pageable, count);
 
             return new ResponseEntity<>(bookingsList.map(this::convertToTransactionDto), HttpStatus.OK);
@@ -70,19 +71,27 @@ public class PaymentFilterDaoImplementation implements PaymentFilterDao {
     @Override
     public ResponseEntity<Page<TransactionDto>> getAllTransactionByUserId(String id, Pageable pageable) {
         try {
-            Query query = new Query();
             Criteria criteria = new Criteria().orOperator(
                     Criteria.where("bookerUser").is(id),
                     Criteria.where("bookedRecipeUser").is(id));
-            query.addCriteria(criteria).with(pageable).with(Sort.by(Sort.Direction.DESC, "orderCreatedDate"));
+
+            Query query = new Query(criteria)
+                    .with(pageable)
+                    .with(Sort.by(Sort.Direction.ASC, "orderCreatedDate"));
 
             List<Booking> bookings = mongoTemplate.find(query, Booking.class);
             long count = mongoTemplate.count(query, Booking.class);
 
             Page<Booking> bookingsList = new PageImpl<>(bookings, pageable, count);
 
-            return new ResponseEntity<>(bookingsList.map(this::convertToTransactionDto), HttpStatus.OK);
+            List<TransactionDto> transactionDtos = bookingsList
+                    .stream()
+                    .map(this::convertToTransactionDto)
+                    .collect(Collectors.toList());
+
+            return new ResponseEntity<>(new PageImpl<>(transactionDtos, pageable, count), HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

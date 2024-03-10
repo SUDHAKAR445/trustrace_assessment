@@ -31,19 +31,23 @@ import { FeedPageComponent } from './components/feed-page/feed-page.component';
 import { HeaderComponent } from './components/header/header.component';
 import { HomeComponent } from './components/home/home.component';
 import { PaymentComponent } from './components/payment/payment.component';
-import { ProfileComponent } from './components/profile/profile.component';
 import { RecipeCreateComponent } from './components/recipe/recipe-create/recipe-create.component';
 import { RecipeDetailComponent } from './components/recipe/recipe-detail/recipe-detail.component';
 import { RecipeUpdateComponent } from './components/recipe/recipe-update/recipe-update.component';
 import { SavedRecipeComponent } from './components/saved-recipe/saved-recipe.component';
 import { SearchComponent } from './components/search/search.component';
 import { UserRoutingModule } from './user-routing.module';
+import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
+import { YourPostComponent } from './components/your-post/your-post.component';
+import { FollowerListComponent } from './components/follower-list/follower-list.component';
+import { FollowingListComponent } from './components/following-list/following-list.component';
+import { DetailComponent } from './components/detail/detail.component';
+import { BioComponent } from './components/bio/bio.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
     HeaderComponent,
-    ProfileComponent,
     FeedPageComponent,
     RecipeCreateComponent,
     BookingsComponent,
@@ -56,6 +60,12 @@ import { UserRoutingModule } from './user-routing.module';
     CuisineComponent,
     SearchComponent,
     PaymentComponent,
+    ProfileEditComponent,
+    YourPostComponent,
+    FollowerListComponent,
+    FollowingListComponent,
+    DetailComponent,
+    BioComponent,
   ],
   imports: [
     CommonModule,

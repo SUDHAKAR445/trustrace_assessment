@@ -3,6 +3,7 @@ import { AuthService } from "../services/auth.service";
 import { inject } from "@angular/core";
 import { Observable, map, take } from "rxjs";
 import { Token } from "../model/user";
+import { IDeactivateComponent } from "../model/canActivate.model";
 
 export const canActivate = (
     router: ActivatedRouteSnapshot,

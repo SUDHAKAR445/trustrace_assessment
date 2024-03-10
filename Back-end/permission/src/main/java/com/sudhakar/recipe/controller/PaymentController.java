@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sudhakar.recipe.entity.PaymentRequest;
-import com.sudhakar.recipe.entity.Status;
-import com.sudhakar.recipe.entity.Booking.PaymentStatus;
 import com.sudhakar.recipe.filters.PaymentFilterDao;
 import com.sudhakar.recipe.dto.BookingDto;
 import com.sudhakar.recipe.dto.TransactionDto;
@@ -28,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/payment")
 @CrossOrigin(origins = "http://localhost:4200")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class PaymentController {
 
     @Autowired
@@ -46,6 +46,7 @@ public class PaymentController {
         return razorpayService.updateBooking(id, paymentId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<Page<TransactionDto>> getAllTransactions(@RequestParam int page, @RequestParam int size) {
         return razorpayService.getAllTransactions(PageRequest.of(page, size));
@@ -56,6 +57,7 @@ public class PaymentController {
         return razorpayService.getTransactionById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/search")
     public ResponseEntity<Page<TransactionDto>> searchTransaction(
         @RequestParam(required = false) String searchText,

@@ -1,9 +1,10 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild, Inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild, Inject, inject } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { User } from 'src/app/model/user-detail';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
+import { AlertService } from 'src/app/services/alert.service';
 
 @Component({
   selector: 'app-user-list',
@@ -12,19 +13,17 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class UserListComponent implements AfterViewInit {
 
-  errorMessage!: string | null;
+  router: Router = inject(Router);
+  userService: UserService = inject(UserService);
+  changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
+  alertService: AlertService = inject(AlertService);
+  
   createUserClicked: boolean = false;
   displayedColumns: string[] = ['S.No', 'Profile', 'Username', 'First Name', 'Last Name', 'Gender', 'Contact', 'Role', 'CreatedAt', 'UpdatedAt', 'DeletedAt', 'Wallet', 'Actions'];
   dataSource = new MatTableDataSource<User>();
-
-  router: Router;
-
-  constructor(private userService: UserService, private changeDetectorRef: ChangeDetectorRef, @Inject(Router) router: Router) {
-    this.router = router;
-  }
-
   selectedRole : string = '';
   selectedGender : string = '';
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('message') messageRef!: ElementRef;
 
@@ -61,10 +60,7 @@ export class UserListComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error in applying the filter');
       }
     });
   }
@@ -78,10 +74,7 @@ export class UserListComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error in displaying the user list');
       }
     });
   }
@@ -94,22 +87,48 @@ export class UserListComponent implements AfterViewInit {
     this.router.navigate(['/admin/users/detail'], { queryParams: { detail: id } });
   }
 
-  onDeleteClicked(id: string) {
-    this.userService.deleteUserById(id).subscribe({
-      next: (response) => {
-        this.router.navigate(['/admin/users']);
-      },
-      error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
-      }
-    });
+  onDeleteClicked(id: string, deletedAt: string) {
+    if(!deletedAt) {
+      this.alertService.confirmDelete('Confirm', "Are you sure do you want to delete this user").then((isConfirmed) => {
+        if(isConfirmed) {
+          this.userService.deleteUserById(id).subscribe({
+            next: (response) => {
+              this.alertService.showSuccess("User deleted successfully");
+              this.router.navigate(['/admin/users']);
+            },
+            error: (error) => {
+              this.alertService.showSuccess("Error occurred in deleting the user");
+              this.router.navigate(['/admin/users']);
+            }
+          });
+        } else {
+          this.router.navigate(['/admin/users']);
+        }
+      });
+    } else {
+      this.alertService.confirmDelete('Confirm', "Are you sure do you want to revoke this user").then((isConfirmed) => {
+        if(isConfirmed) {
+          this.userService.deleteUserById(id).subscribe({
+            next: (response) => {
+              this.alertService.showSuccess("User revoked successfully");
+              this.router.navigate(['/admin/users']);
+            },
+            error: (error) => {
+              this.alertService.showSuccess("Error occurred in revoking the user");
+              this.router.navigate(['/admin/users']);
+            }
+          });
+        } else {
+          this.router.navigate(['/admin/users']);
+        }
+      });
+    }
   }
 
   onEditClicked(id: string | undefined) {
-    this.router.navigate(['/admin/users/update'], { queryParams: { detail: id } });
+    this.alertService.confirm('Confirm', 'Are you sure do you want to edit this user').then((isConfirmed) => {
+      this.router.navigate(['/admin/users/update'], { queryParams: { detail: id } });
+    });
   }
 
   searchText(value: string) {
@@ -119,6 +138,4 @@ export class UserListComponent implements AfterViewInit {
   onCancelClicked(){
     window.history.go(-1);
   }
-
-  
 }

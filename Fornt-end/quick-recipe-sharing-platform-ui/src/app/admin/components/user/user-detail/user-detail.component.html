@@ -1,4 +1,3 @@
-<app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
 <div class="container">
     <h2>User Detail</h2>
     <div *ngIf="userDetail">
@@ -115,8 +114,8 @@
             <ng-container matColumnDef="Actions">
                 <th mat-header-cell *matHeaderCellDef> Actions</th>
                 <td mat-cell *matCellDef="let element">
-                    <mat-icon class="small-button" clickable (click)="onDeleteClicked(element.id)">delete</mat-icon>
-                    <mat-icon class="small-button" clickable (click)="onEditClicked(element.id)">edit</mat-icon>
+                    <mat-icon class="small-button" clickable (click)="onDeleteClicked(element.recipeId, element.deletedAt)">delete</mat-icon>
+                    <mat-icon class="small-button" clickable (click)="onEditClicked(element.recipeId)">edit</mat-icon>
                 </td>
             </ng-container>
 

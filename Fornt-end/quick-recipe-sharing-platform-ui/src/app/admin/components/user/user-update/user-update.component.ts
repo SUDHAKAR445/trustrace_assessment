@@ -2,31 +2,38 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { IDeactivateComponent } from 'src/app/model/canActivate.model';
 import { FileHandle } from 'src/app/model/file-handle.model';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { UserService } from 'src/app/services/user.service';
+import { CustomValidators } from 'src/app/validators/custom.validator';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-user-update',
   templateUrl: './user-update.component.html',
   styleUrls: ['./user-update.component.scss']
 })
-export class UserUpdateComponent {
-  updateUserForm!: FormGroup;
-  imageFile!: FileHandle;
-  errorMessage!: string | null;
+export class UserUpdateComponent implements IDeactivateComponent {
 
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
+  alertService: AlertService = inject(AlertService);
   userService: UserService = inject(UserService);
   router: Router = inject(Router);
   sanitizer: DomSanitizer = inject(DomSanitizer);
+  customValidators: CustomValidators = inject(CustomValidators);
 
+  updateUserForm!: FormGroup;
+  imageFile!: FileHandle;
   userId!: string | null;
   userDetail!: User;
+  isSubmitted: boolean = false;
 
   ngOnInit() {
     this.updateUserForm = new FormGroup({
-      usernameValue: new FormControl(null, [Validators.required]),
+      usernameValue: new FormControl(null, [Validators.required, this.customValidators.checkUsername]),
       firstName: new FormControl(null, Validators.required),
       lastName: new FormControl(null, Validators.required),
       email: new FormControl(null, Validators.required),
@@ -63,21 +70,24 @@ export class UserUpdateComponent {
 
 
   onUpdateFormSubmitted() {
-    if (this.updateUserForm.valid) {
-      const userFormData = this.prepareFormData(this.updateUserForm.value);
-      this.userService.updateUserById(this.userId, userFormData).subscribe({
-        next: (response) => {
-          this.router.navigate(['/admin/users']);
-        },
-        error: (error) => {
-          this.errorMessage = error;
-          this.router.navigate(['/admin/users']);
-          setTimeout(() => {
-            this.errorMessage = null;
-          }, 3000);
+    this.alertService.confirm('Confirm', 'Are you sure you update this changes?').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.isSubmitted = true;
+        if (this.updateUserForm.valid) {
+          const userFormData = this.prepareFormData(this.updateUserForm.value);
+          this.userService.updateUserById(this.userId, userFormData).subscribe({
+            next: (response) => {
+              this.alertService.showSuccess('User updated successfully');
+              this.router.navigate(['/admin/users']);
+            },
+            error: (error) => {
+              this.alertService.showError('Error occurred in updating the user (Reason username or email already exists)');
+              this.router.navigate(['/admin/users']);
+            }
+          });
         }
-      });
-    }
+      }
+    });
   }
 
   prepareFormData(user: User): FormData {
@@ -112,8 +122,15 @@ export class UserUpdateComponent {
     }
   }
 
+  canExit(): boolean | Promise<boolean> | Observable<boolean> {
+    if (this.updateUserForm.dirty && !this.isSubmitted) {
+      return this.alertService.confirmExit();
+    } else {
+      return true;
+    }
+  }
 
-  onCancelClicked(){
+  onCancelClicked() {
     window.history.go(-1);
   }
 }

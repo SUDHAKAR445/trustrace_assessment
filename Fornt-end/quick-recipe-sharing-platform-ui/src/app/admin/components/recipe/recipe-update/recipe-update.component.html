@@ -1,6 +1,5 @@
 <div class="recipe-container">
     <h2>Update Your Recipe</h2>
-    <app-snackbar [errorMessage]="errorMessage" *ngIf="errorMessage"></app-snackbar>
     <mat-stepper class="example-stepper" [orientation]="(stepperOrientation | async)!" [linear]="isLinear">
         <mat-step [stepControl]="firstFormGroup" label="Recipe Details">
             <form [formGroup]="firstFormGroup">
@@ -26,13 +25,13 @@
                 <br>
                 <mat-form-field appearance="fill">
                     <mat-label>Preparation Time</mat-label>
-                    <input matInput placeholder="Preparation Time in minutes" formControlName="preparationTime"
+                    <input matInput placeholder="Preparation Time in minutes" type="number" formControlName="preparationTime"
                         required>
                 </mat-form-field>
                 <br>
                 <mat-form-field appearance="fill">
                     <mat-label>Cooking Time</mat-label>
-                    <input matInput placeholder="Cooking Time in minutes" formControlName="cookingTime" required>
+                    <input matInput placeholder="Cooking Time in minutes" type="number" formControlName="cookingTime" required>
                 </mat-form-field>
                 <div>
                     <button mat-button matStepperNext color="primary" [disabled]="firstFormGroup.invalid">Next</button>

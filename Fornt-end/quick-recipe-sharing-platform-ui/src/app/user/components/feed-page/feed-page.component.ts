@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { CommentService } from 'src/app/services/comment.service';
 import { FollowService } from 'src/app/services/follow.service';
@@ -17,8 +18,9 @@ import { ReportDialogComponent } from 'src/app/utility/report-dialog/report-dial
 })
 export class FeedPageComponent implements OnInit {
 
-  constructor(private recipeService: RecipeService, private dialog: MatDialog) { };
-  
+  alertService: AlertService = inject(AlertService);
+  dialog: MatDialog = inject(MatDialog);
+  recipeService: RecipeService = inject(RecipeService);
   authService: AuthService = inject(AuthService);
   commentService: CommentService = inject(CommentService);
   router: Router = inject(Router);
@@ -71,22 +73,22 @@ export class FeedPageComponent implements OnInit {
         this.recipes = [...this.recipes, ...response.content];
         this.page++;
         this.isLoading = false;
-        console.log(this.recipes);
-
       },
       error: (error) => {
-        this.isLoading = false;
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error in displaying the recipe list');
       }
-    })
+    });
   }
 
   @HostListener('window:scroll', ['$event'])
   onScroll(event: any): void {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    console.log('Scroll event detected!');
+    console.log('Window inner height:', window.innerHeight);
+    console.log('Window scroll Y:', window.scrollY);
+    console.log('Document body offset height:', document.body.offsetHeight);
+
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1) {
+      console.log('Calling loadRecipes...');
       this.loadRecipes();
     }
   }
@@ -101,6 +103,9 @@ export class FeedPageComponent implements OnInit {
         this.recipeService.getAllLikedRecipes(this.userId).subscribe((data) => {
           this.authService.likedRecipes.next(data);
         });
+      },
+      error: () => {
+        this.alertService.showError('Error in like the recipe');
       }
     })
   }
@@ -111,6 +116,9 @@ export class FeedPageComponent implements OnInit {
         this.recipeService.getAllLikedRecipes(this.userId).subscribe((data) => {
           this.authService.likedRecipes.next(data);
         });
+      },
+      error: () => {
+        this.alertService.showError('Error in unlike the recipe');
       }
     })
   }
@@ -120,7 +128,11 @@ export class FeedPageComponent implements OnInit {
   }
 
   onUpdateClick(id: string) {
-    this.router.navigate(['/user/update'], { queryParams: { "detail": id } });
+    this.alertService.confirm('Confirm', 'Are you sure do you want to update this recipe').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.router.navigate(['/user/update'], { queryParams: { "detail": id } });
+      }
+    });
   }
 
   checkFollow(id: string): boolean {
@@ -139,10 +151,7 @@ export class FeedPageComponent implements OnInit {
         });
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error in following the user');
       }
     });
   }
@@ -159,66 +168,51 @@ export class FeedPageComponent implements OnInit {
         });
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error in unfollow the user');
       }
     });
   }
 
 
   onDeleteRecipe(id: string | undefined) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: { message: 'Are you sure you want to delete this recipe?' },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+    this.alertService.confirmDelete('Confirm', 'Are you do you want delete this recipe').then((isConfirmed) => {
+      if (isConfirmed) {
         this.recipeService.deleteRecipeById(id).subscribe({
           next: () => {
+            this.alertService.showSuccess('Recipe deleted successfully');
             this.router.navigate(['/user/feed']);
           },
           error: (error) => {
             this.isLoading = false;
-            this.errorMessage = error;
-            setTimeout(() => {
-              this.errorMessage = null;
-            }, 3000);
+            this.alertService.showError('Error occurred in deleting the recipe');
           }
         })
       }
     });
   }
-  
-  onBookNowClick(id: string | undefined) {
-    this.router.navigate(['/user/book'], { queryParams: { 'detail': id, 'id': this.userId } });
-  }
-  
-  onSaveRecipe(id: string | undefined) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: { message: 'Are you sure you want to save this recipe?' },
-    });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+  onBookNowClick(id: string | undefined) {
+    this.alertService.confirm('Confirm', 'Are you sure do you want to book this recipe').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.router.navigate(['/user/book'], { queryParams: { 'detail': id, 'id': this.userId } });
+      }
+    });
+  }
+
+  onSaveRecipe(id: string | undefined) {
+    this.alertService.confirm('Confirm', 'Are you do you want save this recipe').then((isConfirmed) => {
+      if (isConfirmed) {
         this.recipeService.saveRecipeInUserCollection(this.userId, id).subscribe({
           next: () => {
-            const saveDialogRef = this.dialog.open(ConfirmDialogComponent, {
-              data: { message: 'Are you wanted to see the saved recipe collection?' },
-            });
-            saveDialogRef.afterClosed().subscribe((result) => {
-              if (result) {
+            this.alertService.confirmDelete('Confirm', 'Are you do you want see this saved recipe').then((isConfirmed) => {
+              if (isConfirmed) {
                 this.router.navigate(['/user/saved']);
               }
             });
           },
           error: (error) => {
             this.isLoading = false;
-            this.errorMessage = error;
-            setTimeout(() => {
-              this.errorMessage = null;
-            }, 3000);
+            this.alertService.showError('Error occurred in saving the recipe');
           },
         });
       }
@@ -227,24 +221,17 @@ export class FeedPageComponent implements OnInit {
 
   onReportRecipe(id: string | undefined) {
     const dialogRef = this.dialog.open(ReportDialogComponent);
-
     dialogRef.afterClosed().subscribe((reportReason) => {
       if (reportReason) {
-        const reportDialogRef = this.dialog.open(ConfirmDialogComponent, {
-          data: { message: 'Are you sure you want to report this comment?' },
-        });
-        reportDialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-            console.log(result);
+        this.alertService.confirmDelete('Confirm', 'Are you do you want report this recipe').then((isConfirmed) => {
+          if (isConfirmed) {
             this.commentService.reportRecipe(this.userId, id, reportReason).subscribe({
               next: () => {
+                this.alertService.showSuccess('Recipe reported successfully');
               },
               error: (error) => {
                 this.isLoading = false;
-                this.errorMessage = error;
-                setTimeout(() => {
-                  this.errorMessage = null;
-                }, 3000);
+                this.alertService.showError('Error occurred in reporting the recipe')
               },
             });
           }
@@ -255,24 +242,17 @@ export class FeedPageComponent implements OnInit {
 
   onReportUser(id: string | undefined) {
     const dialogRef = this.dialog.open(ReportDialogComponent);
-
     dialogRef.afterClosed().subscribe((reportReason) => {
       if (reportReason) {
-        const reportDialogRef = this.dialog.open(ConfirmDialogComponent, {
-          data: { message: 'Are you sure you want to report this comment?' },
-        });
-        reportDialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-            console.log(result);
+        this.alertService.confirmDelete('Confirm', 'Are you do you want report this user').then((isConfirmed) => {
+          if (isConfirmed) {
             this.commentService.reportUser(this.userId, id, reportReason).subscribe({
               next: () => {
+                this.alertService.showSuccess('User reported successfully');
               },
               error: (error) => {
                 this.isLoading = false;
-                this.errorMessage = error;
-                setTimeout(() => {
-                  this.errorMessage = null;
-                }, 3000);
+                this.alertService.showError('Error occurred in reporting the user')
               },
             });
           }
@@ -281,7 +261,11 @@ export class FeedPageComponent implements OnInit {
     });
   }
 
-  ngOnDestroy(){
+  showUserDetail(id: string | undefined) {
+    this.router.navigate(['/user/bio'], { queryParams: { 'id': id } });
+  }
+
+  ngOnDestroy() {
     this.subscription.unsubscribe();
     this.subscription1.unsubscribe();
     this.subscription2.unsubscribe();

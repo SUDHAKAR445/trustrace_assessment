@@ -7,14 +7,17 @@
                     <div class="profile-image-container" (mouseenter)="showEditButton = true"
                         (mouseleave)="showEditButton = false">
                         <img [src]="userProfile.profileImageUrl" alt="Profile Image" class="profile-image">
-                        <mat-icon *ngIf="showEditButton" class="edit-icon">edit-button</mat-icon>
+                        <mat-icon *ngIf="showEditButton" class="edit-icon" [routerLink]="['/user/profile/edit']" routerLinkActive="router-link-active" >edit-button</mat-icon>
                     </div>
                     <div>
-                        <div class="profile-label">Followers:</div>
-                        <div class="profile-value">{{ followersList?.length || 0}}</div>
+                        <div class="profile-label" clickable (click)="showFollowers()">Followers:</div>
+                        <div class="profile-value" clickable (click)="showFollowers()">{{ followersList?.length || 0}}</div>
 
-                        <div class="profile-label">Following:</div>
-                        <div class="profile-value">{{ followingList?.length || 0}}</div>
+                        <div class="profile-label" clickable (click)="showFollowing()">Following:</div>
+                        <div class="profile-value" clickable (click)="showFollowing()">{{ followingList?.length || 0}}</div>
+
+                        <div class="profile-label" clickable (click)="showPosts()">Total Posts:</div>
+                        <div class="profile-value" clickable (click)="showPosts()">{{ totalPost || 0}}</div>
 
                         <div class="profile-label">Username</div>
                         <div class="profile-value">{{ userProfile.usernameValue }}</div>

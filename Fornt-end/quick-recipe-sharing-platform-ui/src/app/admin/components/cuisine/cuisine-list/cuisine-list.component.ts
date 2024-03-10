@@ -4,6 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Cuisine } from 'src/app/model/cuisine.model';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { CuisineService } from 'src/app/services/cuisine.service';
 import { UserService } from 'src/app/services/user.service';
 
@@ -14,15 +15,14 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class CuisineListComponent implements AfterViewInit {
 
-  errorMessage!: string | null;
+  router: Router = inject(Router);
+  cuisineService: CuisineService = inject(CuisineService);
+  changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
+  alertService: AlertService = inject(AlertService);
+
   createUserClicked: boolean = false;
   displayedColumns: string[] = ['S.No', 'Cuisine Name', 'Total Recipe Posted'];
   dataSource = new MatTableDataSource<Cuisine>();
-
-  router: Router = inject(Router);
-
-  constructor(private cuisineService: CuisineService, private changeDetectorRef: ChangeDetectorRef) {
-  }
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('message') messageRef!: ElementRef;
@@ -57,10 +57,7 @@ export class CuisineListComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Error in applying the filter");
       }
     })
   }
@@ -74,10 +71,7 @@ export class CuisineListComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Error in displaying the Cuisine");
       }
     })
   }

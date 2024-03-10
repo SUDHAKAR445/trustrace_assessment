@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Explore } from 'src/app/model/cuisine.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { CategoryService } from 'src/app/services/category.service';
 import { CuisineService } from 'src/app/services/cuisine.service';
 
@@ -13,38 +14,29 @@ export class ExploreComponent {
 
   categoryService: CategoryService = inject(CategoryService);
   cuisineService: CuisineService = inject(CuisineService);
+  alertService: AlertService = inject(AlertService);
   router: Router = inject(Router);
 
   cuisineExplore!: Explore[];
   categoryExplore!: Explore[];
-  errorMessage!: string | null;
 
   ngOnInit() {
     this.categoryService.exploreByCategory().subscribe({
       next: (response) => {
         this.categoryExplore = response;
-        console.log(this.categoryExplore);
 
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error occurred in showing the explore page');
       }
     });
 
     this.cuisineService.exploreByCuisine().subscribe({
       next: (response) => {
         this.cuisineExplore = response;
-        console.log(this.cuisineExplore);
-
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error occurred in showing the explore page');
       }
     });
   }

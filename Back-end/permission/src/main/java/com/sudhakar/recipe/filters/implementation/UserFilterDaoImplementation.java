@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -56,7 +57,7 @@ public class UserFilterDaoImplementation implements UserFilterDao {
             }
 
             long count = mongoTemplate.count(query, User.class);
-            List<User> users = mongoTemplate.find(query.with(pageable), User.class);
+            List<User> users = mongoTemplate.find(query.with(pageable).with(Sort.by(Sort.Direction.ASC, "createdAt")), User.class);
 
             Page<User> usersList = new PageImpl<>(users, pageable, count);
 

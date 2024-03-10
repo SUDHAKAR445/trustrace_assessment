@@ -1,0 +1,24 @@
+<div *ngFor="let user of followers" class="user-profile">
+    <div class="user-info" (click)="showUserDetail(user.id)" clickable>
+        <img [src]="user.profileImageUrl" alt="Profile Image">
+        <div>
+            <strong>{{ user.usernameValue }}</strong>
+        </div>
+    </div>
+    <div class="follow-buttons">
+        <button mat-button *ngIf="!checkFollow(user.id!) && user.id !== userId" color="primary"
+            (click)="onFollowNowClick(user.id!)">
+            Follow
+        </button>
+        <button mat-button *ngIf="checkFollow(user.id!) && user.id !== userId" color="primary"
+            (click)="onUnfollowNowClick(user.id!)">
+            Unfollow
+        </button>
+    </div>
+    <hr class="profile-divider">
+</div>
+
+<div *ngIf="!followers || followers.length === 0" class="no-saved-message">
+    <p>No Followers present for you </p>
+    <img src="../assets/no-follower.png">
+</div>

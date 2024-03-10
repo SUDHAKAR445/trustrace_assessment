@@ -17,11 +17,13 @@ public interface CommentService {
 
     ResponseEntity<Void> deleteComment(String commentId);
 
-    ResponseEntity<String> updateCommentLike(String commentId, String userId, boolean like);
+    ResponseEntity<Void> updateCommentLike(String commentId, String userId, boolean like);
 
     void deleteAllComment(List<String> comments);
 
     ResponseEntity<Page<CommentDto>> getAllComments(String recipeId, Pageable page);
 
     ResponseEntity<CommentDto> getCommentById(String id);
+
+    ResponseEntity<Set<String>> getAllLikedComments(String id);
 }

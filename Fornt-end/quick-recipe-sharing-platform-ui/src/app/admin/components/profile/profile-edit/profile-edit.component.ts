@@ -1,35 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { IDeactivateComponent } from 'src/app/model/canActivate.model';
 import { FileHandle } from 'src/app/model/file-handle.model';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-profile-edit',
   templateUrl: './profile-edit.component.html',
   styleUrls: ['./profile-edit.component.scss']
 })
-export class ProfileEditComponent implements OnInit {
+export class ProfileEditComponent implements OnInit, IDeactivateComponent {
+
+  alertService: AlertService = inject(AlertService);
+  userService: UserService = inject(UserService);
+  router: Router = inject(Router);
+  sanitizer: DomSanitizer = inject(DomSanitizer);
+  authService: AuthService = inject(AuthService);
+
   updateUserForm!: FormGroup;
   imageFile!: FileHandle;
-  errorMessage: string | null = null;
-
-  defaultImageUrl = "https://img.icons8.com/bubbles/100/000000/user.png";
-
+  defaultImageUrl!: string;
+  isSubmitted: boolean = false;
   userId: string | null = null;
-  userDetail: User = {} as User;
+  userDetail: User | null = {} as User;
   imagePreview: SafeUrl | null = null;
-
-  constructor(
-    private activeRoute: ActivatedRoute,
-    private userService: UserService,
-    private router: Router,
-    private sanitizer: DomSanitizer,
-    private authService: AuthService
-  ) {}
 
   ngOnInit(): void {
     this.updateUserForm = new FormGroup({
@@ -38,58 +39,55 @@ export class ProfileEditComponent implements OnInit {
       lastName: new FormControl(null, Validators.required),
       email: new FormControl(null, Validators.required),
       gender: new FormControl(null, Validators.required),
-      contact: new FormControl(null),
+      contact: new FormControl(null, Validators.min(1000)),
       role: new FormControl(null, Validators.required),
       password: new FormControl(null, Validators.required),
     });
 
-    this.activeRoute.queryParamMap.subscribe((data) => {
-      this.userId = data.get('detail');
-      if (this.userId) {
-        this.userService.getUserById(this.userId).subscribe({
-          next: (response) => {
-            this.userDetail = response;
-            this.updateUserForm.setValue({
-              usernameValue: this.userDetail.usernameValue,
-              firstName: this.userDetail.firstName,
-              lastName: this.userDetail.lastName,
-              email: this.userDetail.email,
-              gender: this.userDetail.gender,
-              contact: this.userDetail.contact,
-              role: this.userDetail.role,
-              password: this.userDetail.password || null,
-            });
+    this.authService.userDetail.subscribe((data) => {
+      this.userDetail = data;
+      this.updateUserForm.setValue({
+        usernameValue: this.userDetail?.usernameValue,
+        firstName: this.userDetail?.firstName,
+        lastName: this.userDetail?.lastName,
+        email: this.userDetail?.email,
+        gender: this.userDetail?.gender,
+        contact: this.userDetail?.contact,
+        role: this.userDetail?.role,
+        password: this.userDetail?.password || null,
+      });
 
-            // Initialize default image URL
-            this.imagePreview = this.sanitizer.bypassSecurityTrustUrl(this.defaultImageUrl);
-          },
-          error: (error) => {
-            console.log(error);
-          }
-        });
-      }
+      this.defaultImageUrl = this.userDetail?.profileImageUrl!;
+      // Initialize default image URL
+      this.imagePreview = this.sanitizer.bypassSecurityTrustUrl(this.defaultImageUrl);
+
     });
   }
-
   onUpdateFormSubmitted() {
-    if (this.updateUserForm.valid) {
-      const userFormData = this.prepareFormData(this.updateUserForm.value);
-      this.userService.updateUserById(this.userId!, userFormData).subscribe({
-        next: (response) => {
-          this.userService.getUserById(this.userId).subscribe((data) => {
-            this.authService.userDetail.next(data);
+    this.alertService.confirm("Confirm", "Are you sure you want to update this report?").then((confirmed) => {
+      if (confirmed) {
+        this.isSubmitted = true;
+        if (this.updateUserForm.valid) {
+          const userFormData = this.prepareFormData(this.updateUserForm.value);
+          this.userService.updateUserById(this.userDetail?.id!, userFormData).subscribe({
+            next: (response) => {
+              this.userService.getUserById(this.userDetail?.id).subscribe((data) => {
+                this.authService.userDetail.next(data);
+              });
+              this.userService.getUserById(this.userId).subscribe((data) => {
+                this.authService.userDetail.next(data);
+              });
+              this.alertService.showSuccess("Your profile updated successfully");
+              this.router.navigate(['/admin/profile']);
+            },
+            error: (error) => {
+              this.alertService.showError("Error in updating your profile");
+              this.router.navigate(['/admin/profile']);
+            }
           });
-          this.router.navigate(['/admin/profile']);
-        },
-        error: (error) => {
-          this.errorMessage = error;
-          this.router.navigate(['/admin/profile']);
-          setTimeout(() => {
-            this.errorMessage = null;
-          }, 3000);
         }
-      });
-    }
+      }
+    });
   }
 
   prepareFormData(user: User): FormData {
@@ -121,6 +119,14 @@ export class ProfileEditComponent implements OnInit {
       };
       this.imageFile = fileHandle;
       this.imagePreview = fileHandle.url;
+    }
+  }
+
+  canExit(): boolean | Promise<boolean> | Observable<boolean> {
+    if (this.updateUserForm.dirty && !this.isSubmitted) {
+      return this.alertService.confirmExit();
+    } else {
+      return true;
     }
   }
 }

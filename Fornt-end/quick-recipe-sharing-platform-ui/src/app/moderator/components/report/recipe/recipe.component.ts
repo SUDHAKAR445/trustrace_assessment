@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Report } from 'src/app/model/report.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { ReportService } from 'src/app/services/report.service';
 
 const today = new Date();
@@ -19,18 +20,16 @@ const day = today.getDate();
 })
 export class RecipeComponent implements AfterViewInit {
 
-  errorMessage!: string | null;
-  createUserClicked: boolean = false;
+  reportService: ReportService = inject(ReportService);
+  changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
+  router: Router = inject(Router);
+  alertService: AlertService = inject(AlertService);
+
   displayedColumns: string[] = ['S.No', 'Reporter Profile', 'Reporter Username', 'Recipe Title', 'Recipe User Profile', 'Recipe Username', 'Reported Text', 'Reported Date', 'Status', 'Actions'];
   dataSource = new MatTableDataSource<Report>();
   selectedStatus!: string;
 
-  router: Router = inject(Router);
-
-  constructor(private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) {
-  }
-
-  campaignOne = new FormGroup({
+  dateFilter = new FormGroup({
     start: new FormControl(new Date(year - 1, month, day)),
     end: new FormControl(new Date(year, month, day)),
   });
@@ -53,15 +52,15 @@ export class RecipeComponent implements AfterViewInit {
   }
   applyFilters() {
     const inputValue = this.messageRef.nativeElement.value;
-    if(!this.selectedStatus && !this.campaignOne.value && !inputValue) {
+    if(!this.selectedStatus && !this.dateFilter.value && !inputValue) {
       this.loadPage(this.paginator.pageIndex, this.paginator.pageSize);
     } else {
-      this.makeApiCall(inputValue, this.selectedStatus, this.campaignOne.value.start, this.campaignOne.value.end, this.paginator.pageIndex, this.paginator.pageSize);
+      this.makeApiCall(inputValue, this.selectedStatus, this.dateFilter.value.start, this.dateFilter.value.end, this.paginator.pageIndex, this.paginator.pageSize);
     }
   }
 
   makeApiCall(inputValue: string, status: string, start: Date | null | undefined, end: Date | null | undefined, pageIndex: number, pageSize: number) {
-    this.reportService.getAllReportedRecipeStatus(inputValue, status, start, end, pageIndex, pageSize).subscribe({
+    this.reportService.getAllReportedRecipeStatus(inputValue,status, start, end, pageIndex, pageSize).subscribe({
       next: (response) => {
         this.dataSource.data = response.content;
         this.paginator.length = response.totalElements;
@@ -69,10 +68,7 @@ export class RecipeComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Error in applying the filter");
       }
     })
   }
@@ -86,44 +82,43 @@ export class RecipeComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Error occurred in displaying the reported recipe");
       }
     })
+  }
+
+  showDetail(id: string) {
+    this.router.navigate(['/moderator/users/detail'], {queryParams:{detail: id}});
+  }
+
+  showRecipeDetail(id: string) {
+    this.router.navigate(['/moderator/recipes/detail'], {queryParams:{detail: id}});
   }
 
   onReportClicked(id: string) {
-    this.router.navigate(['/moderator/report/recipes/detail'], {queryParams:{detail: id}});
+    this.alertService.confirm("Confirm", "Are you sure you want to update this report?").then((confirmed) => {
+      if(confirmed) {
+        this.router.navigate(['/moderator/report/recipes/detail'], {queryParams:{detail: id}});
+      }
+    });
   }
 
   onEditClicked(id: string) {
-    this.router.navigate(['/moderator/report/recipes/detail'], {queryParams:{detail: id}});
-  }
-
-  onDeleteClicked(id: string) {
-    this.reportService.deleteReportById(id).subscribe({
-      next: (response) => {
-        this.router.navigate(['/admin/report/recipes']);
-      },
-      error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+    this.alertService.confirm("Confirm", "Are you sure you want to update this report?").then((confirmed) => {
+      if(confirmed) {
+        this.router.navigate(['/moderator/report/recipes/detail'], {queryParams:{detail: id}});
       }
-    })
+    });
   }
 
   onStartDateChange(event: MatDatepickerInputEvent<Date>) {
-    this.campaignOne.patchValue({
+    this.dateFilter.patchValue({
       start: event.value,
     });
   }
 
   onEndDateChange(event: MatDatepickerInputEvent<Date>) {
-    this.campaignOne.patchValue({
+    this.dateFilter.patchValue({
       end: event.value,
     });
   }

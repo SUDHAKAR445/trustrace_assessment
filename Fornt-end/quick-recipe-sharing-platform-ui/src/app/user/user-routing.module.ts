@@ -13,6 +13,13 @@ import { RecipeDetailComponent } from './components/recipe/recipe-detail/recipe-
 import { RecipeUpdateComponent } from './components/recipe/recipe-update/recipe-update.component';
 import { SavedRecipeComponent } from './components/saved-recipe/saved-recipe.component';
 import { SearchComponent } from './components/search/search.component';
+import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
+import { YourPostComponent } from './components/your-post/your-post.component';
+import { FollowerListComponent } from './components/follower-list/follower-list.component';
+import { FollowingListComponent } from './components/following-list/following-list.component';
+import { DetailComponent } from './components/detail/detail.component';
+import { BioComponent } from './components/bio/bio.component';
+import { UserCreateComponent } from '../admin/components/user/user-create/user-create.component';
 
 const routes: Routes = [
   {
@@ -20,12 +27,21 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'feed', pathMatch: 'full' },
       { path: 'feed', component: FeedPageComponent },
-      { path: 'create', component: RecipeCreateComponent },
+      { path: 'create', component: RecipeCreateComponent, canDeactivate: [(comp: RecipeCreateComponent) => {return comp.canExit()}] },
       { path: 'detail', component: RecipeDetailComponent },
-      { path: 'update', component: RecipeUpdateComponent },
+      { path: 'update', component: RecipeUpdateComponent, canDeactivate: [(comp: RecipeUpdateComponent) => {return comp.canExit()}] },
       { path: 'saved', component: SavedRecipeComponent },
-      { path: 'book', component: PaymentComponent },
-      { path: 'search', component: SearchComponent },
+      { path: 'book', component: PaymentComponent, canDeactivate: [(comp: PaymentComponent) => {return comp.canExit()}] },
+      { path: 'followers', component: FollowerListComponent },
+      { path: 'following', component: FollowingListComponent },
+      { path: 'bio', component: BioComponent },
+      { path: 'post', component: DetailComponent },
+      {
+        path: 'search', component: SearchComponent,
+        runGuardsAndResolvers: 'always'
+      },
+      { path: 'profile/edit', component: ProfileEditComponent, canDeactivate: [(comp: ProfileEditComponent) => {return comp.canExit()}] },
+      { path: 'recipes', component: YourPostComponent },
       {
         path: 'explore',
         children: [

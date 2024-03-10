@@ -1,8 +1,11 @@
 package com.sudhakar.recipe.service.implementation;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +62,7 @@ public class CommentServiceImplementation implements CommentService {
     }
 
     @Override
-    public ResponseEntity<String> updateCommentLike(String commentId, String userId, boolean like) {
+    public ResponseEntity<Void> updateCommentLike(String commentId, String userId, boolean like) {
         try {
             Optional<Comment> commentOptional = commentRepository.findById(commentId);
             Optional<User> userOptional = userRepository.findById(userId);
@@ -68,22 +71,22 @@ public class CommentServiceImplementation implements CommentService {
                 Comment comment = commentOptional.get();
                 User user = userOptional.get();
 
-                List<String> likes = comment.getLikes();
+                Set<String> likes = comment.getLikes();
 
                 if (like) {
-                    likes.add(0, user.getId());
+                    likes.add(user.getId());
                     commentRepository.save(comment);
-                    return new ResponseEntity<>("Comment liked successfully", HttpStatus.OK);
+                    return new ResponseEntity<>(HttpStatus.OK);
                 } else {
                     likes.remove(user.getId());
                     commentRepository.save(comment);
-                    return new ResponseEntity<>("Comment unliked successfully", HttpStatus.OK);
+                    return new ResponseEntity<>(HttpStatus.OK);
                 }
             }
 
-            return new ResponseEntity<>("Comment does not exist or user not found", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in updating comment like", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -125,6 +128,24 @@ public class CommentServiceImplementation implements CommentService {
         }
     }
 
+    @Override
+    public ResponseEntity<Set<String>> getAllLikedComments(String id) {
+        try {
+            Optional<User> userOptional = userRepository.findById(id);
+            if(userOptional.isPresent()) {
+                List<Comment> comments = commentRepository.findByLikesContains(id);
+                Set<String> likedComment = new HashSet<>();
+                for(Comment comment : comments) {
+                    likedComment.add(comment.getId());
+                }
+                return new ResponseEntity<>(likedComment, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch ( Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public CommentDto convertToDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setId(comment.getId());
@@ -135,6 +156,7 @@ public class CommentServiceImplementation implements CommentService {
         commentDto.setProfileImageUrl(user.getProfileImageUrl());
         commentDto.setLikeCount(comment.getLikes() == null ? 0 : comment.getLikes().size());
         commentDto.setCommentDate(comment.getDate());
+        commentDto.setLikes(comment.getLikes());
 
         return commentDto;
     }

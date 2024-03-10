@@ -59,7 +59,7 @@
                 placeholder="Enter password">
         </div>
 
-        <button type="submit" class="btn-primary">Update Profile</button>
+        <button type="submit" class="btn-primary" [disabled]="updateUserForm.invalid">Update Profile</button>
         <button type="button" class="btn-danger" routerLink="/admin/profile">Cancel</button>
     </form>
 </div>

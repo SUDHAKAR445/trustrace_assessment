@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -67,7 +68,7 @@ public class RecipeFilterDaoImplementation implements RecipeFilterDao {
             }
 
             long count = mongoTemplate.count(query, User.class);
-            List<Recipe> recipes = mongoTemplate.find(query.with(pageable), Recipe.class);
+            List<Recipe> recipes = mongoTemplate.find(query.with(pageable).with(Sort.by(Sort.Direction.ASC, "dateCreated")), Recipe.class);
 
             Page<Recipe> recipesList = new PageImpl<>(recipes, pageable, count);
 

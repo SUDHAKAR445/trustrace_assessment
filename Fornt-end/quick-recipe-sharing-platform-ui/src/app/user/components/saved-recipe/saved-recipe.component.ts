@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Recipe } from 'src/app/model/recipe.model';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { CommentService } from 'src/app/services/comment.service';
 import { FollowService } from 'src/app/services/follow.service';
@@ -26,8 +27,8 @@ export class SavedRecipeComponent {
   router: Router = inject(Router);
   commentService: CommentService = inject(CommentService);
   followService: FollowService = inject(FollowService);
+  alertService: AlertService = inject(AlertService);
 
-  errorMessage!: string | null;
   isFollow: boolean = false;
   isLoading: boolean = false;
   userId!: string;
@@ -75,10 +76,7 @@ export class SavedRecipeComponent {
 
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error occurred in displaying the user collection');
       }
     });
 
@@ -87,12 +85,16 @@ export class SavedRecipeComponent {
   onShowDetailClicked(id: string) {
     this.router.navigate(['/user/detail'], { queryParams: { "detail": id } });
   }
+
   onLikeClick(id: string): void {
     this.recipeService.likeRecipe(id, this.userId).subscribe({
       next: () => {
         this.recipeService.getAllLikedRecipes(this.userId).subscribe((data) => {
           this.authService.likedRecipes.next(data);
         });
+      },
+      error: () => {
+        this.alertService.showError('Error in like the recipe');
       }
     })
   }
@@ -103,6 +105,9 @@ export class SavedRecipeComponent {
         this.recipeService.getAllLikedRecipes(this.userId).subscribe((data) => {
           this.authService.likedRecipes.next(data);
         });
+      },
+      error: () => {
+        this.alertService.showError('Error in unlike the recipe');
       }
     })
   }
@@ -112,12 +117,11 @@ export class SavedRecipeComponent {
   }
 
   onUpdateClick(id: string) {
-    console.log(id);
-    this.router.navigate(['/user/update'], { queryParams: { "detail": id } });
-  }
-
-  onBookNowClick(id: string) {
-    this.router.navigate(['/user/book'], { queryParams: { 'detail': id, 'id': this.userId } });
+    this.alertService.confirm('Confirm', 'Are you sure do you want to update this recipe').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.router.navigate(['/user/update'], { queryParams: { "detail": id } });
+      }
+    });
   }
 
   checkFollow(id: string): boolean {
@@ -136,10 +140,7 @@ export class SavedRecipeComponent {
         });
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error in following the user');
       }
     });
   }
@@ -156,65 +157,50 @@ export class SavedRecipeComponent {
         });
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error in unfollow the user');
       }
     });
   }
 
-  onRemoveRecipe(id: string | undefined) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: { message: 'Are you sure you want to remove this recipe?' },
-    });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.recipeService.removeRecipeInUserCollection(this.userId, id).subscribe({
+  onDeleteRecipe(id: string | undefined) {
+    this.alertService.confirmDelete('Confirm', 'Are you do you want delete this recipe').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.recipeService.deleteRecipeById(id).subscribe({
           next: () => {
-            const saveDialogRef = this.dialog.open(ConfirmDialogComponent, {
-              data: { message: 'Are you wanted to see the saved recipe collection?' },
-            });
-            saveDialogRef.afterClosed().subscribe((result) => {
-              if (result) {
-                window.location.reload();
-                this.router.navigate(['/user/saved']);
-              }
-            });
+            this.alertService.showSuccess('Recipe deleted successfully');
+            this.router.navigate(['/user/feed']);
           },
           error: (error) => {
             this.isLoading = false;
-            this.errorMessage = error;
-            setTimeout(() => {
-              this.errorMessage = null;
-            }, 3000);
-          },
-        });
+            this.alertService.showError('Error occurred in deleting the recipe');
+          }
+        })
+      }
+    });
+  }
+
+  onBookNowClick(id: string | undefined) {
+    this.alertService.confirm('Confirm', 'Are you sure do you want to book this recipe').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.router.navigate(['/user/book'], { queryParams: { 'detail': id, 'id': this.userId } });
       }
     });
   }
 
   onReportRecipe(id: string | undefined) {
     const dialogRef = this.dialog.open(ReportDialogComponent);
-
     dialogRef.afterClosed().subscribe((reportReason) => {
       if (reportReason) {
-        const reportDialogRef = this.dialog.open(ConfirmDialogComponent, {
-          data: { message: 'Are you sure you want to report this comment?' },
-        });
-        reportDialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-            console.log(result);
+        this.alertService.confirmDelete('Confirm', 'Are you do you want report this recipe').then((isConfirmed) => {
+          if (isConfirmed) {
             this.commentService.reportRecipe(this.userId, id, reportReason).subscribe({
               next: () => {
+                this.alertService.showSuccess('Recipe reported successfully');
               },
               error: (error) => {
                 this.isLoading = false;
-                this.errorMessage = error;
-                setTimeout(() => {
-                  this.errorMessage = null;
-                }, 3000);
+                this.alertService.showError('Error occurred in reporting the recipe')
               },
             });
           }
@@ -225,30 +211,48 @@ export class SavedRecipeComponent {
 
   onReportUser(id: string | undefined) {
     const dialogRef = this.dialog.open(ReportDialogComponent);
-
     dialogRef.afterClosed().subscribe((reportReason) => {
       if (reportReason) {
-        const reportDialogRef = this.dialog.open(ConfirmDialogComponent, {
-          data: { message: 'Are you sure you want to report this user?' },
-        });
-        reportDialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-            console.log(result);
+        this.alertService.confirmDelete('Confirm', 'Are you do you want report this user').then((isConfirmed) => {
+          if (isConfirmed) {
             this.commentService.reportUser(this.userId, id, reportReason).subscribe({
               next: () => {
+                this.alertService.showSuccess('User reported successfully');
               },
               error: (error) => {
                 this.isLoading = false;
-                this.errorMessage = error;
-                setTimeout(() => {
-                  this.errorMessage = null;
-                }, 3000);
+                this.alertService.showError('Error occurred in reporting the user')
               },
             });
           }
         });
       }
     });
+  }
+
+  onRemoveRecipe(id: string | undefined) {
+    this.alertService.confirmDelete('Confirm', 'Are you do you want remove this recipe').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.recipeService.removeRecipeInUserCollection(this.userId, id).subscribe({
+          next: () => {
+            this.alertService.confirm('Confirm', 'Are you do you want see the saved collection').then((isConfirmed) => {
+              if (isConfirmed) {
+                window.location.reload();
+                this.router.navigate(['/user/saved']);
+              }
+            });
+          },
+          error: (error) => {
+            this.isLoading = false;
+            this.alertService.showError('Error occurred in removing the recipe');
+          },
+        });
+      }
+    });
+  }
+
+  showUserDetail(id: string | undefined) {
+    this.router.navigate(['/user/bio'], { queryParams: { 'id': id } });
   }
 
   ngOnDestroy() {

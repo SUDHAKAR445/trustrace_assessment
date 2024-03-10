@@ -1,6 +1,7 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Payment, Transaction } from 'src/app/model/payment.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PaymentService } from 'src/app/services/payment.service';
 
@@ -11,6 +12,11 @@ import { PaymentService } from 'src/app/services/payment.service';
 })
 export class BookingsComponent {
 
+  paymentService: PaymentService = inject(PaymentService);
+  authService: AuthService = inject(AuthService);
+  router: Router = inject(Router);
+  alertService: AlertService = inject(AlertService);
+
   userId!: string | null | undefined;
   errorMessage!: string | null;
   bookings: Transaction[] = [];
@@ -19,10 +25,6 @@ export class BookingsComponent {
   isLoading: boolean = false;
   hasLoadedInitialData: boolean = false;
   showNoBookingsMessage: boolean = false;
-
-  paymentService: PaymentService = inject(PaymentService);
-  authService: AuthService = inject(AuthService);
-  router: Router = inject(Router);
 
   ngOnInit() {
     this.authService.user.subscribe((data) => {
@@ -54,11 +56,7 @@ export class BookingsComponent {
         this.hasLoadedInitialData = true;
       },
       error: (error) => {
-        this.isLoading = false;
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error occurred in displaying the bookings')
       }
     });
   }

@@ -2,7 +2,9 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { RecipeService } from 'src/app/services/recipe.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -14,7 +16,9 @@ export class HeaderComponent {
 
   authService: AuthService = inject(AuthService);
   userService: UserService = inject(UserService);
+  recipeService: RecipeService = inject(RecipeService);
   router: Router = inject(Router);
+  alertService: AlertService = inject(AlertService);
   subscription!: Subscription;
 
   userId!: string | undefined | null;
@@ -26,7 +30,11 @@ export class HeaderComponent {
     });
   }
   onLogoutClicked(){
-    this.authService.logout();
+    this.alertService.confirm('Confirm', 'Are going to logout?').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.authService.logout();
+      }
+    });
   }
 
   onSearchClicked(search: string) {
@@ -35,5 +43,9 @@ export class HeaderComponent {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  onSearchChange(searchText: string): void {
+    this.recipeService.setSearchText(searchText);
   }
 }

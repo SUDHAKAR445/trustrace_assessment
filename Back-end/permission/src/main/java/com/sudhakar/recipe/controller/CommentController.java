@@ -1,9 +1,12 @@
 package com.sudhakar.recipe.controller;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import com.sudhakar.recipe.service.CommentService;
 @RestController
 @RequestMapping("/api/comments")
 @CrossOrigin(origins = "http://localhost:4200")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class CommentController {
 
     @Autowired
@@ -29,16 +33,21 @@ public class CommentController {
         return commentService.deleteComment(commentId);
     }
 
-    @PutMapping("/{commentId}/like")
-    public ResponseEntity<String> likeComment(@PathVariable String commentId,
-            @RequestParam String userId) {
+    @PutMapping("/like/{commentId}/{userId}")
+    public ResponseEntity<Void> likeComment(@PathVariable String commentId,
+            @PathVariable String userId) {
         return commentService.updateCommentLike(commentId, userId, true);
     }
 
-    @PutMapping("/{commentId}/unlike")
-    public ResponseEntity<String> unlikeComment(@PathVariable String commentId,
-            @RequestParam String userId) {
+    @PutMapping("/unlike/{commentId}/{userId}")
+    public ResponseEntity<Void> unlikeComment(@PathVariable String commentId,
+            @PathVariable String userId) {
         return commentService.updateCommentLike(commentId, userId, false);
+    }
+
+    @GetMapping("/like/{userId}")
+    public ResponseEntity<Set<String>> getAllLikedComments(@PathVariable String userId) {
+        return commentService.getAllLikedComments(userId);
     }
 
     @GetMapping("/{recipeId}")
@@ -46,7 +55,8 @@ public class CommentController {
             @RequestParam int size) {
         return commentService.getAllComments(recipeId, PageRequest.of(page, size));
     }
-
+    
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/id/{id}")
     public ResponseEntity<CommentDto> getCommentById(@PathVariable String id) {
         return commentService.getCommentById(id);

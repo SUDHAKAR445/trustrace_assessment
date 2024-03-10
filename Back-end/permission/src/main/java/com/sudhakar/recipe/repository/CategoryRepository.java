@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.sudhakar.recipe.entity.Category;
-import com.sudhakar.recipe.entity.Cuisine;
 
 @Repository
 public interface CategoryRepository extends MongoRepository<Category, String>{

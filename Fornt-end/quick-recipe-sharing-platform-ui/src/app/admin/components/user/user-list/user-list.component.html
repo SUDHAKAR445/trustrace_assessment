@@ -1,4 +1,3 @@
-<app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
 <button mat-button color="primary" clickable (click)="onCreateClicked()">+Add New User</button>
 <div style="display: flex;">
     <mat-form-field class="example-full-width">
@@ -94,7 +93,7 @@
             <ng-container matColumnDef="Actions">
                 <th mat-header-cell *matHeaderCellDef> Actions</th>
                 <td mat-cell *matCellDef="let element">
-                    <mat-icon class="small-button" clickable (click)="onDeleteClicked(element.id)">delete</mat-icon>
+                    <mat-icon class="small-button" clickable (click)="onDeleteClicked(element.id, element.deletedAt)">delete</mat-icon>
                     <mat-icon class="small-button" clickable (click)="onEditClicked(element.id)">edit</mat-icon>
                 </td>
             </ng-container>

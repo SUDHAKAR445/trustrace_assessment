@@ -1,14 +1,11 @@
 package com.sudhakar.recipe.service;
 
-import java.util.Date;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.sudhakar.recipe.dto.ReportBody;
 import com.sudhakar.recipe.dto.ReportDto;
-import com.sudhakar.recipe.entity.Status;
 
 public interface ReportService {
 

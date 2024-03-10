@@ -1,16 +1,13 @@
-<app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
-
 <div class="feed-container" *ngIf="recipes">
     <div *ngFor="let post of recipes">
         <mat-card class="post-card" *ngIf="!post.deletedAt">
             <mat-card-header class="header-container">
-                <div mat-card-avatar class="profile-image">
+                <div mat-card-avatar class="profile-image" (click)="showUserDetail(post.userId)" clickable>
                     <img class="profile-image" [src]="post.profileImageUrl">
                 </div>
-                <div class="header-content">
+                <div class="header-content" (click)="showUserDetail(post.userId)" clickable>
                     <mat-card-title>{{ post.username }}</mat-card-title>
-                    <mat-card-subtitle>{{ post.dateCreated | date }}</mat-card-subtitle>
-                    <mat-card-subtitle style="font-weight: bolder;">{{ post.title }}</mat-card-subtitle>
+                    <mat-card-subtitle style="font-weight: bolder;">{{ post.title }} {{ post.dateCreated | date }}</mat-card-subtitle>
                 </div>
                 <button mat-button *ngIf="!checkFollow(post.userId)" color="primary" style="margin-top: 10px;" clickable
                     (click)="onFollowNowClick(post.userId)">Follow</button>

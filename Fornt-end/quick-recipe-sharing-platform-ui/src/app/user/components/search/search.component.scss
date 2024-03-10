@@ -102,3 +102,14 @@ body{
 .no-result-message img {
     height: 80vh;
 }
+
+.like-count {
+    margin-right: 5px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.liked {
+    color: blue;
+}

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:4200")
+@PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
 public class UserController {
 
     @Autowired
@@ -35,16 +37,19 @@ public class UserController {
     @Autowired
     private UserFilterDao userFilterDao;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@RequestBody User createUserRequest) {
         return userService.createUser(createUserRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         return userService.deleteUser(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @PutMapping("{id}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable String id,
             @ModelAttribute UserResponseDto userRequest,
@@ -52,22 +57,26 @@ public class UserController {
         return userService.updateUser(id, userRequest, imageFile);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<Page<UserResponseDto>> getAllUsers(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userService.getAllUsers(pageable);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("{id}")
     public ResponseEntity<UserResponseDto> getProfile(@PathVariable String id) {
         return userService.getProfile(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/check/{usernameOrEmail}")
     public ResponseEntity<Boolean> checkUsernameOrEmail(@PathVariable String usernameOrEmail) {
         return userService.checkUsernameOrEmail(usernameOrEmail);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/search")
     public ResponseEntity<Page<UserResponseDto>> search(@RequestParam String searchText,
             @RequestParam String selectedRole,

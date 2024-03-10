@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Transaction } from 'src/app/model/payment.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { PaymentService } from 'src/app/services/payment.service';
 
 const today = new Date();
@@ -18,16 +19,15 @@ const day = today.getDate();
 })
 export class TransactionListComponent implements AfterViewInit {
 
-  errorMessage!: string | null;
+  paymentService: PaymentService = inject(PaymentService);
+  changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
+  alertService: AlertService = inject(AlertService);
+  router: Router = inject(Router);
+  
   displayedColumns: string[] = ['S.No', 'Order Id', 'Amount', 'Booker Profile', 'Booker Username', 'Booker Contact', 'Recipe Title', 'Recipe User Profile', 'Recipe Username', 'Wallet', 'Created At', 'Completed At', 'Status'];
   dataSource = new MatTableDataSource<Transaction>();
 
-  router: Router = inject(Router);
-
-  constructor(private paymentService: PaymentService, private changeDetectorRef: ChangeDetectorRef) {
-  }
-
-  campaignOne = new FormGroup({
+  dateFilter = new FormGroup({
     start: new FormControl(new Date(year - 1, month, day)),
     end: new FormControl(new Date(year, month, day)),
   });
@@ -52,10 +52,10 @@ export class TransactionListComponent implements AfterViewInit {
 
   applyFilters() {
     const inputValue = this.messageRef.nativeElement.value;
-    if(!this.selectedStatus && !inputValue && !this.campaignOne.value) {
+    if(!this.selectedStatus && !inputValue && !this.dateFilter.value) {
       this.loadPage(this.paginator.pageIndex, this.paginator.pageSize);
     } else {
-      this.makeApiCall(inputValue, this.selectedStatus, this.campaignOne.value.start, this.campaignOne.value.end, this.paginator.pageIndex, this.paginator.pageSize);
+      this.makeApiCall(inputValue, this.selectedStatus, this.dateFilter.value.start, this.dateFilter.value.end, this.paginator.pageIndex, this.paginator.pageSize);
     }
   }
 
@@ -68,14 +68,10 @@ export class TransactionListComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Error in applying the filter");
       }
     })
   }
-
 
   loadPage(pageIndex: number, pageSize: number) {
     this.paymentService.getAllTransactions(pageIndex, pageSize).subscribe({
@@ -86,10 +82,7 @@ export class TransactionListComponent implements AfterViewInit {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Failed to load Transaction list");
       }
     })
   }
@@ -107,13 +100,13 @@ export class TransactionListComponent implements AfterViewInit {
   }
 
   onStartDateChange(event: MatDatepickerInputEvent<Date>) {
-    this.campaignOne.patchValue({
+    this.dateFilter.patchValue({
       start: event.value,
     });
   }
 
   onEndDateChange(event: MatDatepickerInputEvent<Date>) {
-    this.campaignOne.patchValue({
+    this.dateFilter.patchValue({
       end: event.value,
     });
   }

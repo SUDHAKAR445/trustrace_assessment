@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { AfterViewInit, Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, switchMap } from 'rxjs';
 import { Comment } from 'src/app/model/comment.model';
 import { Recipe } from 'src/app/model/recipe.model';
 import { Report } from 'src/app/model/report.model';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { CommentService } from 'src/app/services/comment.service';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { ReportService } from 'src/app/services/report.service';
@@ -15,14 +16,14 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './report-detail.component.html',
   styleUrls: ['./report-detail.component.scss']
 })
-export class ReportDetailComponent {
+export class ReportDetailComponent implements AfterViewInit {
 
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   reportService: ReportService = inject(ReportService);
   userService: UserService = inject(UserService);
   recipeService: RecipeService = inject(RecipeService);
   commentService: CommentService = inject(CommentService);
-
+  alertService: AlertService = inject(AlertService);
   router: Router = inject(Router);
 
   reportId!: string | null;
@@ -102,14 +103,22 @@ export class ReportDetailComponent {
     this.router.navigate(['/admin/users/detail'], { queryParams: { detail: id } });
   }
 
-  updateStatusClicked(id: string | undefined , value: string) {
-    this.reportService.updateReportStatusById(id, value).subscribe({
-      next : (response) => {
-        this.router.navigate([`/admin/report/${this.type}`]);
-      },
-      error: (error) => {
+  updateStatusClicked(id: string | undefined, value: string) {
+    this.alertService.confirm("Confirm", "Are you sure you want to "+ value+ " this report?").then((confirmed) => {
+      if (confirmed) {
+        this.reportService.updateReportStatusById(id, value).subscribe({
+          next: () => {
+            this.alertService.showSuccess("Report status updated successfully");
+            this.router.navigate([`/admin/report/${this.type}`]);
+          },
+          error: (error) => {
+            this.alertService.showError("Error occurred in updating status");
+            this.router.navigate([`/admin/report/${this.type}`]);
+          },
+        });
+      } else {
         this.router.navigate([`/admin/report/${this.type}`]);
       }
-    })
+    });
   }
 }

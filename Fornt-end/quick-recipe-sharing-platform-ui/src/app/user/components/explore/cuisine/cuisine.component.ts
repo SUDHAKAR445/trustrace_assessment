@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Explore } from 'src/app/model/cuisine.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { CuisineService } from 'src/app/services/cuisine.service';
 
 @Component({
@@ -8,14 +9,15 @@ import { CuisineService } from 'src/app/services/cuisine.service';
   templateUrl: './cuisine.component.html',
   styleUrls: ['./cuisine.component.scss']
 })
-export class CuisineComponent {
-  alphabet: string[] = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
+export class CuisineComponent implements OnInit{
+
   cuisineService: CuisineService = inject(CuisineService);
-  errorMessage!: string | null;
+  alertService: AlertService = inject(AlertService);
+  router: Router = inject(Router);
 
   cuisineExplore!: Explore[];
   groupedCuisines: { [key: string]: Explore[] } = {};
-  router: Router = inject(Router);
+  alphabet: string[] = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
   ngOnInit() {
     this.cuisineService.exploreByCuisine().subscribe({
@@ -25,10 +27,7 @@ export class CuisineComponent {
         console.log(this.groupedCuisines);
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError('Error occurred in showing the cuisine list');
       }
     });
   }

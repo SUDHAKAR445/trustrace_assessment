@@ -86,10 +86,9 @@
                     </div>
                 </div>
 
-
                 <div class="button-container">
-                    <button mat-raised-button color="primary">Update</button>
-                    <button mat-raised-button color="warn">Cancel</button>
+                    <button mat-raised-button color="primary" (click)="updateRecipeClicked(recipeDetail.id!)">Update</button>
+                    <button mat-raised-button color="warn" (click)="onCancelClicked()">Cancel</button>
                 </div>
             </mat-card-content>
         </mat-card>

@@ -20,7 +20,7 @@ const routes: Routes = [
         path: 'profile',
         children: [
           { path: '', component: ProfileDetailComponent },
-          { path: 'update', component: ProfileEditComponent },
+          { path: 'update', component: ProfileEditComponent, canDeactivate: [(comp: ProfileEditComponent) => {return comp.canExit()}] },
         ]
       },
       {

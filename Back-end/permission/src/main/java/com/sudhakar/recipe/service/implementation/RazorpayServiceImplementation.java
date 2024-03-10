@@ -8,9 +8,6 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
@@ -166,7 +163,7 @@ public class RazorpayServiceImplementation implements RazorpayService {
     @Override
     public ResponseEntity<Page<TransactionDto>> getAllTransactions(Pageable page) {
         try {
-            Page<Booking> transactions = bookingRepository.findAll(page);
+            Page<Booking> transactions = bookingRepository.findByOrderByOrderCreatedDateDesc(page);
             System.out.println(transactions);
             return new ResponseEntity<>(transactions.map(this::convertToTransactionDto), HttpStatus.OK);
         } catch (Exception e) {

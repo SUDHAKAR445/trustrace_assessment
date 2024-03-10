@@ -10,6 +10,8 @@ import { User } from "../model/user-detail";
 import { UserService } from "./user.service";
 import { FollowService } from "./follow.service";
 import { RecipeService } from "./recipe.service";
+import { CommentService } from "./comment.service";
+import { Recipe } from "../model/recipe.model";
 
 @Injectable({
     providedIn: 'root'
@@ -20,6 +22,7 @@ export class AuthService {
     userService: UserService = inject(UserService);
     followService: FollowService = inject(FollowService);
     recipeService: RecipeService = inject(RecipeService);
+    commentService: CommentService = inject(CommentService);
 
     constructor(
         private http: HttpClient,
@@ -30,7 +33,9 @@ export class AuthService {
     userDetail: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
     followers: BehaviorSubject<User[] | null> = new BehaviorSubject<User[] | null>(null);
     following: BehaviorSubject<User[] | null> = new BehaviorSubject<User[] | null>(null);
+    recipesPosted: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
     likedRecipes: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+    likedComments: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
 
     error: string | null = null;
 
@@ -105,15 +110,24 @@ export class AuthService {
         this.userService.getUserById(user.id).subscribe((data) => {
             this.userDetail.next(data);
         });
-        this.followService.getAllFollowersById(user.id).subscribe((data) => {
-            this.followers.next(data);
-        });
-        this.followService.getAllFollowingById(user.id).subscribe((data) => {
-            this.following.next(data);
-        });
-        this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
-            this.likedRecipes.next(data);
-        });
+        if(user.authority === 'ROLE_USER') {
+            this.followService.getAllFollowersById(user.id).subscribe((data) => {
+                this.followers.next(data);
+            });
+            this.followService.getAllFollowingById(user.id).subscribe((data) => {
+                this.following.next(data);
+            });
+            this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
+                this.likedRecipes.next(data);
+            });
+            this.commentService.getAllLikedCommentsByUser(user.id).subscribe((data) => {
+                this.likedComments.next(data);
+            });
+            this.recipeService.getCountOfRecipes(user.id).subscribe((data) => {
+                this.recipesPosted.next(data[0]);
+            });
+        }
+        
         localStorage.setItem('user', JSON.stringify(user));
         this.autoLogout(user.expiresIn);
     }
@@ -148,15 +162,23 @@ export class AuthService {
                 this.userService.getUserById(user.id).subscribe((data) => {
                     this.userDetail.next(data);
                 });
-                this.followService.getAllFollowersById(user.id).subscribe((data) => {
-                    this.followers.next(data);
-                });
-                this.followService.getAllFollowingById(user.id).subscribe((data) => {
-                    this.following.next(data);
-                });
-                this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
-                    this.likedRecipes.next(data);
-                });
+                if(user.authority === 'ROLE_USER') {
+                    this.followService.getAllFollowersById(user.id).subscribe((data) => {
+                        this.followers.next(data);
+                    });
+                    this.followService.getAllFollowingById(user.id).subscribe((data) => {
+                        this.following.next(data);
+                    });
+                    this.recipeService.getAllLikedRecipes(user.id).subscribe((data) => {
+                        this.likedRecipes.next(data);
+                    });
+                    this.commentService.getAllLikedCommentsByUser(user.id).subscribe((data) => {
+                        this.likedComments.next(data);
+                    });
+                    this.recipeService.getCountOfRecipes(user.id).subscribe((data) => {
+                        this.recipesPosted.next(data[0]);
+                    });
+                }
                 this.autoLogout(timeDifference);
             }
         } else {
@@ -165,9 +187,14 @@ export class AuthService {
     }
 
     logout() {
-        this.user.next(null);
         this.router.navigate(['/login']);
         localStorage.clear();
+        this.user.next(null);
+        this.userDetail.next(null);
+        this.followers.next(null);
+        this.following.next(null);
+        this.likedComments.next([]);
+        this.likedRecipes.next([]);
         this.clearTokenExpireTimer();
     }
 

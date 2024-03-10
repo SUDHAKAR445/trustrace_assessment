@@ -5,6 +5,10 @@ import { PaymentService } from 'src/app/services/payment.service';
 import { UserService } from 'src/app/services/user.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SuccessPopComponent } from 'src/app/utility/success-pop/success-pop.component';
+import { IDeactivateComponent } from 'src/app/model/canActivate.model';
+import { Observable } from 'rxjs';
+import Swal from 'sweetalert2';
+import { AlertService } from 'src/app/services/alert.service';
 
 declare let Razorpay: any;
 @Component({
@@ -12,11 +16,12 @@ declare let Razorpay: any;
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.scss']
 })
-export class PaymentComponent implements OnInit {
+export class PaymentComponent implements OnInit, IDeactivateComponent {
 
   constructor(private paymentService: PaymentService,
     private activateRoute: ActivatedRoute,
     private userService: UserService,
+    private alertService: AlertService,
     private dialog: MatDialog,
     private router: Router) { }
 
@@ -27,6 +32,7 @@ export class PaymentComponent implements OnInit {
   payerEmail!: string | null;
   payerPhone!: string | null;
   isLoading: boolean = false;
+  isSubmitted: boolean = false;
 
   bookingAmount: number = 100;
 
@@ -51,13 +57,17 @@ export class PaymentComponent implements OnInit {
   }
 
   bookNowClicked() {
-    this.paymentService.createTransaction(this.paymentForm.value).subscribe({
-      next: response => {
-        console.log(response);
-        this.openTransactionModel(response);
-      },
-      error: response => {
-        console.log(response);
+    this.alertService.confirm('Confirm', 'Are you sure do you book this recipe?').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.isSubmitted = true;
+        this.paymentService.createTransaction(this.paymentForm.value).subscribe({
+          next: response => {
+            this.openTransactionModel(response);
+          },
+          error: response => {
+            this.alertService.showError('Error occurred in booking the recipe');
+          }
+        });
       }
     });
   }
@@ -82,10 +92,12 @@ export class PaymentComponent implements OnInit {
         if (response != null && response.razorpay_payment_id != null) {
           this.paymentService.updateTransaction(res.id, response.razorpay_payment_id).subscribe({
             next: (response) => {
-              const dialogRef = this.dialog.open(SuccessPopComponent);
-              this.isLoading = false;
-              dialogRef.afterClosed().subscribe((result) => {
-                this.router.navigate(['/user/feed']);
+              this.alertService.confirm('Info','Your booking is successfully and you order is sent to your mail. Now click OK to see detail').then((isConfirmed) => {
+                if(isConfirmed) {
+                  this.router.navigate(['/user/booking']);
+                } else {
+                  this.router.navigate(['/user/feed']);
+                }
               });
             }
           });
@@ -102,8 +114,7 @@ export class PaymentComponent implements OnInit {
           this.paymentService.updateTransaction(res.id, '').subscribe({
             next: (response) => console.log(response),
             error: (err) => {
-              this.isLoading = false;
-              alert('Payment failed..');
+              this.alertService.showError('Booking is Failed..');
               this.router.navigate(['/user/feed']);
             },
           });
@@ -113,7 +124,14 @@ export class PaymentComponent implements OnInit {
 
     let razorpayObject: any = new Razorpay(options);
     razorpayObject.open();
+  }
 
+  canExit(): boolean | Promise<boolean> | Observable<boolean> {
+    if (!this.isSubmitted) {
+      return this.alertService.confirmExit();
+    } else {
+      return true;
+    }
   }
 }
 

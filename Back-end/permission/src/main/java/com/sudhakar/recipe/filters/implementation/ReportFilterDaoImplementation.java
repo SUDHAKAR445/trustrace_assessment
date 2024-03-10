@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -54,7 +55,7 @@ public class ReportFilterDaoImplementation implements ReportFilterDao {
             }
 
             long count = mongoTemplate.count(query, Report.class);
-            List<Report> reports = mongoTemplate.find(query.with(pageable), Report.class);
+            List<Report> reports = mongoTemplate.find(query.with(pageable).with(Sort.by(Sort.Direction.ASC, "reportedDate")), Report.class);
             Page<Report> reportsList = new PageImpl<>(reports, pageable, count);
 
             return new ResponseEntity<>(reportsList.map(this::convertToDto), HttpStatus.OK);
@@ -85,7 +86,7 @@ public class ReportFilterDaoImplementation implements ReportFilterDao {
             }
 
             long count = mongoTemplate.count(query, Report.class);
-            List<Report> reports = mongoTemplate.find(query.with(pageable), Report.class);
+            List<Report> reports = mongoTemplate.find(query.with(pageable).with(Sort.by(Sort.Direction.ASC, "reportedDate")), Report.class);
             Page<Report> reportsList = new PageImpl<>(reports, pageable, count);
 
             return new ResponseEntity<>(reportsList.map(this::convertToDto), HttpStatus.OK);
@@ -116,7 +117,7 @@ public class ReportFilterDaoImplementation implements ReportFilterDao {
             }
 
             long count = mongoTemplate.count(query, Report.class);
-            List<Report> reports = mongoTemplate.find(query.with(pageable), Report.class);
+            List<Report> reports = mongoTemplate.find(query.with(pageable).with(Sort.by(Sort.Direction.ASC, "reportedDate")), Report.class);
             Page<Report> reportsList = new PageImpl<>(reports, pageable, count);
 
             return new ResponseEntity<>(reportsList.map(this::convertToDto), HttpStatus.OK);

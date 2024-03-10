@@ -5,5 +5,6 @@ export class Comment{
     username?: string;
     profileImageUrl?: string;
     likeCount?: number;
+    likes!: string[];
     commentDate?: Date;
 }

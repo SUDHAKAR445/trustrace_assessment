@@ -1,24 +1,32 @@
-<app-snackbar *ngIf="errorMessage" [errorMessage]="errorMessage"></app-snackbar>
-
 <div class="feed-container">
     <div *ngFor="let post of recipes">
         <mat-card class="post-card" *ngIf="!post.deletedAt">
             <mat-card-header class="header-container">
-                <div mat-card-avatar class="profile-image">
+                <div mat-card-avatar class="profile-image" (click)="showUserDetail(post.userId)" clickable>
                     <img class="profile-image" [src]="post.profileImageUrl">
                 </div>
-                <div class="header-content">
+                <div class="header-content" (click)="showUserDetail(post.userId)" clickable>
                     <mat-card-title>{{ post.username }}</mat-card-title>
-                    <mat-card-subtitle>{{ post.title }}</mat-card-subtitle>
+                    <mat-card-subtitle style="font-weight: bolder;">{{ post.title }} {{ post.dateCreated | date }}</mat-card-subtitle>
                 </div>
+                
+                <button mat-button *ngIf="!checkFollow(post.userId) && post.userId !== userId" color="primary" style="margin-top: 10px;" clickable
+                    (click)="onFollowNowClick(post.userId)">Follow</button>
+                <button mat-button *ngIf="checkFollow(post.userId) && post.userId !== userId" color="primary" style="margin-top: 10px;" clickable
+                    (click)="onUnfollowNowClick(post.userId)">Unfollow</button>
                 <mat-menu #menu="matMenu" class="menu-button" matMenuPosition="above">
-                    <button *ngIf="post.userId === userId" mat-menu-item
-                        clickable (click)="onUpdateClick(post.recipeId)">Update</button>
-                    <button *ngIf="post.userId === userId" mat-menu-item clickable (click)="onDeleteClick(post.recipeId)">Delete</button>
-                    <button *ngIf="post.userId !== userId" mat-menu-item clickable (click)="onReportRecipe(post.recipeId)">Report Recipe</button>
-                    <button *ngIf="post.userId !== userId" mat-menu-item clickable (click)="onReportUser(post.userId)">Report User</button>
-                    <button *ngIf="post.userId !== userId" mat-menu-item clickable (click)="onSaveRecipe(post.recipeId)">Save</button>
-                    <button *ngIf="post.userId !== userId" mat-menu-item clickable (click)="onBookNowClick(post.recipeId)">Book
+                    <button *ngIf="post.userId === userId" mat-menu-item clickable
+                        (click)="onUpdateClick(post.recipeId)">Update</button>
+                    <button *ngIf="post.userId === userId" mat-menu-item clickable
+                        (click)="onDeleteRecipe(post.recipeId)">Delete</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item clickable
+                        (click)="onReportRecipe(post.recipeId)">Report Recipe</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item clickable
+                        (click)="onReportUser(post.userId)">Report User</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item clickable
+                        (click)="onSaveRecipe(post.recipeId)">Save</button>
+                    <button *ngIf="post.userId !== userId" mat-menu-item clickable
+                        (click)="onBookNowClick(post.recipeId)">Book
                         Now</button>
                 </mat-menu>
                 <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
@@ -31,16 +39,28 @@
 
             </mat-card-content>
             <mat-card-actions class="icon-buttons">
-                <button mat-icon-button clickable (click)="onLikeClick()">
-                    <mat-icon>thumb_up</mat-icon>
-                </button>
-                <button mat-icon-button clickable (click)="onCommentClick()">
+                <div class="like-count" *ngIf="!(userId && likedRecipes?.includes(post.recipeId))" clickable (click)="onLikeClick(post.recipeId)">
+                    {{ post.likes.length }}
+                    <button mat-icon-button>
+                        <mat-icon>thumb_up_off_alt</mat-icon>
+                    </button>
+                </div>
+            
+                <div class="like-count" *ngIf="userId && likedRecipes?.includes(post.recipeId)" clickable (click)="onUnlikeClick(post.recipeId)">
+                    {{ post.likes.length + 1}}
+                    <button mat-icon-button>
+                        <mat-icon>thumb_up</mat-icon>
+                    </button>
+                </div>
+            
+                <button mat-icon-button clickable (click)="onCommentClick(post.recipeId)">
                     <mat-icon>comment</mat-icon>
                 </button>
             </mat-card-actions>
         </mat-card>
     </div>
 </div>
+
 <div *ngIf="recipes.length === 0 || !recipes || showNoBookingsMessage" class="no-result-message">
     <p>No Bookings present for you </p>
     <img src="../assets/no-result-found.png">

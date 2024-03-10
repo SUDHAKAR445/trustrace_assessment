@@ -1,6 +1,5 @@
 package com.sudhakar.recipe.service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -44,4 +43,6 @@ public interface RecipeService {
     ResponseEntity<List<RecipeDto>> getAllSavedRecipes(String userId);
 
     ResponseEntity<Set<String>> getAllLikedRecipes(String userId);
+
+    ResponseEntity<List<Integer>> getTotalRecipeCount(String userId);
 }

@@ -9,24 +9,27 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { RecipeService } from 'src/app/services/recipe.service';
+import { IDeactivateComponent } from 'src/app/model/canActivate.model';
+import Swal from 'sweetalert2';
+import { AlertService } from 'src/app/services/alert.service';
 
 @Component({
   selector: 'app-recipe-create',
   templateUrl: './recipe-create.component.html',
   styleUrls: ['./recipe-create.component.scss']
 })
-export class RecipeCreateComponent {
+export class RecipeCreateComponent implements IDeactivateComponent {
+
+  authService: AuthService = inject(AuthService);
+  recipeService: RecipeService = inject(RecipeService);
+  alertService: AlertService = inject(AlertService);
+  router: Router = inject(Router);
 
   selectedFile: any = null;
   imagePreview: SafeUrl | null = null;
   isLinear: boolean = true;
   userId!: string | null | undefined;
-  errorMessage!: string | null;
-
-
-  authService: AuthService = inject(AuthService);
-  recipeService: RecipeService = inject(RecipeService);
-  router: Router = inject(Router);
+  isSubmitted: boolean = false;
   firstFormGroup!: FormGroup;
   secondFormGroup!: FormGroup;
   thirdFormGroup!: FormGroup;
@@ -71,19 +74,19 @@ export class RecipeCreateComponent {
   handleFileInput(event: any) {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-  
+
       const fileHandle: FileHandle = {
         file: file,
         url: this.sanitizer.bypassSecurityTrustUrl(window.URL.createObjectURL(file))
       };
       this.imagePreview = fileHandle.url;
-  
+
       this.thirdFormGroup.patchValue({
         imageFile: fileHandle.file,
       });
     }
   }
-  
+
 
   addIngredients() {
     const ingredientsFormGroup = new FormGroup({
@@ -104,37 +107,46 @@ export class RecipeCreateComponent {
   }
 
   onPostRecipeClicked() {
-    const thirdFormGroupValue = this.thirdFormGroup.value;
 
-    const allFormValues = {
-      ...this.firstFormGroup.value,
-      ...this.secondFormGroup.value,
-      ...this.thirdFormGroup.value,
-      ...this.fourthFormGroup.value,
-    };
-  
-    this.recipeService.createRecipe(this.userId, allFormValues).subscribe({
-      next: (response) => {
-        this.recipeService.updateRecipeImage(response.id, thirdFormGroupValue.imageFile).subscribe({
-          next: () => {
-            this.router.navigate(['/user/feed']);
+    this.alertService.confirm('Confirm', 'Are you post this recipe?').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.isSubmitted = true;
+        const thirdFormGroupValue = this.thirdFormGroup.value;
+
+        const allFormValues = {
+          ...this.firstFormGroup.value,
+          ...this.secondFormGroup.value,
+          ...this.thirdFormGroup.value,
+          ...this.fourthFormGroup.value,
+        };
+
+        this.recipeService.createRecipe(this.userId, allFormValues).subscribe({
+          next: (response) => {
+            this.recipeService.updateRecipeImage(response.id, thirdFormGroupValue.imageFile).subscribe({
+              next: () => {
+                this.alertService.showSuccess("Recipe posted successfully");
+                this.router.navigate(['/moderator/feed']);
+              },
+              error: (error) => {
+                this.alertService.showError("Error in uploading the recipe image");
+                this.router.navigate(['/moderator/feed']);
+              },
+            });
           },
           error: (error) => {
-            console.error("Error updating recipe image:", error);
-            this.errorMessage = error;
-            setTimeout(() => {
-              this.errorMessage = null;
-            }, 3000);
+            this.alertService.showError("Error in posting the recipe");
+            this.router.navigate(['/moderator/feed']);
           },
         });
-      },
-      error: (error) => {
-        console.error("Error creating recipe:", error);
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
-      },
+      }
     });
+  }
+
+  canExit(): boolean | Promise<boolean> | Observable<boolean> {
+    if ((this.firstFormGroup.dirty || this.secondFormGroup.dirty || this.thirdFormGroup.dirty || this.fourthFormGroup.dirty) && !this.isSubmitted) {
+      return this.alertService.confirmExit();
+    } else {
+      return true;
+    }
   }
 }

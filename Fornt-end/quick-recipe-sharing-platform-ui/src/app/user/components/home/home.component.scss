@@ -65,8 +65,26 @@
     padding: 20px;
     box-sizing: border-box;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
     background-color: #f0f0f0;
     color: #333;
+}
+
+.center-section::-webkit-scrollbar {
+    width: 12px;
+}
+
+.center-section::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
+
+.center-section {
+    height: 100%;
+}
+
+body, html {
+    overflow: auto;
 }
 
 .profile-label {
@@ -79,7 +97,7 @@
 .profile-value {
     margin-top: 5px;
     margin-bottom: 15px;
-    font-size: 25px;
+    font-size: 20px;
     color: #555;
 }
 

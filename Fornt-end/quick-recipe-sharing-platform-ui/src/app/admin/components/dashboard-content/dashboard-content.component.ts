@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { AlertService } from 'src/app/services/alert.service';
 import { DashboardService } from 'src/app/services/dashboard.service';
 
 @Component({
@@ -6,9 +7,10 @@ import { DashboardService } from 'src/app/services/dashboard.service';
   templateUrl: './dashboard-content.component.html',
   styleUrls: ['./dashboard-content.component.scss']
 })
-export class DashboardContentComponent {
+export class DashboardContentComponent implements OnInit{
 
   dashboardService: DashboardService = inject(DashboardService);
+  alertService: AlertService = inject(AlertService);
 
   dashboardDetail!: { key: string, value: { [key: string]: number } }[];
 
@@ -18,7 +20,7 @@ export class DashboardContentComponent {
         this.dashboardDetail = response;
       },
       error: (error) => {
-        console.log(error);
+        this.alertService.showError("Failed to load the dashboard content");
       }
     })
   }

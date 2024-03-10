@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, ViewChild, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecipeCuisine } from 'src/app/model/recipe-cuisine.model';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { UserService } from 'src/app/services/user.service';
 
@@ -12,29 +13,22 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './user-detail.component.html',
   styleUrls: ['./user-detail.component.scss']
 })
-export class UserDetailComponent {
+export class UserDetailComponent implements OnInit {
 
-  constructor(private recipeService: RecipeService, private changeDetectorRef: ChangeDetectorRef) {
-  }
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
-  userService: UserService =inject(UserService);
+  userService: UserService = inject(UserService);
+  recipeService: RecipeService = inject(RecipeService);
+  changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
+  alertService: AlertService = inject(AlertService);
+  router: Router = inject(Router);
 
   userId!: string | null;
-
   userDetail!: User;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-
-  errorMessage!: string | null;
-  createUserClicked: boolean = false;
   displayedColumns: string[] = ['S.No', 'Profile', 'Username', 'Title', 'Date Created', 'Deleted At', 'Category', 'Cuisine', 'Actions'];
   dataSource = new MatTableDataSource<RecipeCuisine>();
-
-  router: Router = inject(Router);
-
-  
-
 
   ngOnInit() {
     this.activeRoute.queryParamMap.subscribe((data) => {
@@ -44,16 +38,11 @@ export class UserDetailComponent {
     this.userService.getUserById(this.userId).subscribe({
       next: (response) => {
         this.userDetail = response;
-        console.log(response);
       },
       error: (error) => {
-        console.log(error);
+        this.alertService.showError("Error occurred in getting user detail");
       }
     })
-  }
-
-  onUpdateClicked(id: string, status: string) {
-    
   }
 
   ngAfterViewInit() {
@@ -75,16 +64,9 @@ export class UserDetailComponent {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Error occurred in loading user's recipes");
       }
-    })
-  }
-
-  onCreateClicked() {
-    this.router.navigate(['/admin/recipes/create']);
+    });
   }
 
   showDetail(id: string) {
@@ -95,12 +77,50 @@ export class UserDetailComponent {
     this.router.navigate(['/admin/users/detail'], { queryParams: { detail: id } });
   }
 
-  onDeleteClicked(id: string) {
-
+  onDeleteClicked(id: string, deletedAt: string | null) {
+    if(!deletedAt){
+      this.alertService.confirm("Confirm","Are you sure you want to delete this recipe?").then((confirmed) => {
+        if (confirmed) {
+          this.recipeService.deleteRecipeById(id).subscribe({
+            next: () => {
+              this.alertService.showSuccess("Recipe deleted successfully");
+              window.history.go(-1);
+            },
+            error: (error) => {
+              this.alertService.showError("Error occurred in delete the recipe");
+              window.history.go(-1);
+            },
+          });
+        } else {
+          window.history.go(-1);
+        }
+      });
+    } else {
+      this.alertService.confirm("Confirm","Are you sure you want to revoke this recipe?").then((confirmed) => {
+        if (confirmed) {
+          this.recipeService.deleteRecipeById(id).subscribe({
+            next: () => {
+              this.alertService.showSuccess("Recipe revoked successfully");
+              window.history.go(-1);
+            },
+            error: (error) => {
+              this.alertService.showError("Error occurred in revoke the recipe");
+              window.history.go(-1);
+            },
+          });
+        } else {
+          window.history.go(-1);
+        }
+      });
+    }
   }
 
   onEditUserClicked(id: string | undefined) {
-    this.router.navigate(['/admin/users/update'], { queryParams: { detail: id } });
+    this.alertService.confirm('Confirm', 'Are you sure do want edit this user').then((isConfirmed) => {
+      if(isConfirmed) {
+        this.router.navigate(['/admin/users/update'], { queryParams: { detail: id } });
+      }
+    });
   }
 
   onCancelClicked(){
@@ -108,7 +128,11 @@ export class UserDetailComponent {
   }
 
   onEditClicked(id: string | undefined) {
-    this.router.navigate(['/admin/recipes/update'], { queryParams: { detail: id } });
+    this.alertService.confirm('Confirm', 'Are you sure do want edit this recipe').then((isConfirmed) => {
+      if(isConfirmed) {
+        this.router.navigate(['/admin/recipes/update'], { queryParams: { detail: id } });
+      }
+    });
   }
 }
 

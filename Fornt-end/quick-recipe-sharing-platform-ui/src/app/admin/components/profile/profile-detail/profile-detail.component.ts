@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from 'src/app/model/user-detail';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
 
@@ -9,16 +10,15 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './profile-detail.component.html',
   styleUrls: ['./profile-detail.component.scss']
 })
-export class ProfileDetailComponent {
+export class ProfileDetailComponent implements OnInit {
 
   authService: AuthService = inject(AuthService);
   userService: UserService = inject(UserService);
   router: Router = inject(Router);
+  alertService: AlertService = inject(AlertService);
+
   userId!: string | null | undefined;
   userDetail!: User;
-
-
-  defaultImageUrl = "https://img.icons8.com/bubbles/100/000000/user.png";
   
   ngOnInit(){
     this.authService.user.subscribe((data) => {
@@ -30,12 +30,12 @@ export class ProfileDetailComponent {
         this.userDetail = response;
       },
       error: (error) => {
-        console.log(error);
+        this.alertService.showError("Error in loading your profile");
       }
     })
   }
 
   updateProfile() {
-    this.router.navigate(['/admin/profile/update'], { queryParams: { detail: this.userId } })
+    this.router.navigate(['/admin/profile/update']);
   }
 }

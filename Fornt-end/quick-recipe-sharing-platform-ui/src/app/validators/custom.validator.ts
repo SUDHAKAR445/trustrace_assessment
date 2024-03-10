@@ -1,13 +1,12 @@
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 import { UserService } from "../services/user.service";
 import { Injectable } from "@angular/core";
-import { take } from "rxjs/operators";
+import { debounceTime, switchMap, map } from "rxjs/operators";
 
 @Injectable({
     providedIn: 'root'
 })
 export class CustomValidators {
-    static checkUsername: ValidatorFn;
     constructor(private userService: UserService) { }
 
     noSpaceAllowed(control: FormControl): ValidationErrors | null {
@@ -17,17 +16,18 @@ export class CustomValidators {
         return null;
     }
 
-    async checkUsername(control: AbstractControl): Promise<ValidationErrors | null> {
-        return await this.usernameAllowed(control.value);
+    checkUsername(): ValidatorFn {
+        return (control: AbstractControl) => {
+            return this.usernameAllowed(control.value).pipe(
+                map(isTaken => (isTaken ? { checkValue: true } : null))
+            );
+        };
     }
 
-    private async usernameAllowed(value: any): Promise<ValidationErrors | null> {
-        try {
-            const isUsernameTaken = await this.userService.checkUsernameOrEmail(value).pipe(take(1)).toPromise();
-            return isUsernameTaken ? { checkValue: true } : null;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
+    private usernameAllowed(value: any) {
+        return this.userService.checkUsernameOrEmail(value).pipe(
+            debounceTime(300),
+            switchMap(async (isTaken) => isTaken)
+        );
     }
 }

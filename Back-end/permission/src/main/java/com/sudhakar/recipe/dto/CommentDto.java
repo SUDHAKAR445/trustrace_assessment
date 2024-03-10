@@ -1,6 +1,7 @@
 package com.sudhakar.recipe.dto;
 
 import java.util.Date;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,4 +20,5 @@ public class CommentDto {
     private Date  commentDate;
     private String profileImageUrl;
     private int likeCount;
+    private Set<String> likes;
 }

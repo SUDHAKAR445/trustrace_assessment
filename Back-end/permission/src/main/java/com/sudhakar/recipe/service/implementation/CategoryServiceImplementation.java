@@ -17,7 +17,6 @@ import com.sudhakar.recipe.dto.CategoryDto;
 import com.sudhakar.recipe.dto.ExploreDto;
 import com.sudhakar.recipe.dto.RecipeDto;
 import com.sudhakar.recipe.entity.Category;
-import com.sudhakar.recipe.entity.Cuisine;
 import com.sudhakar.recipe.entity.Recipe;
 import com.sudhakar.recipe.repository.CategoryRepository;
 import com.sudhakar.recipe.repository.RecipeRepository;

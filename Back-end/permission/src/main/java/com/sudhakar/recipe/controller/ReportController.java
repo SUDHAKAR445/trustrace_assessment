@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sudhakar.recipe.dto.ReportBody;
 import com.sudhakar.recipe.dto.ReportDto;
-import com.sudhakar.recipe.entity.Status;
 import com.sudhakar.recipe.filters.ReportFilterDao;
 import com.sudhakar.recipe.service.ReportService;
 
 @RestController
 @RequestMapping("/api/reports")
 @CrossOrigin(origins = "http://localhost:4200")
+@PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
 public class ReportController {
 
     @Autowired
@@ -35,54 +36,64 @@ public class ReportController {
     @Autowired
     private ReportFilterDao reportFilterDao;
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping("/recipe/{reporterId}")
     public ResponseEntity<Void> createRecipeReport(@PathVariable String reporterId, @RequestBody ReportBody report) {
         return reportService.createRecipeReport(reporterId, report);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping("/comment/{reporterId}")
     public ResponseEntity<Void> createCommentReport(@PathVariable String reporterId, @RequestBody ReportBody report) {
         return reportService.createCommentReport(reporterId, report);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping("/user/{reporterId}")
     public ResponseEntity<Void> createUserReport(@PathVariable String reporterId, @RequestBody ReportBody report) {
         return reportService.createUserReport(reporterId, report);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @PutMapping("/{reportId}")
     public ResponseEntity<String> updateStatusOfReport(@PathVariable String reportId, @RequestBody String status) {
         return reportService.updateStatusOfReport(reportId, status);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @DeleteMapping("/{reportId}")
     public ResponseEntity<String> deleteReport(@PathVariable String reportId) {
         return reportService.deleteReport(reportId);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @GetMapping("/recipe")
     public ResponseEntity<Page<ReportDto>> getAllReportedRecipe(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
         return reportService.getAllRecipeReport(pageable);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @GetMapping("/comment")
     public ResponseEntity<Page<ReportDto>> getAllReportedComment(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
         return reportService.getAllCommentReport(pageable);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @GetMapping("/user")
     public ResponseEntity<Page<ReportDto>> getAllReportedUser(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
         return reportService.getAllUserReport(pageable);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @GetMapping("/{id}")
     public ResponseEntity<ReportDto> getReportById(@PathVariable String id) {
         return reportService.getReportById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @GetMapping("/recipe/status")
     public ResponseEntity<Page<ReportDto>> getAllRecipeReportsWithStatus(
             @RequestParam(required = false) String searchText,
@@ -95,6 +106,7 @@ public class ReportController {
         return reportFilterDao.getAllRecipeReportWithStatus(searchText, status, start, end, pageable);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @GetMapping("/comment/status")
     public ResponseEntity<Page<ReportDto>> getAllCommentReportsWithStatus(
             @RequestParam(required = false) String searchText,
@@ -107,6 +119,7 @@ public class ReportController {
         return reportFilterDao.getAllCommentReportWithStatus(searchText, status, start, end, pageable);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @GetMapping("/user/status")
     public ResponseEntity<Page<ReportDto>> getAllUserReportsWithStatus(
             @RequestParam(required = false) String searchText,

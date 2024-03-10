@@ -1,0 +1,57 @@
+div.user-profile button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.user-profile {
+    margin: 20px;
+    margin-left: 25%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info img {
+    margin-right: 10px;
+    height: 50px;
+    width: 0px;
+    border-radius: 50%;
+}
+
+img {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
+.profile-divider {
+    border: 1px solid color(srgb red green blue);
+    height: 1px;
+    background: #ccc;
+    margin: 10px 0;
+}
+
+.no-saved-message {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 30px;
+    color: #555;
+    font-weight: bolder;
+}
+
+.no-saved-message img {
+    height: 80vh;
+    width: 50%;
+    border-radius: 0px;
+}

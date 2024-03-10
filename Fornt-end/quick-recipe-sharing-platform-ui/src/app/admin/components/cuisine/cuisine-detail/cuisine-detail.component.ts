@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ViewChild, inject } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Cuisine } from 'src/app/model/cuisine.model';
 import { RecipeCuisine } from 'src/app/model/recipe-cuisine.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { CuisineService } from 'src/app/services/cuisine.service';
 
 @Component({
@@ -11,23 +12,20 @@ import { CuisineService } from 'src/app/services/cuisine.service';
   templateUrl: './cuisine-detail.component.html',
   styleUrls: ['./cuisine-detail.component.scss']
 })
-export class CuisineDetailComponent {
+export class CuisineDetailComponent implements AfterViewInit{
 
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
-
-  cuisineId!: string | null;
-
-  cuisineDetail!: Cuisine;
-
-  errorMessage!: string | null;
-  createUserClicked: boolean = false;
-  displayedColumns: string[] = ['S.No', 'Profile', 'Username', 'Title', 'Date Created', 'Category', 'Cuisine'];
-  dataSource = new MatTableDataSource<RecipeCuisine>();
-
+  cuisineService: CuisineService = inject(CuisineService);
+  changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
+  alertService: AlertService = inject(AlertService);
   router: Router = inject(Router);
 
-  constructor(private cuisineService: CuisineService, private changeDetectorRef: ChangeDetectorRef) {
-  }
+  cuisineId!: string | null;
+  cuisineDetail!: Cuisine;
+  createUserClicked: boolean = false;
+
+  displayedColumns: string[] = ['S.No', 'Profile', 'Username', 'Title', 'Date Created', 'Category', 'Cuisine'];
+  dataSource = new MatTableDataSource<RecipeCuisine>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -43,7 +41,7 @@ export class CuisineDetailComponent {
         console.log(response);
       },
       error: (error) => {
-        console.log(error);
+        this.alertService.showError("Failed to load Cuisine Detail");
       }
     })
 
@@ -66,10 +64,7 @@ export class CuisineDetailComponent {
         this.paginator.pageSize = response.size;
       },
       error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
+        this.alertService.showError("Failed to Load the Recipes present in this Cuisine");
       }
     })
   }

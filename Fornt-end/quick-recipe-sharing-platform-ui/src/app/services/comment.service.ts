@@ -101,4 +101,46 @@ export class CommentService {
                 return throwError(() => this.error);
             }));
     }
+
+    getAllLikedCommentsByUser(userId: string | undefined | null): Observable<string[]> {
+        return this.http.get<string[]>(`${environment.commentUrl}/like/${userId}`).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    likeComment(commentId: string, userId: string | null | undefined): Observable<void>{
+        return this.http.put<void>(`${environment.commentUrl}/like/${commentId}/${userId}`, {}).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
+
+    unlikeComment(commentId: string, userId: string | null | undefined): Observable<void>{
+        return this.http.put<void>(`${environment.commentUrl}/unlike/${commentId}/${userId}`, {}).pipe(
+            catchError(err => {
+                if (!err.error || !err.error.error) {
+                    return throwError(() => 'An unknown error has occurred');
+                }
+                switch (err.error.error.message) {
+                    default:
+                        this.error = err.error.error.message;
+                }
+                return throwError(() => this.error);
+            }));
+    }
 }

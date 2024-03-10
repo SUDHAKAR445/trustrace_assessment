@@ -4,8 +4,10 @@ import { Component, inject } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, map } from 'rxjs';
+import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { RecipeService } from 'src/app/services/recipe.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-recipe-update',
@@ -17,13 +19,14 @@ export class RecipeUpdateComponent {
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   recipeService: RecipeService = inject(RecipeService);
   authService: AuthService = inject(AuthService);
+  alertService: AlertService = inject(AlertService);
   router: Router = inject(Router);
 
   userId!: string | null | undefined;
   recipeId!: string | null;
-  errorMessage!: string | null;
   imagePreview!: string | undefined;
   isLinear: boolean = true;
+  isSubmitted: boolean = false;
 
   firstFormGroup!: FormGroup;
   secondFormGroup!: FormGroup;
@@ -95,6 +98,9 @@ export class RecipeUpdateComponent {
             })
           );
         });
+      },
+      error: () => {
+        this.alertService.showError("Error in getting the recipe detail");
       }
     });
   }
@@ -127,24 +133,35 @@ export class RecipeUpdateComponent {
   }
 
   onUpdateRecipeClicked() {
+    this.alertService.confirm('Confirm', 'Are you update this changes?').then((isConfirmed) => {
+      if (isConfirmed) {
+        this.isSubmitted = true;
+        const allFormValues = {
+          ...this.firstFormGroup.value,
+          ...this.secondFormGroup.value,
+          ...this.thirdFormGroup.value,
+          ...this.fourthFormGroup.value,
+        };
 
-    const allFormValues = {
-      ...this.firstFormGroup.value,
-      ...this.secondFormGroup.value,
-      ...this.thirdFormGroup.value,
-      ...this.fourthFormGroup.value,
-    };
-  
-    this.recipeService.updateRecipeById(this.recipeId, allFormValues).subscribe({
-      next: (response) => {
-        this.router.navigate(['/user/feed'])
-      },
-      error: (error) => {
-        this.errorMessage = error;
-        setTimeout(() => {
-          this.errorMessage = null;
-        }, 3000);
-      },
+        this.recipeService.updateRecipeById(this.recipeId, allFormValues).subscribe({
+          next: (response) => {
+            this.alertService.showSuccess("Recipe updated successfully");
+            window.history.go(-1);
+          },
+          error: (error) => {
+            this.alertService.showError("Error occurred in updating the recipe");
+            window.history.go(-1);
+          },
+        });
+      }
     });
+  }
+
+  canExit(): boolean | Promise<boolean> | Observable<boolean> {
+    if ((this.firstFormGroup.dirty || this.secondFormGroup.dirty || this.thirdFormGroup.dirty || this.fourthFormGroup.dirty)&& !this.isSubmitted) {
+      return this.alertService.confirmExit();
+    } else {
+      return true;
+    }
   }
 }
