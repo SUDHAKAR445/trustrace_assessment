@@ -1,5 +1,6 @@
 package com.sudhakar.recipe.filters.implementation;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -81,6 +82,10 @@ public class ReportFilterDaoImplementation implements ReportFilterDao {
             }
 
             if (startDate != null && endDate != null) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                endDate = calendar.getTime();
                 Criteria dateCriteria = Criteria.where("reportedDate").gte(startDate).lte(endDate);
                 query.addCriteria(dateCriteria);
             }

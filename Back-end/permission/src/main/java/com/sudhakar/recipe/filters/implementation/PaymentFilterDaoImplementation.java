@@ -1,5 +1,6 @@
 package com.sudhakar.recipe.filters.implementation;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -51,8 +52,10 @@ public class PaymentFilterDaoImplementation implements PaymentFilterDao {
             }
 
             if (startDate != null && endDate != null) {
-                System.out.println();
-
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                endDate = calendar.getTime();
                 Criteria dateCriteria = Criteria.where("orderCreatedDate").gte(startDate).lte(endDate);
                 query.addCriteria(dateCriteria);
             }

@@ -56,7 +56,6 @@ public class UserServiceImplementation implements UserService {
             }
 
             Role role = roleRepository.findByRoleName(createUserRequest.getRole().getRoleName()).get();
-
             createUserRequest.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
             createUserRequest.setRole(role);
             createUserRequest.setCreatedAt(new Date());

@@ -1,5 +1,6 @@
 package com.sudhakar.recipe.filters.implementation;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +21,6 @@ import com.sudhakar.recipe.dto.RecipeDto;
 import com.sudhakar.recipe.entity.Category;
 import com.sudhakar.recipe.entity.Cuisine;
 import com.sudhakar.recipe.entity.Recipe;
-import com.sudhakar.recipe.entity.User;
 import com.sudhakar.recipe.filters.RecipeFilterDao;
 
 import lombok.RequiredArgsConstructor;
@@ -39,15 +39,13 @@ public class RecipeFilterDaoImplementation implements RecipeFilterDao {
 
             if (StringUtils.hasText(searchText)) {
                 Criteria textCriteria = new Criteria().orOperator(
-                        // Criteria.where("user.usernameValue").regex(searchText, "i"),
                         Criteria.where("title").regex(searchText, "i"));
 
                 query.addCriteria(textCriteria);
-
             }
 
             query.addCriteria(Criteria.where("deletedAt").is(null));
-            
+
             if (StringUtils.hasText(cuisineName)) {
                 Cuisine cuisine = findCuisineByName(cuisineName);
                 if (cuisine != null) {
@@ -63,14 +61,18 @@ public class RecipeFilterDaoImplementation implements RecipeFilterDao {
             }
 
             if (startDate != null && endDate != null) {
-                System.out.println();
-                
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                endDate = calendar.getTime();
+
                 Criteria dateCriteria = Criteria.where("dateCreated").gte(startDate).lte(endDate);
                 query.addCriteria(dateCriteria);
             }
 
-            long count = mongoTemplate.count(query, User.class);
-            List<Recipe> recipes = mongoTemplate.find(query.with(pageable).with(Sort.by(Sort.Direction.ASC, "dateCreated")), Recipe.class);
+            long count = mongoTemplate.count(query, Recipe.class);
+            List<Recipe> recipes = mongoTemplate.find(query.with(pageable)
+                    .with(Sort.by(Sort.Direction.ASC, "dateCreated")), Recipe.class);
 
             Page<Recipe> recipesList = new PageImpl<>(recipes, pageable, count);
 
