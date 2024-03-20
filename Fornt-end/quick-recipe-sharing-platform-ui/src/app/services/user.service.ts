@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { User } from "../model/user-detail";
-import { Observable, catchError, throwError } from "rxjs";
+import { Observable, catchError, map, of, throwError } from "rxjs";
 import { environment } from "src/environments/environment.development";
 
 @Injectable({
@@ -12,11 +12,6 @@ export class UserService {
 
     error: string | null = null;
     http: HttpClient = inject(HttpClient);
-
-    // createUser() {
-    //     return this.http.post<User>()
-    // }
-
 
     getAllUsers(pageIndex: number, pageSize: number) {
 
@@ -37,11 +32,11 @@ export class UserService {
             }));
     }
 
-    checkUsername(username: String) {
+    checkUsername(username: String): Observable<boolean> {
         return this.http.get<boolean>(`${environment.userUrl}/check/username/${username}`);
     }
 
-    checkEmail(email: String) {
+    checkEmail(email: String): Observable<boolean> {
         return this.http.get<boolean>(`${environment.userUrl}/check/email/${email}`);
     }
 
@@ -87,7 +82,7 @@ export class UserService {
             }));
     }
 
-    updateUserById(id: string | null , formData: FormData): Observable<string> {
+    updateUserById(id: string | null, formData: FormData): Observable<string> {
         return this.http.put<string>(`${environment.userUrl}/${id}`, formData).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
@@ -101,7 +96,7 @@ export class UserService {
             }));
     }
 
-    searchUsers(searchText: string, selectedRole: string, selectedGender: string, pageIndex: number, pageSize: number): Observable<any>{
+    searchUsers(searchText: string, selectedRole: string, selectedGender: string, pageIndex: number, pageSize: number): Observable<any> {
 
         let queryParams = new HttpParams();
         queryParams = queryParams.append("searchText", searchText);
@@ -109,7 +104,7 @@ export class UserService {
         queryParams = queryParams.append("selectedGender", selectedGender);
         queryParams = queryParams.append("page", pageIndex);
         queryParams = queryParams.append("size", pageSize);
-        return this.http.get<any>(`${environment.userUrl}/search`, { params: queryParams}).pipe(
+        return this.http.get<any>(`${environment.userUrl}/search`, { params: queryParams }).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');

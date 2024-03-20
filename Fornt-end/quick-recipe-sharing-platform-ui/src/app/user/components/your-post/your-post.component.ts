@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -8,17 +8,16 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CommentService } from 'src/app/services/comment.service';
 import { FollowService } from 'src/app/services/follow.service';
 import { RecipeService } from 'src/app/services/recipe.service';
-import { ReportDialogComponent } from 'src/app/utility/report-dialog/report-dialog.component';
 
 @Component({
   selector: 'app-your-post',
   templateUrl: './your-post.component.html',
   styleUrls: ['./your-post.component.scss']
 })
-export class YourPostComponent implements OnInit {
+export class YourPostComponent implements OnInit, OnDestroy {
 
-  constructor(private recipeService: RecipeService, private dialog: MatDialog) { };
-  
+  dialog: MatDialog = inject(MatDialog);
+  recipeService: RecipeService = inject(RecipeService);
   authService: AuthService = inject(AuthService);
   commentService: CommentService = inject(CommentService);
   router: Router = inject(Router);
@@ -33,29 +32,28 @@ export class YourPostComponent implements OnInit {
   followerList!: User[] | null;
   followingList!: User[] | null;
   likedRecipes!: string[] | null;
-  subscription!: Subscription;
-  subscription1!: Subscription;
-  subscription2!: Subscription;
-  subscription3!: Subscription;
+  userIdSubscription!: Subscription;
+  followerListSubscription!: Subscription;
+  followingListSubscription!: Subscription;
+  likedRecipesSubscription!: Subscription;
 
   ngOnInit(): void {
 
-    this.subscription = this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id || '';
     });
 
-    this.subscription1 = this.authService.followers.subscribe((data) => {
+    this.followerListSubscription = this.authService.followers.subscribe((data) => {
       this.followerList = data;
     });
 
-    this.subscription2 = this.authService.following.subscribe((data) => {
+    this.followingListSubscription = this.authService.following.subscribe((data) => {
       this.followingList = data;
     });
 
-    this.subscription3 = this.authService.likedRecipes.subscribe((data) => {
+    this.likedRecipesSubscription = this.authService.likedRecipes.subscribe((data) => {
       this.likedRecipes = data;
     });
-
     this.loadRecipes();
   }
 
@@ -63,7 +61,6 @@ export class YourPostComponent implements OnInit {
     if (this.isLoading) {
       return;
     }
-
     this.isLoading = true;
 
     this.recipeService.getAllRecipeByUserId(this.userId, this.page, this.pageSize).subscribe({
@@ -71,8 +68,6 @@ export class YourPostComponent implements OnInit {
         this.recipes = [...this.recipes, ...response.content];
         this.page++;
         this.isLoading = false;
-        console.log(this.recipes);
-
       },
       error: (error) => {
         this.isLoading = false;
@@ -152,9 +147,9 @@ export class YourPostComponent implements OnInit {
   }
 
   ngOnDestroy(){
-    this.subscription.unsubscribe();
-    this.subscription1.unsubscribe();
-    this.subscription2.unsubscribe();
-    this.subscription3.unsubscribe();
+    this.userIdSubscription.unsubscribe();
+    this.followerListSubscription.unsubscribe();
+    this.followingListSubscription.unsubscribe();
+    this.likedRecipesSubscription.unsubscribe();
   }
 }

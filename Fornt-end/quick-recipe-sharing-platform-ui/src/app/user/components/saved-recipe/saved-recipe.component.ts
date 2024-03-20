@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -18,7 +18,7 @@ import { ReportDialogComponent } from 'src/app/utility/report-dialog/report-dial
   templateUrl: './saved-recipe.component.html',
   styleUrls: ['./saved-recipe.component.scss']
 })
-export class SavedRecipeComponent {
+export class SavedRecipeComponent implements OnInit, OnDestroy{
 
   userService: UserService = inject(UserService);
   authService: AuthService = inject(AuthService);
@@ -37,27 +37,27 @@ export class SavedRecipeComponent {
   likedRecipes!: string[] | null;
   showNoBookingsMessage: boolean = false;
   hasLoadedInitialData: boolean = false;
-  subscription!: Subscription;
-  subscription1!: Subscription;
-  subscription2!: Subscription;
-  subscription3!: Subscription;
+  userIdSubscription!: Subscription;
+  followerListSubscription!: Subscription;
+  followingListSubscription!: Subscription;
+  likedRecipesSubscription!: Subscription;
 
   recipes!: any[];
 
   ngOnInit() {
-    this.subscription = this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id || '';
     });
 
-    this.subscription1 = this.authService.followers.subscribe((data) => {
+    this.followerListSubscription = this.authService.followers.subscribe((data) => {
       this.followerList = data;
     });
 
-    this.subscription2 = this.authService.following.subscribe((data) => {
+    this.followingListSubscription = this.authService.following.subscribe((data) => {
       this.followingList = data;
     });
 
-    this.subscription3 = this.authService.likedRecipes.subscribe((data) => {
+    this.likedRecipesSubscription = this.authService.likedRecipes.subscribe((data) => {
       this.likedRecipes = data;
     });
 
@@ -66,20 +66,16 @@ export class SavedRecipeComponent {
         this.recipes = response;
         if (!this.hasLoadedInitialData && response.length === 0) {
           const delayTime = 1000;
-
           setTimeout(() => {
             this.showNoBookingsMessage = true;
           }, delayTime);
         }
-
         this.hasLoadedInitialData = true;
-
       },
       error: (error) => {
         this.alertService.showError('Error occurred in displaying the user collection');
       }
     });
-
   }
 
   onShowDetailClicked(id: string) {
@@ -256,8 +252,9 @@ export class SavedRecipeComponent {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.subscription1.unsubscribe();
-    this.subscription2.unsubscribe();
+    this.userIdSubscription.unsubscribe();
+    this.followerListSubscription.unsubscribe();
+    this.followingListSubscription.unsubscribe();
+    this.likedRecipesSubscription.unsubscribe();
   }
 }

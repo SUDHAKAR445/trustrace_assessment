@@ -30,8 +30,8 @@
             <tr mat-row clickable (click)="showDetail(row.id)" *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
 
-        <mat-paginator #paginator1 [length]="paginator1.length" [pageIndex]="paginator1.pageIndex"
-            [pageSize]="paginator1.pageSize" [pageSizeOptions]="[2, 5, 10, 20]" [showFirstLastButtons]="true"
+        <mat-paginator #paginator [length]="paginator.length" [pageIndex]="paginator.pageIndex"
+            [pageSize]="paginator.pageSize" [pageSizeOptions]="[2, 5, 10, 20]" [showFirstLastButtons]="true"
             (page)="loadPage($event.pageIndex, $event.pageSize)">
         </mat-paginator>
     </div>

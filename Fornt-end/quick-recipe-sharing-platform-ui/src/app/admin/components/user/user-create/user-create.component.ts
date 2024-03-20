@@ -9,7 +9,6 @@ import { User } from 'src/app/model/user-detail';
 import { AlertService } from 'src/app/services/alert.service';
 import { UserService } from 'src/app/services/user.service';
 import { CustomValidators } from 'src/app/validators/custom.validator';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-user-create',
@@ -48,7 +47,6 @@ export class UserCreateComponent implements IDeactivateComponent {
     });
   }
 
-
   onCreateFormSubmitted() {
     this.alertService.confirm("Confirm", "Are you sure you want to create this user?").then((confirmed) => {
       if (confirmed) {
@@ -75,21 +73,3 @@ export class UserCreateComponent implements IDeactivateComponent {
     }
   }
 }
-
-// onFileSelected(event: any){
-//   if(event.target.files) {
-//     const file = event.target.files[0];
-
-//     const fileHandle: FileHandle = {
-//       file: file,
-//       url: this.sanitizer.bypassSecurityTrustUrl(window.URL.createObjectURL(file))
-//     }
-//     this.imageFile = file;
-//   }
-// }
-
-// prepareFormData(user: User): FormData {
-//   const formData = new FormData();
-
-//   formData.append()
-// }

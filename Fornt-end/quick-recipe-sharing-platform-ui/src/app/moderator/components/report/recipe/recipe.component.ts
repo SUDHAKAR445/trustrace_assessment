@@ -38,12 +38,7 @@ export class RecipeComponent implements AfterViewInit {
   @ViewChild('message') messageRef!: ElementRef;
 
   ngAfterViewInit() {
-    if (this.paginator) {
-      this.paginator.page.subscribe({
-        next: (page: any) => this.loadPage(page.pageIndex, page.pageSize)
-      });
-      this.loadPage(0, 10);
-    }
+    this.loadPage(0, 10);
     this.changeDetectorRef.detectChanges();
 
     this.messageRef.nativeElement.addEventListener('input', () => {
@@ -52,7 +47,7 @@ export class RecipeComponent implements AfterViewInit {
   }
   applyFilters() {
     const inputValue = this.messageRef.nativeElement.value;
-    if(!this.selectedStatus && !this.dateFilter.value && !inputValue) {
+    if (!this.selectedStatus && !this.dateFilter.value && !inputValue) {
       this.loadPage(this.paginator.pageIndex, this.paginator.pageSize);
     } else {
       this.makeApiCall(inputValue, this.selectedStatus, this.dateFilter.value.start, this.dateFilter.value.end, this.paginator.pageIndex, this.paginator.pageSize);
@@ -60,7 +55,7 @@ export class RecipeComponent implements AfterViewInit {
   }
 
   makeApiCall(inputValue: string, status: string, start: Date | null | undefined, end: Date | null | undefined, pageIndex: number, pageSize: number) {
-    this.reportService.getAllReportedRecipeStatus(inputValue,status, start, end, pageIndex, pageSize).subscribe({
+    this.reportService.getAllReportedRecipeStatus(inputValue, status, start, end, pageIndex, pageSize).subscribe({
       next: (response) => {
         this.dataSource.data = response.content;
         this.paginator.length = response.totalElements;
@@ -88,25 +83,25 @@ export class RecipeComponent implements AfterViewInit {
   }
 
   showDetail(id: string) {
-    this.router.navigate(['/moderator/users/detail'], {queryParams:{detail: id}});
+    this.router.navigate(['/moderator/users/detail'], { queryParams: { detail: id } });
   }
 
   showRecipeDetail(id: string) {
-    this.router.navigate(['/moderator/recipes/detail'], {queryParams:{detail: id}});
+    this.router.navigate(['/moderator/recipes/detail'], { queryParams: { detail: id } });
   }
 
   onReportClicked(id: string) {
     this.alertService.confirm("Confirm", "Are you sure you want to update this report?").then((confirmed) => {
-      if(confirmed) {
-        this.router.navigate(['/moderator/report/recipes/detail'], {queryParams:{detail: id}});
+      if (confirmed) {
+        this.router.navigate(['/moderator/report/recipes/detail'], { queryParams: { detail: id } });
       }
     });
   }
 
   onEditClicked(id: string) {
     this.alertService.confirm("Confirm", "Are you sure you want to update this report?").then((confirmed) => {
-      if(confirmed) {
-        this.router.navigate(['/moderator/report/recipes/detail'], {queryParams:{detail: id}});
+      if (confirmed) {
+        this.router.navigate(['/moderator/report/recipes/detail'], { queryParams: { detail: id } });
       }
     });
   }

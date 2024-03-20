@@ -1,8 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { IDeactivateComponent } from 'src/app/model/canActivate.model';
 import { FileHandle } from 'src/app/model/file-handle.model';
 import { User } from 'src/app/model/user-detail';
@@ -18,7 +18,7 @@ import { CustomValidators } from 'src/app/validators/custom.validator';
   templateUrl: './profile-edit.component.html',
   styleUrls: ['./profile-edit.component.scss']
 })
-export class ProfileEditComponent implements OnInit, IDeactivateComponent {
+export class ProfileEditComponent implements OnInit, OnDestroy, IDeactivateComponent {
 
   alertService: AlertService = inject(AlertService);
   userService: UserService = inject(UserService);
@@ -36,16 +36,17 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
   userId: string | null = null;
   userDetail: User | null = {} as User;
   imagePreview: SafeUrl | null = null;
+  userIdSubscription!: Subscription;
 
   ngOnInit(): void {
-    this.authService.user.subscribe((data) =>{
+    this.userIdSubscription = this.authService.user.subscribe((data) =>{
       this.userId = data?.id!;
     });
     this.updateUserForm = new FormGroup({
-      usernameValue: new FormControl({disabled: true }, [Validators.required]),
+      usernameValue: new FormControl({value: '',disabled: true }, [Validators.required]),
       firstName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
       lastName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
-      email: new FormControl({disabled: true }, Validators.required),
+      email: new FormControl({value: '',disabled: true }, Validators.required),
       gender: new FormControl(null, Validators.required),
       contact: new FormControl(null, Validators.min(1000)),
       role: new FormControl(null),
@@ -65,6 +66,9 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
         password: this.userDetail?.password || null,
       });
 
+      console.log(this.updateUserForm);
+      
+
       this.defaultImageUrl = this.userDetail?.profileImageUrl!;
       this.imagePreview = this.sanitizer.bypassSecurityTrustUrl(this.defaultImageUrl);
 
@@ -74,8 +78,10 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
     this.alertService.confirm("Confirm", "Are you sure you want to update yuor profile?").then((confirmed) => {
       if (confirmed) {
         this.isSubmitted = true;
+        console.log(this.updateUserForm);
         if (this.updateUserForm.valid) {
           const userFormData = this.prepareFormData(this.updateUserForm.value);
+          console.log(userFormData);
           this.userService.updateUserById(this.userDetail?.id!, userFormData).subscribe({
             next: (response) => {
               this.userService.getUserById(this.userId).subscribe((data) => {
@@ -109,10 +115,10 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
   prepareFormData(user: User): FormData {
     const formData = new FormData();
 
-    formData.append('usernameValue', user.usernameValue || '');
+    formData.append('usernameValue', this.userDetail?.usernameValue || '');
     formData.append('firstName', user.firstName || '');
     formData.append('lastName', user.lastName || '');
-    formData.append('email', user.email || '');
+    formData.append('email', this.userDetail?.email || '');
     formData.append('gender', user.gender || '');
     formData.append('contact', user.contact || '');
     formData.append('role', user.role || '');
@@ -143,5 +149,9 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
     } else {
       return true;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.userIdSubscription.unsubscribe();
   }
 }

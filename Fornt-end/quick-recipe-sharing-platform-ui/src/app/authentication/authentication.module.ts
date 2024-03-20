@@ -18,6 +18,7 @@ import {MatSelectModule} from '@angular/material/select';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { VerifyComponent } from './components/verify/verify.component';
 import { MatRadioModule } from '@angular/material/radio';
+import { AuthenticationLoaderComponent } from '../utility/authentication-loader/authentication-loader.component';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { MatRadioModule } from '@angular/material/radio';
     LoadComponent,
     SnackbarComponent,
     MatSelectModule,
-    MatRadioModule
+    MatRadioModule,
+    AuthenticationLoaderComponent
   ]
 })
 export class AuthenticationModule { }

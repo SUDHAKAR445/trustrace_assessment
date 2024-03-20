@@ -28,14 +28,7 @@ export class CuisineListComponent implements AfterViewInit {
   @ViewChild('message') messageRef!: ElementRef;
 
   ngAfterViewInit() {
-    if (this.paginator) {
-      this.paginator.page.subscribe({
-        next: (page: any) => this.loadPage(page.pageIndex, page.pageSize)
-      });
-      this.loadPage(0, 10);
-    }
-    this.changeDetectorRef.detectChanges();
-
+    this.loadPage(0, 10);
     this.messageRef.nativeElement.addEventListener('input', () => {
       const inputValue = this.messageRef.nativeElement.value;
       
@@ -45,6 +38,7 @@ export class CuisineListComponent implements AfterViewInit {
         this.makeApiCall(inputValue, this.paginator.pageIndex, this.paginator.pageSize);
       }
     });
+    this.changeDetectorRef.detectChanges();
   }
 
   makeApiCall(inputValue: string, pageIndex: number, pageSize: number) {
@@ -81,6 +75,6 @@ export class CuisineListComponent implements AfterViewInit {
   }
 
   showDetail(id: string) {
-    this.router.navigate(['/admin/cuisines/detail'], {queryParams:{detail: id}});
+    this.router.navigate(['/admin/cuisines/detail'], { queryParams: { detail: id } });
   }
 }

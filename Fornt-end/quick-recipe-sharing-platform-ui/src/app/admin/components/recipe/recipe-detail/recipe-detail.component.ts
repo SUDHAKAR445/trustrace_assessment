@@ -55,7 +55,6 @@ export class RecipeDetailComponent implements AfterViewInit {
   loadPage(pageIndex: number, pageSize: number) {
     this.commentService.getAllComments(this.recipeId, pageIndex, pageSize).subscribe({
       next: (response) => {
-        console.log(response.content);
         this.dataSource.data = response.content;
         this.paginator.length = response.totalElements;
         this.paginator.pageIndex = response.number;

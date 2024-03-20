@@ -1,5 +1,6 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { Payment, Transaction } from 'src/app/model/payment.model';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -10,7 +11,7 @@ import { PaymentService } from 'src/app/services/payment.service';
   templateUrl: './bookings.component.html',
   styleUrls: ['./bookings.component.scss']
 })
-export class BookingsComponent {
+export class BookingsComponent implements OnInit, OnDestroy{
 
   paymentService: PaymentService = inject(PaymentService);
   authService: AuthService = inject(AuthService);
@@ -21,13 +22,14 @@ export class BookingsComponent {
   errorMessage!: string | null;
   bookings: Transaction[] = [];
   page = 0;
-  pageSize = 10;
+  pageSize = 100;
   isLoading: boolean = false;
   hasLoadedInitialData: boolean = false;
   showNoBookingsMessage: boolean = false;
+  userIdSubscription!: Subscription;
 
   ngOnInit() {
-    this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id;
     })
 
@@ -70,5 +72,9 @@ export class BookingsComponent {
 
   showTransactionDetails(id: string) {
     this.router.navigate(['/user/booking/detail'], { queryParams: { "detail": id } });
+  }
+
+  ngOnDestroy(): void {
+    this.userIdSubscription.unsubscribe();
   }
 }

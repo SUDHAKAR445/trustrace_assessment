@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/internal/Subscription';
@@ -11,7 +11,6 @@ import { CommentService } from 'src/app/services/comment.service';
 import { FollowService } from 'src/app/services/follow.service';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { UserService } from 'src/app/services/user.service';
-import { ConfirmDialogComponent } from 'src/app/utility/confirm-dialog/confirm-dialog.component';
 import { ReportDialogComponent } from 'src/app/utility/report-dialog/report-dialog.component';
 
 @Component({
@@ -19,7 +18,7 @@ import { ReportDialogComponent } from 'src/app/utility/report-dialog/report-dial
   templateUrl: './recipe-detail.component.html',
   styleUrls: ['./recipe-detail.component.scss']
 })
-export class RecipeDetailComponent {
+export class RecipeDetailComponent implements OnInit, OnDestroy{
 
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   recipeService: RecipeService = inject(RecipeService);
@@ -44,20 +43,20 @@ export class RecipeDetailComponent {
   pageSize: number = 10;
   newCommentText!: string;
   userDetail!: User;
-  subscription1!: Subscription;
-  subscription2!: Subscription;
-  subscription3!: Subscription;
+  followerListSubscription!: Subscription;
+  followingListSubscription!: Subscription;
+  likedCommentsSubscription!: Subscription;
 
   ngOnInit() {
-    this.subscription1 = this.authService.followers.subscribe((data) => {
+    this.followerListSubscription = this.authService.followers.subscribe((data) => {
       this.followerList = data;
     });
 
-    this.subscription2 = this.authService.following.subscribe((data) => {
+    this.followingListSubscription = this.authService.following.subscribe((data) => {
       this.followingList = data;
     });
 
-    this.subscription3 = this.authService.likedComments.subscribe((data) => {
+    this.likedCommentsSubscription = this.authService.likedComments.subscribe((data) => {
       this.likedComments = data;
     });
 
@@ -332,8 +331,8 @@ export class RecipeDetailComponent {
   }
 
   ngOnDestroy() {
-    this.subscription1.unsubscribe();
-    this.subscription2.unsubscribe();
-    this.subscription3.unsubscribe();
+    this.followerListSubscription.unsubscribe();
+    this.followingListSubscription.unsubscribe();
+    this.likedCommentsSubscription.unsubscribe();
   }
 }

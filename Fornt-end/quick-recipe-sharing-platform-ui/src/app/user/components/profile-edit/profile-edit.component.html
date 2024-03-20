@@ -60,7 +60,7 @@
             <input matInput type="tel" id="contact" name="contact" formControlName="contact" />
         </div>
 
-        <button type="submit" class="btn-primary" [disabled]="updateUserForm.invalid">Update Profile</button>
-        <button type="button" class="btn-danger" routerLink="/user/feed">Cancel</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="updateUserForm.invalid">Update Profile</button>
+        <button mat-raised-button color="warn" type="button" routerLink="/user/feed">Cancel</button>
     </form>
 </div>

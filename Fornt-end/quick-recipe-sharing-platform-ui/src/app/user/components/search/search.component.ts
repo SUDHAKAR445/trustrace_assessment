@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -8,7 +8,6 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CommentService } from 'src/app/services/comment.service';
 import { FollowService } from 'src/app/services/follow.service';
 import { RecipeService } from 'src/app/services/recipe.service';
-import { ConfirmDialogComponent } from 'src/app/utility/confirm-dialog/confirm-dialog.component';
 import { ReportDialogComponent } from 'src/app/utility/report-dialog/report-dialog.component';
 
 @Component({
@@ -16,9 +15,10 @@ import { ReportDialogComponent } from 'src/app/utility/report-dialog/report-dial
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss']
 })
-export class SearchComponent {
-  constructor(private recipeService: RecipeService, private dialog: MatDialog) { };
+export class SearchComponent implements OnInit, OnDestroy{
 
+  dialog: MatDialog = inject(MatDialog);
+  recipeService: RecipeService = inject(RecipeService);
   authService: AuthService = inject(AuthService);
   commentService: CommentService = inject(CommentService);
   activateRoute: ActivatedRoute = inject(ActivatedRoute);
@@ -39,26 +39,26 @@ export class SearchComponent {
   followerList!: User[] | null;
   followingList!: User[] | null;
   likedRecipes!: string[] | null;
-  subscription!: Subscription;
-  subscription1!: Subscription;
-  subscription2!: Subscription;
-  subscription3!: Subscription;
+  userIdSubscription!: Subscription;
+  followerListSubscription!: Subscription;
+  followingListSubscription!: Subscription;
+  likedRecipesSubscription!: Subscription;
 
   ngOnInit(): void {
 
-    this.subscription = this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id || '';
     });
 
-    this.subscription1 = this.authService.followers.subscribe((data) => {
+    this.followerListSubscription = this.authService.followers.subscribe((data) => {
       this.followerList = data;
     });
 
-    this.subscription2 = this.authService.following.subscribe((data) => {
+    this.followingListSubscription = this.authService.following.subscribe((data) => {
       this.followingList = data;
     });
 
-    this.subscription3 = this.authService.likedRecipes.subscribe((data) => {
+    this.likedRecipesSubscription = this.authService.likedRecipes.subscribe((data) => {
       this.likedRecipes = data;
     });
 
@@ -67,8 +67,6 @@ export class SearchComponent {
       this.searchCategory = data.get('category');
       this.searchCuisine = data.get('cuisine');
     });
-    
-
     this.loadRecipes();
   }
 
@@ -90,9 +88,7 @@ export class SearchComponent {
             this.showNoBookingsMessage = true;
           }, delayTime);
         }
-
         this.hasLoadedInitialData = true;
-
       },
       error: (error) => {
         this.isLoading = false;
@@ -281,9 +277,9 @@ export class SearchComponent {
   }
   
   ngOnDestroy(){
-    this.subscription.unsubscribe();
-    this.subscription1.unsubscribe();
-    this.subscription2.unsubscribe();
-    this.subscription3.unsubscribe();
+    this.userIdSubscription.unsubscribe();
+    this.followerListSubscription.unsubscribe();
+    this.followingListSubscription.unsubscribe();
+    this.likedRecipesSubscription.unsubscribe();
   }
 }

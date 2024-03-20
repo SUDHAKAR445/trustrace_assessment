@@ -32,13 +32,11 @@ export class CuisineDetailComponent implements AfterViewInit{
   ngAfterViewInit() {
     this.activeRoute.queryParamMap.subscribe((data) => {
       this.cuisineId = data.get('detail');
-      console.log(this.cuisineId);
     })
 
     this.cuisineService.getCuisineDetailsById(this.cuisineId).subscribe({
       next: (response) => {
         this.cuisineDetail = response;
-        console.log(response);
       },
       error: (error) => {
         this.alertService.showError("Failed to load Cuisine Detail");
@@ -52,7 +50,6 @@ export class CuisineDetailComponent implements AfterViewInit{
       this.loadPage(0, 2);
     }
     this.changeDetectorRef.detectChanges();
-
   }
 
   loadPage(pageIndex: number, pageSize: number) {
@@ -68,7 +65,6 @@ export class CuisineDetailComponent implements AfterViewInit{
       }
     })
   }
-
 
   showDetail(id: string) {
     this.router.navigate(['/admin/recipes/detail'], { queryParams: { detail: id } });

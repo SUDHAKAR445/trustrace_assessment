@@ -43,6 +43,7 @@ import { FollowerListComponent } from './components/follower-list/follower-list.
 import { FollowingListComponent } from './components/following-list/following-list.component';
 import { DetailComponent } from './components/detail/detail.component';
 import { BioComponent } from './components/bio/bio.component';
+import { AuthenticationLoaderComponent } from '../utility/authentication-loader/authentication-loader.component';
 
 @NgModule({
   declarations: [
@@ -93,6 +94,7 @@ import { BioComponent } from './components/bio/bio.component';
     MatMenuModule,
     MatListModule,
     MatCardModule,
+    AuthenticationLoaderComponent,
   ]
 })
 export class UserModule { }

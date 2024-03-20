@@ -1,9 +1,9 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { StepperOrientation } from '@angular/cdk/stepper';
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, map } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { RecipeService } from 'src/app/services/recipe.service';
@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
   templateUrl: './recipe-update.component.html',
   styleUrls: ['./recipe-update.component.scss']
 })
-export class RecipeUpdateComponent {
+export class RecipeUpdateComponent implements OnInit, OnDestroy{
 
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   recipeService: RecipeService = inject(RecipeService);
@@ -27,6 +27,7 @@ export class RecipeUpdateComponent {
   imagePreview!: string | undefined;
   isLinear: boolean = true;
   isSubmitted: boolean = false;
+  userIdSubscription!: Subscription;
 
   firstFormGroup!: FormGroup;
   secondFormGroup!: FormGroup;
@@ -39,7 +40,7 @@ export class RecipeUpdateComponent {
       this.recipeId = data.get('detail');
     });
 
-    this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id;
     });
 
@@ -163,5 +164,9 @@ export class RecipeUpdateComponent {
     } else {
       return true;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.userIdSubscription.unsubscribe();
   }
 }

@@ -87,14 +87,11 @@ export class ReportDetailComponent implements AfterViewInit {
           this.reportDetail.reportedUser = responses[1] as User;
         }
         if (this.type === 'comments') {
-
           this.reportDetail.reportedComment = responses[1] as Comment;
-
         }
-        console.log(this.reportDetail);
       },
       error: (error) => {
-        console.log(error);
+        this.alertService.showError("Error occurred in showing report detail");
       }
     });
   }

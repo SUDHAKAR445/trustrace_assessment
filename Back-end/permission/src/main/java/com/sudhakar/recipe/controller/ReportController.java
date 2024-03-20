@@ -56,7 +56,7 @@ public class ReportController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @PutMapping("/{reportId}")
-    public ResponseEntity<String> updateStatusOfReport(@PathVariable String reportId, @RequestBody String status) {
+    public ResponseEntity<Void> updateStatusOfReport(@PathVariable String reportId, @RequestBody String status) {
         return reportService.updateStatusOfReport(reportId, status);
     }
 

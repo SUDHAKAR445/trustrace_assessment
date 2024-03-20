@@ -32,7 +32,7 @@ export class ForgetPasswordComponent implements IDeactivateComponent{
     });
   }
   
-  intervalId: any;
+  intervalId!: number;
 
   onSentOptButtonClicked() {
     this.forgotPasswordForm.get('email')?.disable();

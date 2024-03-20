@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/model/user-detail';
 import { AlertService } from 'src/app/services/alert.service';
@@ -10,18 +10,18 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit{
+export class HeaderComponent implements OnInit, OnDestroy{
 
   authService: AuthService = inject(AuthService);
   userService: UserService = inject(UserService);
   alertService: AlertService = inject(AlertService);
-  subscription!: Subscription;
+  userDetailSubscription!: Subscription;
   
   userId!: string | undefined | null;
   userDetail!: User | null;
 
   ngOnInit() {
-    this.subscription = this.authService.userDetail.subscribe((data) => {
+    this.userDetailSubscription = this.authService.userDetail.subscribe((data) => {
       this.userDetail = data;
     });
   }
@@ -34,6 +34,6 @@ export class HeaderComponent implements OnInit{
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.userDetailSubscription.unsubscribe();
   }
 }

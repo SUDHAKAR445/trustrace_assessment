@@ -2,7 +2,8 @@
     <div class="card" *ngFor="let card of dashboardDetail  as cards ">
         <div class="card-body">
             <h5 class="card-title">{{ card.key }}</h5>
-            <p class="card-text">{{ card.value }}</p>
+            <p class="card-text" *ngIf="!card.key.includes('Amount') && !card.key.includes('Commission')">{{ +card.value }}</p>
+            <p class="card-text" *ngIf="card.key.includes('Amount') || card.key.includes('Commission')">{{ +card.value | currency: 'INR'}}</p>
         </div>
     </div>
 </div>

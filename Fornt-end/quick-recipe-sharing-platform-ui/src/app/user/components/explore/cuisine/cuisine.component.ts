@@ -24,7 +24,6 @@ export class CuisineComponent implements OnInit{
       next: (response) => {
         this.cuisineExplore = response;
         this.groupCuisines();
-        console.log(this.groupedCuisines);
       },
       error: (error) => {
         this.alertService.showError('Error occurred in showing the cuisine list');

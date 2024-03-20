@@ -1,18 +1,17 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/model/user-detail';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { FollowService } from 'src/app/services/follow.service';
-import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-following-list',
   templateUrl: './following-list.component.html',
   styleUrls: ['./following-list.component.scss']
 })
-export class FollowingListComponent {
+export class FollowingListComponent implements OnInit, OnDestroy{
 
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   followService: FollowService = inject(FollowService);
@@ -27,11 +26,9 @@ export class FollowingListComponent {
   followerList!: User[] | null;
   followingList!: User[] | null;
   likedRecipes!: string[] | null;
-  subscription!: Subscription;
-  subscription1!: Subscription;
-  subscription2!: Subscription;
-  subscription3!: Subscription;
-
+  userIdSubscription!: Subscription;
+  followerListSubscription!: Subscription;
+  followingListSubscription!: Subscription;
 
   ngOnInit() {
     this.activeRoute.queryParamMap.subscribe((data) => {
@@ -39,7 +36,6 @@ export class FollowingListComponent {
       this.followService.getAllFollowingById(this.user).subscribe({
         next: (response: User[]) => {
           this.following = response;
-          console.log(this.followerList);
           
         },
         error: (error) => {
@@ -48,15 +44,15 @@ export class FollowingListComponent {
       });
     });
 
-    this.subscription = this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id || '';
     });
 
-    this.subscription1 = this.authService.followers.subscribe((data) => {
+    this.followerListSubscription = this.authService.followers.subscribe((data) => {
       this.followerList = data;
     });
 
-    this.subscription2 = this.authService.following.subscribe((data) => {
+    this.followingListSubscription = this.authService.following.subscribe((data) => {
       this.followingList = data;
     });
   }
@@ -104,8 +100,8 @@ export class FollowingListComponent {
   }
 
   ngOnDestroy(){
-    this.subscription.unsubscribe();
-    this.subscription1.unsubscribe();
-    this.subscription2.unsubscribe();
+    this.userIdSubscription.unsubscribe();
+    this.followerListSubscription.unsubscribe();
+    this.followingListSubscription.unsubscribe();
   }
 }

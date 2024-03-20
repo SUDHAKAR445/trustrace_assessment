@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/model/user-detail';
 import { AlertService } from 'src/app/services/alert.service';
@@ -10,7 +10,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit{
+export class HeaderComponent implements OnInit, OnDestroy{
 
   authService: AuthService = inject(AuthService);
   userService: UserService = inject(UserService);
@@ -25,6 +25,7 @@ export class HeaderComponent implements OnInit{
       this.userDetail = data;
     });
   }
+  
   onLogoutClicked(){
     this.alertService.confirm('Confirm', 'Are going to logout?').then((isConfirmed) => {
       if (isConfirmed) {

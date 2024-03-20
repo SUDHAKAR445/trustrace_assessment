@@ -18,17 +18,12 @@
     <div class="search-bar">
         <form class="example-form example-full-width">
             <input matInput #message maxlength="256" placeholder="Ex. Search..." (keyup.enter)="onSearchClicked(message.value)">
-            <button type="button" mat-button color="warn" (click)="onSearchClicked(message.value)">
-                <mat-icon color="white">search</mat-icon>Search
-            </button>
         </form>
     </div>
     <div class="profile" *ngIf="userDetail">
-        <img [src]="userDetail.profileImageUrl" class="profile-image" routerLink="/user/profile" />
+        <img [src]="userDetail.profileImageUrl" class="image" routerLink="/user/profile" />
         <p>Hi {{ userDetail.usernameValue }}</p>
         <mat-menu #menu="matMenu" class="menu-button" matMenuPosition="above">
-            <!-- <button mat-menu-item (click)="onBlockedUserClicked()">Blocked User</button>
-            <button mat-menu-item (click)="onDeletedPostClicked()">Deleted Post</button> -->
             <button mat-menu-item (click)="onLogoutClicked()">Logout</button>
         </mat-menu>
         <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">

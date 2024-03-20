@@ -4,9 +4,7 @@ export class Token {
         private _token: string,
         private _expiresIn: number ,
         private _authority: string
-    ){
-        
-    }
+    ){}
 
     get token(){
         if(!this._expiresIn || this._expiresIn < new Date().getTime()) {

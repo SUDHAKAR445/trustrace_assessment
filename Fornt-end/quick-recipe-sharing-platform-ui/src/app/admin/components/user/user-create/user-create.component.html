@@ -1,4 +1,4 @@
-<div class="container">
+<div class="form-container">
     <h2>Create User</h2>
     <form [formGroup]="createUserForm" (submit)="onCreateFormSubmitted()">
         <div class="form-group">
@@ -7,7 +7,7 @@
             <div *ngIf="createUserForm.get('usernameValue')?.hasError('checkValue')">
                 <small>Username is already taken.</small>
             </div>
-            <small *ngIf="createUserForm.get('usernameValue')?.hasError('required') && createUserForm.get('usernameValue')?.touched">
+            <small *ngIf="createUserForm.get('usernameValue')?.hasError('required') && createUserForm.get('usernameValue')?.touched && !createUserForm.get('usernameValue')?.hasError('checkValue')">
                 *Username is required
             </small>
         </div>
@@ -40,11 +40,14 @@
             <div *ngIf="createUserForm.get('email')?.hasError('checkEmail')">
                 <small>Email is already taken.</small>
             </div>
-            <small *ngIf="createUserForm.get('email')?.hasError('required') && createUserForm.get('email')?.touched">
+            <small *ngIf="createUserForm.get('email')?.hasError('required') && createUserForm.get('email')?.touched && !createUserForm.get('email')?.hasError('checkEmail')">
                 *Email is required
             </small>
-            <small *ngIf="createUserForm.get('email')?.hasError('email') && createUserForm.get('email')?.touched">
+            <small *ngIf="createUserForm.get('email')?.hasError('email') && createUserForm.get('email')?.touched && !createUserForm.get('email')?.hasError('checkEmail')">
                 *Invalid email format
+            </small>
+            <small *ngIf="createUserForm.get('email')?.hasError('checkEmail')">
+                *Email already exists
             </small>
         </div>
 
@@ -53,7 +56,7 @@
             <mat-radio-group aria-label="Select a Gender" formControlName="gender">
                 <mat-radio-button value="MALE">MALE</mat-radio-button>
                 <mat-radio-button value="FEMALE">FEMALE</mat-radio-button>
-                <mat-radio-button value="NONE">Prefer not to say</mat-radio-button>
+                <mat-radio-button value="NONE">PREFER NOT TO SAY</mat-radio-button>
             </mat-radio-group>
             <small *ngIf="createUserForm.get('gender')?.hasError('required') && createUserForm.get('gender')?.touched">
                 *Gender is required

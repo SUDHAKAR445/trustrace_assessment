@@ -15,7 +15,7 @@ public interface ReportService {
 
     ResponseEntity<Void> createUserReport(String reporterId, ReportBody report);
 
-    ResponseEntity<String> updateStatusOfReport(String reportId, String status);
+    ResponseEntity<Void> updateStatusOfReport(String reportId, String status);
 
     ResponseEntity<String> deleteReport(String reportId);
 

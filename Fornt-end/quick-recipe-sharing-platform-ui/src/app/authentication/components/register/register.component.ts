@@ -1,13 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormControlStatus, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { IDeactivateComponent } from 'src/app/model/canActivate.model';
 import { Token } from 'src/app/model/user';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { VerifyEmailDialogComponent } from 'src/app/utility/verify-email-dialog/verify-email-dialog.component';
 import { CustomValidators } from 'src/app/validators/custom.validator';
 
 @Component({
@@ -32,11 +30,19 @@ export class RegisterComponent implements IDeactivateComponent{
 
   ngOnInit() {
     this.registerForm = new FormGroup({
-      userName: new FormControl(null, [Validators.required, this.customValidator.checkUsername]),
+      usernameValue: new FormControl(null, {
+        validators: [Validators.required, this.customValidator.noSpaceAllowed],
+        asyncValidators: [this.customValidator.checkUsername()],
+        updateOn: 'blur'
+      }),
       firstName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
       lastName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
       gender: new FormControl(null, Validators.required),
-      email: new FormControl(null, [Validators.required, Validators.email, this.customValidator.checkEmail]),
+      email: new FormControl(null, {
+        validators: [Validators.required, Validators.email, this.customValidator.noSpaceAllowed],
+        asyncValidators: [this.customValidator.checkEmail()],
+        updateOn: 'blur'
+      }),
       password: new FormControl(null, [Validators.required, Validators.pattern(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,20})/)])
     });
 
@@ -60,7 +66,7 @@ export class RegisterComponent implements IDeactivateComponent{
   onRegisterClicked() {
     this.isSubmitted = true;
     this.isLoading = true;
-    this.authService.register(this.registerForm.get('userName')?.value,
+    this.authService.register(this.registerForm.get('usernameValue')?.value,
       this.registerForm.get('firstName')?.value,
       this.registerForm.get('lastName')?.value,
       this.registerForm.get('email')?.value,

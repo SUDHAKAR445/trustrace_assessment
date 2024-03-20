@@ -1,9 +1,9 @@
-<div class="container">
+<div class="form-container">
     <h2>Update User</h2>
     <form [formGroup]="updateUserForm" (submit)="onUpdateFormSubmitted()">
         <div class="form-group">
             <label for="username">Username:</label>
-            <input matInput type="text" id="username" name="username" formControlName="usernameValue" />
+            <input matInput type="text" id="username" name="username" formControlName="usernameValue"/>
         </div>
 
         <div class="form-group">
@@ -38,7 +38,7 @@
             <mat-radio-group aria-label="Select a Gender" formControlName="gender">
                 <mat-radio-button value="MALE">MALE</mat-radio-button>
                 <mat-radio-button value="FEMALE">FEMALE</mat-radio-button>
-                <mat-radio-button value="NONE">Prefer not to say</mat-radio-button>
+                <mat-radio-button value="NONE">PREFER NOT TO SAY</mat-radio-button>
             </mat-radio-group>
             <small *ngIf="updateUserForm.get('gender')?.hasError('required') && updateUserForm.get('gender')?.touched">
                 *Gender is required
@@ -66,7 +66,7 @@
             <label for="password">Password:</label>
             <input matInput type="password" id="password" name="password" formControlName="password" />
             <small *ngIf="updateUserForm.get('password')?.hasError('required') && updateUserForm.get('password')?.touched">
-                *Password is required
+                *Enter the valid password
             </small>
         </div>
 

@@ -8,7 +8,6 @@ import { IDeactivateComponent } from 'src/app/model/canActivate.model';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { RecipeService } from 'src/app/services/recipe.service';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-recipe-update',
@@ -113,7 +112,6 @@ export class RecipeUpdateComponent implements IDeactivateComponent, OnInit {
       .observe('(min-width: 800px)')
       .pipe(map(() => ('vertical')));
   }
-
 
   addIngredients() {
     const ingredientsFormGroup = new FormGroup({

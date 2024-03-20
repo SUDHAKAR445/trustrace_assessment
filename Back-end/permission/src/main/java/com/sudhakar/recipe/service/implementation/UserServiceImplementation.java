@@ -60,16 +60,15 @@ public class UserServiceImplementation implements UserService {
             createUserRequest.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
             createUserRequest.setRole(role);
             createUserRequest.setCreatedAt(new Date());
-            if(createUserRequest.getGender() == "MALE") {
-                createUserRequest.setProfileImageUrl(uploadDir+"/"+"MALE.png");
-            } else if(createUserRequest.getGender() == "FEMALE"){
-                createUserRequest.setProfileImageUrl(uploadDir+"/"+"FEMALE.png");
+            createUserRequest.setAccountActivated(true);
+            if (createUserRequest.getGender().equals("MALE")) {
+                createUserRequest.setProfileImageUrl(uploadDir + "/" + "MALE.png");
+            } else if (createUserRequest.getGender().equals("FEMALE")) {
+                createUserRequest.setProfileImageUrl(uploadDir + "/" + "FEMALE.png");
             } else {
-                createUserRequest.setProfileImageUrl(uploadDir+"/"+"NONE.png");
+                createUserRequest.setProfileImageUrl(uploadDir + "/" + "NONE.png");
             }
-
             User savedUser = userRepository.save(createUserRequest);
-
             return new ResponseEntity<>(convertToUserDto(savedUser), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -99,36 +98,32 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserResponseDto> updateUser(String id, UserResponseDto updateUserRequest, MultipartFile imageFile) {
+    public ResponseEntity<UserResponseDto> updateUser(String id, UserResponseDto updateUserRequest,
+            MultipartFile imageFile) {
         try {
             validateImageFile(imageFile);
 
             Optional<User> existingUser = userRepository.findById(id);
             if (existingUser.isPresent()) {
-                
+
                 UserResponseDto requestUser = updateUserRequest;
                 User user = existingUser.get();
-                user.setUsernameValue(requestUser.getUsernameValue() != null ? requestUser.getUsernameValue()
-                        : user.getUsernameValue());
                 user.setFirstName(
                         requestUser.getFirstName() != null ? requestUser.getFirstName() : user.getFirstName());
                 user.setLastName(requestUser.getLastName() != null ? requestUser.getLastName() : user.getLastName());
-                user.setEmail(requestUser.getEmail() != null ? requestUser.getEmail() : user.getEmail());
                 user.setGender(requestUser.getGender() != null ? requestUser.getGender() : user.getGender());
                 user.setUpdatedAt(new Date());
                 user.setRole(requestUser.getRole() != null
                         ? roleRepository.findByRoleName(requestUser.getRole()).get()
                         : user.getRole());
                 user.setContact(requestUser.getContact() != 0 ? requestUser.getContact() : user.getContact());
-                System.out.println("ttttttt");
 
                 user.setProfileImageUrl((imageFile == null || imageFile.isEmpty()) ? user.getProfileImageUrl()
                         : generateImageUrl(user.getId(), imageFile));
-                
-                user.setPassword(requestUser.getPassword() != null? passwordEncoder.encode(requestUser.getPassword()) : user.getPassword());
+
+                user.setPassword(requestUser.getPassword() != null ? passwordEncoder.encode(requestUser.getPassword())
+                        : user.getPassword());
                 User savedUser = userRepository.save(user);
-
-
                 return new ResponseEntity<>(convertToUserDto(savedUser), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -229,12 +224,22 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public ResponseEntity<Boolean> checkUsername(String username){
-        return new ResponseEntity<>(userRepository.existsByUsernameValue(username), HttpStatus.OK);
+    public ResponseEntity<Boolean> checkUsername(String username) {
+        try {
+            boolean isUsernameAvailable = !userRepository.existsByUsernameValue(username);
+            return ResponseEntity.ok(isUsernameAvailable);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
-    public ResponseEntity<Boolean> checkEmail(String email){
-        return new ResponseEntity<>(userRepository.existsByEmail(email), HttpStatus.OK);
+    public ResponseEntity<Boolean> checkEmail(String email) {
+        try {
+            boolean isEmailAvailable = !userRepository.existsByEmail(email);
+            return ResponseEntity.ok(isEmailAvailable);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -36,8 +36,8 @@
             <mat-card-content clickable (click)="onShowDetailClicked(post.recipeId)">
                 <p class="description">{{ post.description }}</p>
                 <img mat-card-image [src]="post.recipeImageUrl" alt="Recipe Image" class="recipe-image">
-
             </mat-card-content>
+            <button class="book-button" *ngIf="post.userId !== userId" mat-button color="warn" clickable (click)="onBookNowClick(post.recipeId)">Book Now</button>
             <mat-card-actions class="icon-buttons">
                 <div class="like-count" *ngIf="!(userId && likedRecipes?.includes(post.recipeId))" clickable (click)="onLikeClick(post.recipeId)">
                     {{ post.likes.length }}
@@ -62,7 +62,8 @@
 </div>
 
 <div *ngIf="recipes.length === 0 || !recipes || showNoBookingsMessage" class="no-result-message">
-    <p>No Bookings present for you </p>
+    <!-- Changed -->
+    <p>No Recipes present for this search </p>
     <img src="../assets/no-result-found.png">
 </div>
 <app-load *ngIf="isLoading"></app-load>

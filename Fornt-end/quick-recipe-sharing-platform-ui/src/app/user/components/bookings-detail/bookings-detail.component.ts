@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, switchMap } from 'rxjs';
+import { Subscription, forkJoin, switchMap } from 'rxjs';
 import { Transaction } from 'src/app/model/payment.model';
 import { Recipe } from 'src/app/model/recipe.model';
 import { User } from 'src/app/model/user-detail';
@@ -17,7 +17,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './bookings-detail.component.html',
   styleUrls: ['./bookings-detail.component.scss']
 })
-export class BookingsDetailComponent {
+export class BookingsDetailComponent implements OnInit, OnDestroy{
 
   sanitizer: DomSanitizer = inject(DomSanitizer);
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
@@ -32,6 +32,7 @@ export class BookingsDetailComponent {
   userId!: string | null | undefined;
   videoId!: string ;
   extractedId!: string;
+  userIdSubscription!: Subscription;
 
   transactionDetail: {
     transaction: Transaction,
@@ -46,7 +47,7 @@ export class BookingsDetailComponent {
     };
 
   ngOnInit() {
-    this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id;
     })
 
@@ -89,5 +90,9 @@ export class BookingsDetailComponent {
   extractVideoId(videoUrl: string): string | undefined {
     const match = videoUrl.match(/(?:\/|v=)([a-zA-Z0-9_-]{11})/);
     return match ? match[1] : undefined;
+  }
+
+  ngOnDestroy(): void {
+    this.userIdSubscription.unsubscribe();
   }
 }

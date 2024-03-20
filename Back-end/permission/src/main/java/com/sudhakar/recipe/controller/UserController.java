@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:4200")
-@PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
 public class UserController {
 
     @Autowired
@@ -70,13 +69,13 @@ public class UserController {
         return userService.getProfile(id);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+    // @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/check/username/{username}")
     public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
         return userService.checkUsername(username);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+    // @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @GetMapping("/check/email/{email}")
     public ResponseEntity<Boolean> checkEmail(@PathVariable String email) {
         return userService.checkEmail(email);

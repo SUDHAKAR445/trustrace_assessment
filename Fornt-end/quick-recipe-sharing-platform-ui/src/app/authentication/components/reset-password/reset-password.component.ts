@@ -1,19 +1,17 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormControlStatus, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { IDeactivateComponent } from 'src/app/model/canActivate.model';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { ConfirmDialogComponent } from 'src/app/utility/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss']
 })
-export class ResetPasswordComponent implements IDeactivateComponent{
+export class ResetPasswordComponent implements IDeactivateComponent, OnInit{
 
   authService: AuthService = inject(AuthService);
   activateRoute: ActivatedRoute = inject(ActivatedRoute);
@@ -27,7 +25,6 @@ export class ResetPasswordComponent implements IDeactivateComponent{
   emailId!: string | null;
 
   ngOnInit() {
-
     this.activateRoute.queryParamMap.subscribe((data) => {
       this.emailId = data.get('email');
     });

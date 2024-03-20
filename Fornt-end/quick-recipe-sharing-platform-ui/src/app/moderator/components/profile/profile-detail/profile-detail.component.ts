@@ -1,5 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/model/user-detail';
 import { AlertService } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -10,7 +11,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './profile-detail.component.html',
   styleUrls: ['./profile-detail.component.scss']
 })
-export class ProfileDetailComponent implements OnInit {
+export class ProfileDetailComponent implements OnInit, OnDestroy {
 
   authService: AuthService = inject(AuthService);
   userService: UserService = inject(UserService);
@@ -19,9 +20,10 @@ export class ProfileDetailComponent implements OnInit {
 
   userId!: string | null | undefined;
   userDetail!: User;
+  userIdSubscription!: Subscription;
   
   ngOnInit(){
-    this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.userId;
     })
 
@@ -37,5 +39,9 @@ export class ProfileDetailComponent implements OnInit {
 
   updateProfile() {
     this.router.navigate(['/moderator/profile/update']);
+  }
+
+  ngOnDestroy() {
+    this.userIdSubscription.unsubscribe();
   }
 }

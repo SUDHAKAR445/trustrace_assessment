@@ -38,12 +38,7 @@ export class UserComponent implements AfterViewInit {
   @ViewChild('message') messageRef!: ElementRef;
 
   ngAfterViewInit() {
-    if (this.paginator) {
-      this.paginator.page.subscribe({
-        next: (page: any) => this.loadPage(page.pageIndex, page.pageSize)
-      });
-      this.loadPage(0, 10);
-    }
+    this.loadPage(0, 10);
     this.changeDetectorRef.detectChanges();
 
     this.messageRef.nativeElement.addEventListener('input', () => {
@@ -76,7 +71,6 @@ export class UserComponent implements AfterViewInit {
   loadPage(pageIndex: number, pageSize: number) {
     this.reportService.getAllReportedUser(pageIndex, pageSize).subscribe({
       next: (response) => {
-        console.log(response.content);
         this.dataSource.data = response.content;
         this.paginator.length = response.totalElements;
         this.paginator.pageIndex = response.number;

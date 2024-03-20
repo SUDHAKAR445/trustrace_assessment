@@ -105,7 +105,7 @@ public class ReportServiceImplementation implements ReportService {
     }
 
     @Override
-    public ResponseEntity<String> updateStatusOfReport(String reportId, String status) {
+    public ResponseEntity<Void> updateStatusOfReport(String reportId, String status) {
         try{
             Optional<Report> reportOptional = reportRepository.findById(reportId);
             System.out.println(status);
@@ -120,11 +120,11 @@ public class ReportServiceImplementation implements ReportService {
                 }
                 report = reportRepository.save(report);
                 // System.out.println(report);
-                return new ResponseEntity<>("Status updated successfully", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
-            return new ResponseEntity<>("Report does not exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Problem in updating the status", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

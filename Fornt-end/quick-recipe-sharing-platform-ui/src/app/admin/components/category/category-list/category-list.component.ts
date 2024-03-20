@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { Category } from 'src/app/model/category.model';
 import { AlertService } from 'src/app/services/alert.service';
 import { CategoryService } from 'src/app/services/category.service';
-import { CuisineService } from 'src/app/services/cuisine.service';
 
 @Component({
   selector: 'app-category-list',
@@ -27,12 +26,7 @@ export class CategoryListComponent implements AfterViewInit {
   @ViewChild('message') messageRef!: ElementRef;
 
   ngAfterViewInit() {
-    if (this.paginator) {
-      this.paginator.page.subscribe({
-        next: (page: any) => this.loadPage(page.pageIndex, page.pageSize)
-      });
-      this.loadPage(0, 10);
-    }
+    this.loadPage(0, 10);
     this.messageRef.nativeElement.addEventListener('input', () => {
       const inputValue = this.messageRef.nativeElement.value;
       
@@ -42,6 +36,7 @@ export class CategoryListComponent implements AfterViewInit {
         this.makeApiCall(inputValue, this.paginator.pageIndex, this.paginator.pageSize);
       }
     });
+    this.changeDetectorRef.detectChanges();
   }
 
   makeApiCall(inputValue: string, pageIndex: number, pageSize: number) {

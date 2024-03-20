@@ -1,5 +1,5 @@
 <mat-card class="booking-card">
-    <app-load *ngIf="isLoading"></app-load>
+    <app-authentication-loader *ngIf="isLoading"></app-authentication-loader>
     <mat-card-title>Booking Page</mat-card-title>
     <mat-card-content>
         <form class="booking-form" (submit)="bookNowClicked()">
@@ -23,7 +23,7 @@
                 <input matInput type="number" required [(ngModel)]="bookingAmount" name="amount" [disabled]="true">
             </mat-form-field>
 
-            <button mat-raised-button color="primary" type="submit" [disabled]="false">Book Now</button>
+            <button mat-raised-button class="book-button" type="submit" [disabled]="false">Book Now</button>
         </form>
     </mat-card-content>
 </mat-card>

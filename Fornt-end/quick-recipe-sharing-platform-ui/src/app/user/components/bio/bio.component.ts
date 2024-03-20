@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { User } from 'src/app/model/user-detail';
@@ -13,7 +13,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './bio.component.html',
   styleUrls: ['./bio.component.scss']
 })
-export class BioComponent implements OnInit{
+export class BioComponent implements OnInit, OnDestroy{
 
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   authService: AuthService = inject(AuthService);
@@ -35,11 +35,11 @@ export class BioComponent implements OnInit{
   userFollowingList!: User[] | null;
   totalPosts!: number;
   userDetail!: User;
-  subscription!: Subscription;
-  subscription1!: Subscription;
-  subscription2!: Subscription;
-  subscription3!: Subscription;
-  subscription4!: Subscription;
+  userIdSubscription!: Subscription;
+  userFollowerListSubscription!: Subscription;
+  userFollowingListSubscription!: Subscription;
+  followListSubscription!: Subscription;
+  followingListSubscription!: Subscription;
 
   ngOnInit() {
     this.activeRoute.queryParamMap.subscribe((data) => {
@@ -57,23 +57,23 @@ export class BioComponent implements OnInit{
         this.userDetail = data;
       });
     });
-    this.subscription = this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id || '';
     });
 
-    this.subscription1 = this.authService.followers.subscribe((data) => {
+    this.userFollowerListSubscription = this.authService.followers.subscribe((data) => {
       this.followerList = data;
     });
 
-    this.subscription2 = this.authService.following.subscribe((data) => {
+    this.userFollowingListSubscription = this.authService.following.subscribe((data) => {
       this.followingList = data;
     });
 
-    this.subscription3 = this.userFollowers.subscribe((data) => {
+    this.followListSubscription = this.userFollowers.subscribe((data) => {
       this.userFollowersList = data;
     });
 
-    this.subscription4 = this.userFollowing.subscribe((data) => {
+    this.followingListSubscription = this.userFollowing.subscribe((data) => {
       this.userFollowingList = data;
     });
 
@@ -146,5 +146,13 @@ export class BioComponent implements OnInit{
 
   showPosts(id: string | null) {
     this.router.navigate(['/user/post'], { queryParams: { 'id': id } });
+  }
+
+  ngOnDestroy(): void {
+    this.userIdSubscription.unsubscribe();
+    this.userFollowerListSubscription.unsubscribe();
+    this.userFollowingListSubscription.unsubscribe();
+    this.followListSubscription.unsubscribe();
+    this.followingListSubscription.unsubscribe();
   }
 }

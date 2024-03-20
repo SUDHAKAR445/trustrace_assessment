@@ -31,13 +31,11 @@ export class CategoryDetailComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.activeRoute.queryParamMap.subscribe((data) => {
       this.categoryId = data.get('detail');
-      console.log(this.categoryId);
     })
 
     this.categoryService.getCategoryDetailsById(this.categoryId).subscribe({
       next: (response) => {
         this.categoryDetail = response;
-        console.log(response);
       },
       error: (error) => {
       }

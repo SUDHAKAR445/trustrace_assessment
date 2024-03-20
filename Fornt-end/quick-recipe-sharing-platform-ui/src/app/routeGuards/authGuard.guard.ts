@@ -3,7 +3,6 @@ import { AuthService } from "../services/auth.service";
 import { inject } from "@angular/core";
 import { Observable, map, take } from "rxjs";
 import { Token } from "../model/user";
-import { IDeactivateComponent } from "../model/canActivate.model";
 
 export const canActivate = (
     router: ActivatedRouteSnapshot,
@@ -33,12 +32,10 @@ export const hasOtpVerified = (
     const route: Router = inject(Router);
 
     const isOtpVerified = authService.getOtpVerificationStatus();
-    const isPasswordChanged = authService.getPasswordChangedStatus();
 
     if (isOtpVerified) {
         return true;
     } else {
         return route.createUrlTree(['/login']);
-        return false;
     }
 }

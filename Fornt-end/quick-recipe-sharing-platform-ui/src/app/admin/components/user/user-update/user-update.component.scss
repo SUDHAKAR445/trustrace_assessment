@@ -1,43 +1,88 @@
-.container {
-    max-width: 400px;
-    margin: auto;
+.form-container {
+    width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+.form-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 15px;
 }
 
 label {
+    display: block;
     font-weight: bold;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
 }
 
 input,
-mat-radio-button {
+mat-radio-button,
+mat-select {
+    width: 100%;
     padding: 8px;
+    box-sizing: border-box;
+    margin-top: 5px;
+    margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
 }
 
-button {
-    margin-top: 16px;
-    font-size: 18px;
-    width: max-content;
+.mat-radio-group {
+    display: flex;
+    flex-direction: column;
 }
 
-.button-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content:flex-start;
-    gap: 10px;
+.btn-primary,
+.btn-danger {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #4caf50;
+    color: white;
+}
+
+[disabled] {
+    background-color: #ccc;
+    cursor: none;
+}
+
+.btn-danger {
+    background-color: #f44336;
+    color: white;
+    margin-left: 10px;
+}
+
+// .btn-primary:hover,
+// .btn-danger:hover {
+//     background-color: #45a049;
+// }
+
+img {
+    width: 40%;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 small {

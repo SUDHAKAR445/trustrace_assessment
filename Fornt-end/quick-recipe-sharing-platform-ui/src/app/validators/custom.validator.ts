@@ -1,7 +1,7 @@
 import { AbstractControl, FormControl, ValidationErrors, AsyncValidatorFn } from "@angular/forms";
 import { UserService } from "../services/user.service";
 import { Injectable } from "@angular/core";
-import { debounceTime, switchMap, map } from "rxjs/operators";
+import { map, catchError } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 
 @Injectable({
@@ -20,31 +20,26 @@ export class CustomValidators {
     checkUsername(): AsyncValidatorFn {
         return (control: AbstractControl): Observable<ValidationErrors | null> => {
             return this.usernameAllowed(control.value).pipe(
-                map(isTaken => (isTaken ? { checkValue: true } : null))
+                map(isAvailable => (isAvailable ? null : { checkValue: true })),
+                catchError(() => of({ checkValue: true }))
             );
         };
     }
 
-    private usernameAllowed(value: any): Observable<boolean> {
-        return this.userService.checkUsername(value).pipe(
-            debounceTime(300),
-            switchMap(isTaken => of(isTaken))
-        );
+    private usernameAllowed(username: string): Observable<boolean> {
+        return this.userService.checkUsername(username);
     }
 
     checkEmail(): AsyncValidatorFn {
         return (control: AbstractControl): Observable<ValidationErrors | null> => {
             return this.emailAllowed(control.value).pipe(
-                map(isTaken => (isTaken ? { checkEmail: true } : null))
+                map(isAvailable => (isAvailable ? null : { checkEmail: true })),
+                catchError(() => of({ checkEmail: true }))
             );
         };
     }
 
-    private emailAllowed(value: any): Observable<boolean> {
-        return this.userService.checkEmail(value).pipe(
-            debounceTime(300),
-            switchMap(isTaken => of(isTaken))
-        );
+    private emailAllowed(email: string): Observable<boolean> {
+        return this.userService.checkEmail(email);
     }
 }
-

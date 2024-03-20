@@ -9,7 +9,6 @@ import { User } from 'src/app/model/user-detail';
 import { AlertService } from 'src/app/services/alert.service';
 import { UserService } from 'src/app/services/user.service';
 import { CustomValidators } from 'src/app/validators/custom.validator';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-user-update',
@@ -33,14 +32,14 @@ export class UserUpdateComponent implements IDeactivateComponent {
 
   ngOnInit() {
     this.updateUserForm = new FormGroup({
-      usernameValue: new FormControl({ disabled: true }, [Validators.required, Validators.minLength(5)]),
-      firstName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
-      lastName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
-      email: new FormControl({ disabled: true }, Validators.required),
-      gender: new FormControl(null, Validators.required),
-      contact: new FormControl(null),
-      role: new FormControl(null, Validators.required),
-      password: new FormControl(null, [Validators.required, Validators.pattern(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,20})/)]),
+      usernameValue: new FormControl({ value: '', disabled: true }, [Validators.required, Validators.minLength(5)]),
+      firstName: new FormControl('', [Validators.required, this.customValidator.noSpaceAllowed]),
+      lastName: new FormControl('', [Validators.required, this.customValidator.noSpaceAllowed]),
+      email: new FormControl({ value: '', disabled: true }, Validators.required),
+      gender: new FormControl('', Validators.required),
+      contact: new FormControl(''),
+      role: new FormControl('', Validators.required),
+      password: new FormControl('', [Validators.pattern(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,20})/)]),
     });
 
     this.activeRoute.queryParamMap.subscribe((data) => {
@@ -68,7 +67,6 @@ export class UserUpdateComponent implements IDeactivateComponent {
     });
   }
 
-
   onUpdateFormSubmitted() {
     this.alertService.confirm('Confirm', 'Are you sure you update this changes?').then((isConfirmed) => {
       if (isConfirmed) {
@@ -93,10 +91,10 @@ export class UserUpdateComponent implements IDeactivateComponent {
   prepareFormData(user: User): FormData {
     const formData = new FormData();
 
-    formData.append('usernameValue', user.usernameValue || '');
+    formData.append('usernameValue', this.userDetail?.usernameValue || '');
     formData.append('firstName', user.firstName || '');
     formData.append('lastName', user.lastName || '');
-    formData.append('email', user.email || '');
+    formData.append('email', this.userDetail?.email || '');
     formData.append('gender', user.gender || '');
     formData.append('contact', user.contact || '');
     formData.append('role', user.role || '');

@@ -22,11 +22,11 @@
                         <div class="profile-label">Username</div>
                         <div class="profile-value">{{ userProfile.usernameValue }}</div>
 
-                        <div class="profile-label">First Name</div>
-                        <div class="profile-value">{{ userProfile.firstName }}</div>
+                        <div class="profile-label">Wallet</div>
+                        <div class="profile-value">{{ userProfile.wallet | currency: 'INR'}}</div>
 
-                        <div class="profile-label">Last Name</div>
-                        <div class="profile-value">{{ userProfile.lastName }}</div>
+                        <div class="profile-label">Name</div>
+                        <div class="profile-value">{{ userProfile.firstName }} {{ userProfile.lastName }}</div>
 
                         <div class="profile-label">Gender</div>
                         <div class="profile-value">{{ userProfile.gender }}</div>

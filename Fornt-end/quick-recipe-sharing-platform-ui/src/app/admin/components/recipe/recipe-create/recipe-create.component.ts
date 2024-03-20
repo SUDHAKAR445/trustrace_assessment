@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { IDeactivateComponent } from 'src/app/model/canActivate.model';
-import Swal from 'sweetalert2';
 import { AlertService } from 'src/app/services/alert.service';
 
 @Component({
@@ -86,7 +85,6 @@ export class RecipeCreateComponent implements IDeactivateComponent{
       });
     }
   }
-  
 
   addIngredients() {
     const ingredientsFormGroup = new FormGroup({
@@ -107,7 +105,6 @@ export class RecipeCreateComponent implements IDeactivateComponent{
   }
 
   onPostRecipeClicked() {
-
     this.alertService.confirm('Confirm', 'Are you post this recipe?').then((isConfirmed) => {
       if (isConfirmed) {
         this.isSubmitted = true;

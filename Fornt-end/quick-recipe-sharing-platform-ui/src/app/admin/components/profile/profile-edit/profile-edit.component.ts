@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { IDeactivateComponent } from 'src/app/model/canActivate.model';
 import { FileHandle } from 'src/app/model/file-handle.model';
@@ -36,14 +36,14 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
 
   ngOnInit(): void {
     this.updateUserForm = new FormGroup({
-      usernameValue: new FormControl({disabled: true}, [Validators.required]),
+      usernameValue: new FormControl({ value: '', disabled: true }, [Validators.required]),
       firstName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
       lastName: new FormControl(null, [Validators.required, this.customValidator.noSpaceAllowed]),
-      email: new FormControl({disabled: true}, Validators.required),
+      email: new FormControl({ value: '', disabled: true }, Validators.required),
       gender: new FormControl(null, Validators.required),
-      contact: new FormControl(null, Validators.min(1000)),
+      contact: new FormControl(null, [Validators.min(1000), Validators.required]),
       role: new FormControl(null, Validators.required),
-      password: new FormControl(null, [Validators.required, Validators.pattern(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,20})/)]),
+      password: new FormControl(null, [Validators.pattern(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,20})/)]),
     });
 
     this.authService.userDetail.subscribe((data) => {
@@ -95,10 +95,10 @@ export class ProfileEditComponent implements OnInit, IDeactivateComponent {
   prepareFormData(user: User): FormData {
     const formData = new FormData();
 
-    formData.append('usernameValue', user.usernameValue || '');
+    formData.append('usernameValue', this.userDetail?.usernameValue || '');
     formData.append('firstName', user.firstName || '');
     formData.append('lastName', user.lastName || '');
-    formData.append('email', user.email || '');
+    formData.append('email', this.userDetail?.email || '');
     formData.append('gender', user.gender || '');
     formData.append('contact', user.contact || '');
     formData.append('role', user.role || '');

@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { StepperOrientation } from '@angular/material/stepper';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileHandle } from 'src/app/model/file-handle.model';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { IDeactivateComponent } from 'src/app/model/canActivate.model';
-import Swal from 'sweetalert2';
 import { AlertService } from 'src/app/services/alert.service';
 
 @Component({
@@ -18,7 +17,7 @@ import { AlertService } from 'src/app/services/alert.service';
   templateUrl: './recipe-create.component.html',
   styleUrls: ['./recipe-create.component.scss']
 })
-export class RecipeCreateComponent implements IDeactivateComponent {
+export class RecipeCreateComponent implements IDeactivateComponent, OnInit, OnDestroy {
 
   authService: AuthService = inject(AuthService);
   recipeService: RecipeService = inject(RecipeService);
@@ -30,13 +29,14 @@ export class RecipeCreateComponent implements IDeactivateComponent {
   isLinear: boolean = true;
   userId!: string | null | undefined;
   isSubmitted: boolean = false;
+  userIdSubscription!: Subscription;
   firstFormGroup!: FormGroup;
   secondFormGroup!: FormGroup;
   thirdFormGroup!: FormGroup;
   fourthFormGroup!: FormGroup;
 
   ngOnInit() {
-    this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id;
     })
     this.firstFormGroup = new FormGroup({
@@ -125,17 +125,17 @@ export class RecipeCreateComponent implements IDeactivateComponent {
             this.recipeService.updateRecipeImage(response.id, thirdFormGroupValue.imageFile).subscribe({
               next: () => {
                 this.alertService.showSuccess("Recipe posted successfully");
-                this.router.navigate(['/moderator/feed']);
+                this.router.navigate(['/user/feed']);
               },
               error: (error) => {
                 this.alertService.showError("Error in uploading the recipe image");
-                this.router.navigate(['/moderator/feed']);
+                this.router.navigate(['/user/feed']);
               },
             });
           },
           error: (error) => {
             this.alertService.showError("Error in posting the recipe");
-            this.router.navigate(['/moderator/feed']);
+            this.router.navigate(['/user/feed']);
           },
         });
       }
@@ -148,5 +148,9 @@ export class RecipeCreateComponent implements IDeactivateComponent {
     } else {
       return true;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.userIdSubscription.unsubscribe();
   }
 }

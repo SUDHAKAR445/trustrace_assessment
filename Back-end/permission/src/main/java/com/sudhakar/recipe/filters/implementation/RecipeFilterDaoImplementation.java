@@ -46,6 +46,8 @@ public class RecipeFilterDaoImplementation implements RecipeFilterDao {
 
             }
 
+            query.addCriteria(Criteria.where("deletedAt").is(null));
+            
             if (StringUtils.hasText(cuisineName)) {
                 Cuisine cuisine = findCuisineByName(cuisineName);
                 if (cuisine != null) {

@@ -17,14 +17,12 @@ const month = today.getMonth();
 const year = today.getFullYear();
 const day = today.getDate();
 
-
 @Component({
   selector: 'app-recipe-list',
   templateUrl: './recipe-list.component.html',
   styleUrls: ['./recipe-list.component.scss']
 })
 export class RecipeListComponent implements AfterViewInit, OnInit {
-  
   recipeService:RecipeService = inject(RecipeService);
   changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
   categoryService: CategoryService = inject(CategoryService);
@@ -58,12 +56,7 @@ export class RecipeListComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    if (this.paginator) {
-      this.paginator.page.subscribe({
-        next: (page: any) => this.loadPage(page.pageIndex, page.pageSize),
-      });
-      this.loadPage(0, 10);
-    }
+    this.loadPage(0, 10);
     this.changeDetectorRef.detectChanges();
 
     this.messageRef.nativeElement.addEventListener('input', () => {

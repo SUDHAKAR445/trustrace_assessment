@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { IDeactivateComponent } from 'src/app/model/canActivate.model';
+import { AlertService } from 'src/app/services/alert.service';
 import { PaymentService } from 'src/app/services/payment.service';
 import { UserService } from 'src/app/services/user.service';
-import { MatDialog } from '@angular/material/dialog';
-import { SuccessPopComponent } from 'src/app/utility/success-pop/success-pop.component';
-import { IDeactivateComponent } from 'src/app/model/canActivate.model';
-import { Observable } from 'rxjs';
-import Swal from 'sweetalert2';
-import { AlertService } from 'src/app/services/alert.service';
 
 declare let Razorpay: any;
 @Component({
@@ -57,23 +55,29 @@ export class PaymentComponent implements OnInit, IDeactivateComponent {
   }
 
   bookNowClicked() {
-    this.alertService.confirm('Confirm', 'Are you sure do you book this recipe?').then((isConfirmed) => {
+    this.alertService.confirm('Confirm', 'Are you sure you want to book this recipe?').then((isConfirmed) => {
       if (isConfirmed) {
         this.isSubmitted = true;
+        this.isLoading = true;
         this.paymentService.createTransaction(this.paymentForm.value).subscribe({
           next: response => {
             this.openTransactionModel(response);
           },
           error: response => {
+            this.isLoading = false;
             this.alertService.showError('Error occurred in booking the recipe');
           }
         });
+      } else {
+        this.isLoading = false;
       }
+    }).catch(error => {
+      console.error('Error occurred while confirming:', error);
+      this.isLoading = false;
     });
   }
 
   openTransactionModel(response: any) {
-    this.isLoading = true;
     const res = response;
     const options = {
       order_id: response.orderId,
@@ -89,17 +93,13 @@ export class PaymentComponent implements OnInit, IDeactivateComponent {
         contact: response.bookerContact
       },
       handler: (response: any) => {
+        this.setIsLoading();
         if (response != null && response.razorpay_payment_id != null) {
           this.paymentService.updateTransaction(res.id, response.razorpay_payment_id).subscribe({
-            next: (response) => {
-              this.alertService.confirm('Info','Your booking is successfully and you order is sent to your mail. Now click OK to see detail').then((isConfirmed) => {
-                if(isConfirmed) {
-                  this.router.navigate(['/user/booking']);
-                } else {
-                  this.router.navigate(['/user/feed']);
-                }
-              });
-            }
+            next: (error) => {
+              this.router.navigate(['/user/booking']);
+              this.alertService.showSuccess("Your booking is successful and your order is sent to your email. Click OK to see details");
+            },
           });
         }
       },
@@ -107,13 +107,13 @@ export class PaymentComponent implements OnInit, IDeactivateComponent {
         address: 'Book the person and Cook your food'
       },
       theme: {
-        color: '#0c238a'
+        color: '#3641C9'
       },
       modal: {
         ondismiss: () => {
+          this.isLoading = false;
           this.paymentService.updateTransaction(res.id, '').subscribe({
-            next: (response) => console.log(response),
-            error: (err) => {
+            error: (error) => {
               this.alertService.showError('Booking is Failed..');
               this.router.navigate(['/user/feed']);
             },
@@ -124,6 +124,12 @@ export class PaymentComponent implements OnInit, IDeactivateComponent {
 
     let razorpayObject: any = new Razorpay(options);
     razorpayObject.open();
+  }
+
+  setIsLoading() {
+    console.log(this.isLoading);
+    this.isLoading = false;
+    console.log(this.isLoading);
   }
 
   canExit(): boolean | Promise<boolean> | Observable<boolean> {

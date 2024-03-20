@@ -28,12 +28,7 @@ export class UserListComponent implements AfterViewInit {
   @ViewChild('message') messageRef!: ElementRef;
 
   ngAfterViewInit() {
-    if (this.paginator) {
-      this.paginator.page.subscribe({
-        next: (page: any) => this.loadPage(page.pageIndex, page.pageSize)
-      });
-      this.loadPage(0, 10);
-    }
+    this.loadPage(0, 10);
     this.changeDetectorRef.detectChanges();
   
     this.messageRef.nativeElement.addEventListener('input', () => {
@@ -129,10 +124,6 @@ export class UserListComponent implements AfterViewInit {
     this.alertService.confirm('Confirm', 'Are you sure do you want to edit this user').then((isConfirmed) => {
       this.router.navigate(['/admin/users/update'], { queryParams: { detail: id } });
     });
-  }
-
-  searchText(value: string) {
-    console.log(value);
   }
 
   onCancelClicked(){

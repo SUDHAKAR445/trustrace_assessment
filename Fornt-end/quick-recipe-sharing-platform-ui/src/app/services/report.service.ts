@@ -98,12 +98,12 @@ export class ReportService {
             }));
     }
 
-    updateReportStatusById(reportId: string | undefined, status: string): Observable<string> {
+    updateReportStatusById(reportId: string | undefined, status: string): Observable<void> {
 
         let queryParams = new HttpParams();
         queryParams = queryParams.append("status", status);
 
-        return this.http.put<string>(`${environment.reportUrl}/${reportId}`, status).pipe(
+        return this.http.put<void>(`${environment.reportUrl}/${reportId}`, status).pipe(
             catchError(err => {
                 if (!err.error || !err.error.error) {
                     return throwError(() => 'An unknown error has occurred');

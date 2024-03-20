@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -8,7 +8,6 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CommentService } from 'src/app/services/comment.service';
 import { FollowService } from 'src/app/services/follow.service';
 import { RecipeService } from 'src/app/services/recipe.service';
-import { ConfirmDialogComponent } from 'src/app/utility/confirm-dialog/confirm-dialog.component';
 import { ReportDialogComponent } from 'src/app/utility/report-dialog/report-dialog.component';
 
 @Component({
@@ -16,7 +15,7 @@ import { ReportDialogComponent } from 'src/app/utility/report-dialog/report-dial
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss']
 })
-export class DetailComponent implements OnInit {
+export class DetailComponent implements OnInit, OnDestroy {
 
   dialog: MatDialog = inject(MatDialog);
   recipeService: RecipeService = inject(RecipeService);
@@ -37,29 +36,29 @@ export class DetailComponent implements OnInit {
   followerList!: User[] | null;
   followingList!: User[] | null;
   likedRecipes!: string[] | null;
-  subscription!: Subscription;
-  subscription1!: Subscription;
-  subscription2!: Subscription;
-  subscription3!: Subscription;
+  userIdSubscription!: Subscription;
+  followerListSubscription!: Subscription;
+  followingListSubscription!: Subscription;
+  LikedListSubscription!: Subscription;
 
   ngOnInit(): void {
 
     this.activeRoute.queryParamMap.subscribe((data) => {
       this.bioId = data.get('id');
     });
-    this.subscription = this.authService.user.subscribe((data) => {
+    this.userIdSubscription = this.authService.user.subscribe((data) => {
       this.userId = data?.id || '';
     });
 
-    this.subscription1 = this.authService.followers.subscribe((data) => {
+    this.followerListSubscription = this.authService.followers.subscribe((data) => {
       this.followerList = data;
     });
 
-    this.subscription2 = this.authService.following.subscribe((data) => {
+    this.followingListSubscription = this.authService.following.subscribe((data) => {
       this.followingList = data;
     });
 
-    this.subscription3 = this.authService.likedRecipes.subscribe((data) => {
+    this.LikedListSubscription = this.authService.likedRecipes.subscribe((data) => {
       this.likedRecipes = data;
     });
 
@@ -89,7 +88,6 @@ export class DetailComponent implements OnInit {
   @HostListener('window:scroll', ['$event'])
   onScroll(event: any): void {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1) {
-      console.log('Calling loadRecipes...');
       this.loadRecipes();
     }
   }
@@ -263,9 +261,9 @@ export class DetailComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.subscription1.unsubscribe();
-    this.subscription2.unsubscribe();
-    this.subscription3.unsubscribe();
+    this.userIdSubscription.unsubscribe();
+    this.followerListSubscription.unsubscribe();
+    this.followingListSubscription.unsubscribe();
+    this.LikedListSubscription.unsubscribe();
   }
 }
